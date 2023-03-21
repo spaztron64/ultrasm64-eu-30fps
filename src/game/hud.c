@@ -455,6 +455,10 @@ void render_profiler(void) {
 
 void ui_logic(void) {
     s16 hudDisplayFlags = gHudDisplay.flags;
+    
+    if (gPlayer1Controller->buttonDown & U_JPAD && gPlayer1Controller->buttonPressed & L_TRIG) {
+        gShowProfilerNew ^= 1;
+    }
 
     if (hudDisplayFlags & HUD_DISPLAY_FLAG_CAMERA_AND_POWER) {
         s16 shownHealthWedges = gHudDisplay.wedges;
@@ -481,9 +485,6 @@ void ui_logic(void) {
                 break;
         }
         sPowerMeterVisibleTimer++;
-    }
-    if (gPlayer1Controller->buttonDown & U_JPAD && gPlayer1Controller->buttonPressed & L_TRIG) {
-        gShowProfilerNew ^= 1;
     }
 }
 

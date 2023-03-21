@@ -3200,6 +3200,7 @@ void update_camera(struct Camera *c) {
     update_lakitu(c);
 
     gLakituState.lastFrameAction = sMarioCamState->action;
+    fov_logic();
 }
 
 /**
@@ -3268,6 +3269,7 @@ void reset_camera(struct Camera *c) {
     gLakituState.lastFrameAction = 0;
     set_fov_function(CAM_FOV_DEFAULT);
     sFOVState.fov = 45.f;
+    sFOVState.fovLerp = 45.f;
     sFOVState.fovOffset = 0.f;
     sFOVState.unusedIsSleeping = 0;
     sFOVState.shakeAmplitude = 0.f;
@@ -7455,6 +7457,7 @@ BAD_RETURN(s32) cutscene_ending_look_at_sky(struct Camera *c) {
  */
 BAD_RETURN(s32) cutscene_ending_zoom_fov(UNUSED struct Camera *c) {
     sFOVState.fov = 37.f;
+    sFOVState.fovLerp = 37.f;
 }
 
 /**
@@ -8382,6 +8385,7 @@ BAD_RETURN(s32) cutscene_red_coin_star_warp(struct Camera *c) {
  */
 BAD_RETURN(s32) cutscene_red_coin_star_set_fov(UNUSED struct Camera *c) {
     sFOVState.fov = 60.f;
+    sFOVState.fovLerp = 60.f;
 }
 
 BAD_RETURN(s32) cutscene_red_coin_star(struct Camera *c) {
@@ -8408,6 +8412,7 @@ BAD_RETURN(s32) cutscene_red_coin_star_end(struct Camera *c) {
     c->cutscene = 0;
     // Restore the default fov
     sFOVState.fov = sCutsceneVars[2].point[2];
+    sFOVState.fovLerp = sCutsceneVars[2].point[2];
 }
 
 /**
@@ -8789,6 +8794,7 @@ BAD_RETURN(s32) cutscene_pyramid_top_explode_warp(struct Camera *c) {
 
     set_fov_function(CAM_FOV_DEFAULT);
     sFOVState.fov = 45.f;
+    sFOVState.fovLerp = 45.f;
 
     vec3f_copy(sCutsceneVars[4].point, c->pos);
     vec3f_copy(sCutsceneVars[5].point, c->focus);
@@ -8813,6 +8819,7 @@ BAD_RETURN(s32) cutscene_pyramid_top_explode_closeup(struct Camera *c) {
     c->focus[1] += 4.f;
     c->pos[1] -= 5.f;
     sFOVState.fov = 45.f;
+    sFOVState.fovLerp = 45.f;
     set_handheld_shake(HAND_CAM_SHAKE_CUTSCENE);
 }
 
@@ -9567,6 +9574,7 @@ BAD_RETURN(s32) cutscene_intro_peach_clear_cutscene_status(UNUSED struct Camera 
  */
 BAD_RETURN(s32) cutscene_intro_peach_zoom_fov(UNUSED struct Camera *c) {
     sFOVState.fov = 8.f;
+    sFOVState.fovLerp = 8.f;
     set_fov_function(CAM_FOV_ZOOM_30);
 }
 
@@ -11314,9 +11322,9 @@ void set_fov_shake_from_point(s16 amplitude, s16 decay, s16 shakeSpeed, f32 maxD
 void shake_camera_fov(struct GraphNodePerspective *perspective) {
     if (sFOVState.shakeAmplitude != 0.f) {
         sFOVState.fovOffset = coss(sFOVState.shakePhase) * sFOVState.shakeAmplitude / 0x100;
-        sFOVState.shakePhase += sFOVState.shakeSpeed;
-        camera_approach_f32_symmetric_bool(&sFOVState.shakeAmplitude, 0.f, sFOVState.decay);
-        perspective->fov += sFOVState.fovOffset;
+        sFOVState.shakePhase += sFOVState.shakeSpeed * gLerpSpeed;
+        camera_approach_f32_symmetric_bool(&sFOVState.shakeAmplitude, 0.f, sFOVState.decay * gLerpSpeed);
+        perspective->fov += sFOVState.fovOffset * gLerpSpeed;
     } else {
         sFOVState.shakePhase = 0;
     }
@@ -11328,6 +11336,7 @@ static UNUSED void unused_deactivate_sleeping_camera(UNUSED struct MarioState *m
 
 void set_fov_30(UNUSED struct MarioState *m) {
     sFOVState.fov = 30.f;
+    sFOVState.fovLerp = 30.f;
 }
 
 void approach_fov_20(UNUSED struct MarioState *m) {
@@ -11336,10 +11345,12 @@ void approach_fov_20(UNUSED struct MarioState *m) {
 
 void set_fov_45(UNUSED struct MarioState *m) {
     sFOVState.fov = 45.f;
+    sFOVState.fovLerp = 45.f;
 }
 
 void set_fov_29(UNUSED struct MarioState *m) {
     sFOVState.fov = 29.f;
+    sFOVState.fovLerp = 29.f;
 }
 
 void zoom_fov_30(UNUSED struct MarioState *m) {
@@ -11364,6 +11375,7 @@ void fov_default(struct MarioState *m) {
     }
     if (m->area->camera->cutscene == CUTSCENE_0F_UNUSED) {
         sFOVState.fov = 45.f;
+        sFOVState.fovLerp = 45.f;
     }
 }
 
@@ -11412,15 +11424,11 @@ void set_fov_bbh(struct MarioState *m) {
     sFOVState.fov = approach_f32(sFOVState.fov, targetFoV, 2.f, 2.f);
 }
 
-/**
- * Sets the field of view for the GraphNodeCamera
- */
-Gfx *geo_camera_fov(s32 callContext, struct GraphNode *g, UNUSED void *context) {
-    struct GraphNodePerspective *perspective = (struct GraphNodePerspective *) g;
-    struct MarioState *marioState = &gMarioStates[0];
+void fov_logic(void) {
     u8 fovFunc = sFOVState.fovFunc;
+    struct MarioState *marioState = &gMarioStates[0];
 
-    if (callContext == GEO_CONTEXT_RENDER) {
+    if (gCamera) {
         switch (fovFunc) {
             case CAM_FOV_SET_45:
                 set_fov_45(marioState);
@@ -11459,8 +11467,18 @@ Gfx *geo_camera_fov(s32 callContext, struct GraphNode *g, UNUSED void *context) 
         }
     }
 
-    perspective->fov = sFOVState.fov;
+}
+
+/**
+ * Sets the field of view for the GraphNodeCamera
+ */
+Gfx *geo_camera_fov(UNUSED s32 callContext, struct GraphNode *g, UNUSED void *context) {
+    struct GraphNodePerspective *perspective = (struct GraphNodePerspective *) g;
+
+    sFOVState.fovLerp = approach_f32_asymptotic(sFOVState.fovLerp, sFOVState.fov, gLerpSpeed);
+    perspective->fov = sFOVState.fovLerp;
     shake_camera_fov(perspective);
+
     return NULL;
 }
 

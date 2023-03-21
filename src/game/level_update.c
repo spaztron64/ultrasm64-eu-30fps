@@ -551,10 +551,9 @@ void check_instant_warp(void) {
             && gCurrentArea->instantWarps != NULL) {
             struct InstantWarp *warp = &gCurrentArea->instantWarps[index];
 
-            gInstantWarp = TRUE;
-
-            if (gInstantWarpReady) {
-                if (warp->id != 0) {
+            if (warp->id != 0) {
+                gInstantWarp = TRUE;
+                if (gInstantWarpReady) {
                     gMarioState->pos[0] += warp->displacement[0];
                     gMarioState->pos[1] += warp->displacement[1];
                     gMarioState->pos[2] += warp->displacement[2];

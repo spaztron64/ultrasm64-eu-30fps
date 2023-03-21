@@ -69,6 +69,7 @@ static u8 sTextBaseAlpha = 0;
 // 2D position of the cursor on the screen.
 // sCursorPos[0]: X | sCursorPos[1]: Y
 static f32 sCursorPos[] = {0, 0};
+static f32 sCursorPosLerp[] = {0, 0};
 
 // Determines which graphic to use for the cursor.
 static s16 sCursorClickingTimer = 0;
@@ -1696,8 +1697,9 @@ void handle_controller_cursor_input(void) {
  * to be usable on the file select.
  */
 void print_menu_cursor(void) {
-    handle_controller_cursor_input();
-    create_dl_translation_matrix(MENU_MTX_PUSH, sCursorPos[0] + 160.0f - 5.0, sCursorPos[1] + 120.0f - 25.0, 0.0f);
+    sCursorPosLerp[0] = approach_f32_asymptotic(sCursorPosLerp[0], sCursorPos[0], gLerpSpeed);
+    sCursorPosLerp[1] = approach_f32_asymptotic(sCursorPosLerp[1], sCursorPos[1], gLerpSpeed);
+    create_dl_translation_matrix(MENU_MTX_PUSH, sCursorPosLerp[0] + 160.0f - 5.0, sCursorPosLerp[1] + 120.0f - 25.0, 0.0f);
     // Get the right graphic to use for the cursor.
     if (sCursorClickingTimer == 0)
         // Idle
@@ -1706,10 +1708,14 @@ void print_menu_cursor(void) {
         // Grabbing
         gSPDisplayList(gDisplayListHead++, dl_menu_grabbing_hand);
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+}
+
+void cursor_logic(void) {
+    handle_controller_cursor_input();
     if (sCursorClickingTimer != 0) {
         sCursorClickingTimer++; // This is a very strange way to implement a timer? It counts up and
                                 // then resets to 0 instead of just counting down to 0.
-        if (sCursorClickingTimer == 5) {
+        if (sCursorClickingTimer >= 5) {
             sCursorClickingTimer = 0;
         }
     }
@@ -2866,18 +2872,26 @@ s32 lvl_init_menu_values_and_cursor_pos(UNUSED s32 arg, UNUSED s32 unused) {
         case 1: // File A
             sCursorPos[0] = -94.0f;
             sCursorPos[1] = 46.0f;
+            sCursorPosLerp[0] = -94.0f;
+            sCursorPosLerp[1] = 46.0f;
             break;
         case 2: // File B
             sCursorPos[0] = 24.0f;
             sCursorPos[1] = 46.0f;
+            sCursorPosLerp[0] = 24.0f;
+            sCursorPosLerp[1] = 46.0f;
             break;
         case 3: // File C
             sCursorPos[0] = -94.0f;
             sCursorPos[1] = 5.0f;
+            sCursorPosLerp[0] = -94.0f;
+            sCursorPosLerp[1] = 5.0f;
             break;
         case 4: // File D
             sCursorPos[0] = 24.0f;
             sCursorPos[1] = 5.0f;
+            sCursorPosLerp[0] = 24.0f;
+            sCursorPosLerp[1] = 5.0f;
             break;
     }
     sClickPos[0] = -10000;
@@ -2915,6 +2929,7 @@ s32 lvl_init_menu_values_and_cursor_pos(UNUSED s32 arg, UNUSED s32 unused) {
  * defined in load_main_menu_save_file.
  */
 s32 lvl_update_obj_and_load_file_selected(UNUSED s32 arg, UNUSED s32 unused) {
+    cursor_logic();
     area_update_objects();
     return sSelectedFileNum;
 }

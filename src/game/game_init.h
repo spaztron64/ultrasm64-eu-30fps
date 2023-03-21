@@ -58,6 +58,7 @@ extern struct Controller *gPlayer3Controller;
 extern struct DemoInput *gCurrDemoInput;
 extern u16 gDemoInputListID;
 extern struct DemoInput gRecordedDemoInput;
+extern f32 gLerpSpeed;
 
 // this area is the demo input + the header. when the demo is loaded in, there is a header the size
 // of a single word next to the input list. this word is the current ID count.

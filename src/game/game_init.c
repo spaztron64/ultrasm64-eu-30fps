@@ -26,6 +26,7 @@
 #ifdef SRAM
 #include "sram.h"
 #endif
+#include "engine/math_util.h"
 #include <prevent_bss_reordering.h>
 
 // First 3 controller slots
@@ -36,6 +37,12 @@ struct SPTask *gGfxSPTask;
 Gfx *gDisplayListHead;
 u8 *gGfxPoolEnd;
 struct GfxPool *gGfxPool;
+
+f32 gDelta = 1;
+f32 jDelta = 1;
+f32 lDelta = 1;
+u8 gMoveSpeed = 1;
+f32 gLerpSpeed = 1;
 
 // OS Controllers
 OSContStatus gControllerStatuses[4];
@@ -714,11 +721,15 @@ void setup_game_memory(void) {
 }
 
 extern u32 gGameTime;
+#define SECONDS_PER_CYCLE 0.00000002133f
+
+
 /**
  * Main game loop thread. Runs forever as long as the game continues.
  */
 void thread5_game_loop(UNUSED void *arg) {
     struct LevelCommand *addr;
+    u32 prevTime = 0;
 
     setup_game_memory();
 #if ENABLE_RUMBLE
@@ -762,11 +773,15 @@ void thread5_game_loop(UNUSED void *arg) {
         audio_game_loop_tick();
         read_controller_inputs();
         addr = level_script_execute(addr);
+        hud_logic();
         gGlobalTimer++;
         profiler_log_thread5_time(BEFORE_DISPLAY_LISTS);
         profiler_log_thread5_time(AFTER_DISPLAY_LISTS);
         profiler_log_thread5_time(THREAD5_END);
         gGameTime = osGetTime() - first;
+        u32 deltaTime = osGetTime() - prevTime;
+        lDelta = 1.0f/(deltaTime*(SECONDS_PER_CYCLE));
+        prevTime = osGetTime();
         osRecvMesg(&gGameVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
         osRecvMesg(&gGameVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
 #if 0
@@ -778,13 +793,22 @@ void thread5_game_loop(UNUSED void *arg) {
     }
 }
 extern u32 gVideoTime;
+
 void thread9_graphics(UNUSED void *arg) {
+    u32 prevTime = 0;
 
     set_vblank_handler(3, &gVideoVblankHandler, &gVideoVblankQueue, (OSMesg) 1);
     render_init();
 
     while (TRUE) {
         u32 first = osGetTime();
+
+        u32 deltaTime = osGetTime() - prevTime;
+        prevTime = osGetTime();
+        gDelta = (deltaTime*0.000000666667f);
+        jDelta = 1.0f/(deltaTime*(SECONDS_PER_CYCLE));
+        gLerpSpeed = CLAMP(lDelta/jDelta, 0.01f, 1.0f);
+
         profiler_log_thread9_time(THREAD9_START);
         select_gfx_pool();
         init_rcp();

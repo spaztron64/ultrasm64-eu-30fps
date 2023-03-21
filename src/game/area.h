@@ -163,5 +163,6 @@ void area_update_objects(void);
 void play_transition(s16 transType, s16 time, u8 red, u8 green, u8 blue);
 void play_transition_after_delay(s16 transType, s16 time, u8 red, u8 green, u8 blue, s16 delay);
 void render_game(void);
+void hud_logic(void);
 
 #endif // AREA_H

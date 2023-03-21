@@ -360,6 +360,23 @@ void play_transition_after_delay(s16 transType, s16 time, u8 red, u8 green, u8 b
     play_transition(transType, time, red, green, blue);
 }
 
+void hud_logic(void) {
+    if (gWarpTransition.isActive) {
+        if (gWarpTransDelay == 0) {
+            gWarpTransition.isActive = !screen_transition_logic(0, gWarpTransition.type, gWarpTransition.time, &gWarpTransition.data);
+            if (!gWarpTransition.isActive) {
+                if (gWarpTransition.type & 1) {
+                    gWarpTransition.pauseRendering = TRUE;
+                } else {
+                    set_warp_transition_rgb(0, 0, 0);
+                }
+            }
+        } else {
+                gWarpTransDelay--;
+        }
+    }
+}
+
 void render_game(void) {
     if (gCurrentArea != NULL && !gWarpTransition.pauseRendering) {
         geo_process_root(gCurrentArea->unk04, D_8032CE74, D_8032CE78, gFBSetColor);
@@ -389,19 +406,7 @@ void render_game(void) {
                           SCREEN_HEIGHT - gBorderHeight);
 
         if (gWarpTransition.isActive) {
-            if (gWarpTransDelay == 0) {
-                gWarpTransition.isActive = !render_screen_transition(0, gWarpTransition.type, gWarpTransition.time,
-                                                                     &gWarpTransition.data);
-                if (!gWarpTransition.isActive) {
-                    if (gWarpTransition.type & 1) {
-                        gWarpTransition.pauseRendering = TRUE;
-                    } else {
-                        set_warp_transition_rgb(0, 0, 0);
-                    }
-                }
-            } else {
-                gWarpTransDelay--;
-            }
+            render_screen_transition(0, gWarpTransition.type, gWarpTransition.time, &gWarpTransition.data);
         }
     } else {
         render_text_labels();

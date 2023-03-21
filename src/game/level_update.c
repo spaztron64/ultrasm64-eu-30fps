@@ -478,6 +478,9 @@ void warp_area(void) {
     }
 }
 
+extern u8 gInstantWarp;
+extern u8 gInstantWarpReady;
+
 // used for warps between levels
 void warp_level(void) {
     gCurrLevelNum = sWarpDest.levelNum;
@@ -548,23 +551,29 @@ void check_instant_warp(void) {
             && gCurrentArea->instantWarps != NULL) {
             struct InstantWarp *warp = &gCurrentArea->instantWarps[index];
 
-            if (warp->id != 0) {
-                gMarioState->pos[0] += warp->displacement[0];
-                gMarioState->pos[1] += warp->displacement[1];
-                gMarioState->pos[2] += warp->displacement[2];
+            gInstantWarp = TRUE;
 
-                gMarioState->marioObj->oPosX = gMarioState->pos[0];
-                gMarioState->marioObj->oPosY = gMarioState->pos[1];
-                gMarioState->marioObj->oPosZ = gMarioState->pos[2];
+            if (gInstantWarpReady) {
+                if (warp->id != 0) {
+                    gMarioState->pos[0] += warp->displacement[0];
+                    gMarioState->pos[1] += warp->displacement[1];
+                    gMarioState->pos[2] += warp->displacement[2];
 
-                cameraAngle = gMarioState->area->camera->yaw;
+                    gMarioState->marioObj->oPosX = gMarioState->pos[0];
+                    gMarioState->marioObj->oPosY = gMarioState->pos[1];
+                    gMarioState->marioObj->oPosZ = gMarioState->pos[2];
 
-                change_area(warp->area);
-                gMarioState->area = gCurrentArea;
+                    cameraAngle = gMarioState->area->camera->yaw;
 
-                warp_camera(warp->displacement[0], warp->displacement[1], warp->displacement[2]);
+                    change_area(warp->area);
+                    gMarioState->area = gCurrentArea;
 
-                gMarioState->area->camera->yaw = cameraAngle;
+                    warp_camera(warp->displacement[0], warp->displacement[1], warp->displacement[2]);
+
+                    gMarioState->area->camera->yaw = cameraAngle;
+                    gInstantWarp = FALSE;
+                    gInstantWarpReady = FALSE;
+                }
             }
         }
     }

@@ -798,8 +798,9 @@ void thread9_graphics(UNUSED void *arg) {
             gLerpSpeed = 1.0f;
         }
 
-        profiler_log_thread9_time(THREAD9_START);
-        if (deltaTime < OS_USEC_TO_CYCLES(33333)/* || gPlatform & EMULATOR*/) { // > 30 fps
+        if (gInstantWarp == FALSE || gInstantWarpReady == FALSE) {
+            profiler_log_thread9_time(THREAD9_START);
+            if (deltaTime < OS_USEC_TO_CYCLES(33333)/* || gPlatform & EMULATOR*/) { // > 30 fps
                 if (lastRenderedFrame - gGlobalTimer == 1) {
                     gMoveSpeed = 0; // Full
                 } else {
@@ -815,15 +816,21 @@ void thread9_graphics(UNUSED void *arg) {
                 gMoveSpeed = 0;
             }
             lastRenderedFrame = gGlobalTimer;
-        select_gfx_pool();
-        init_rcp();
-        render_game();
-        end_master_display_list();
-        alloc_display_list(0);
-        gVideoTime = osGetTime() - first;
-        profiler_log_thread9_time(THREAD9_END);
+            select_gfx_pool();
+            init_rcp();
+            render_game();
+            end_master_display_list();
+            alloc_display_list(0);
+            gVideoTime = osGetTime() - first;
+            profiler_log_thread9_time(THREAD9_END);
 
-        display_and_vsync();
+            display_and_vsync();
+        }
+        //If an instant warp has been triggered, this ensures the game isn't trying to render while switching the area.
+        if (gInstantWarp) {
+            gInstantWarpReady = TRUE;
+        }
+
         osRecvMesg(&gVideoVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
     }
 }

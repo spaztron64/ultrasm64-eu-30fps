@@ -38,10 +38,7 @@ Gfx *gDisplayListHead;
 u8 *gGfxPoolEnd;
 struct GfxPool *gGfxPool;
 
-f32 gDelta = 1;
-f32 jDelta = 1;
-f32 lDelta = 1;
-u8 gMoveSpeed = 1;
+u32 gMoveSpeed = 1;
 f32 gLerpSpeed = 1;
 
 // OS Controllers
@@ -729,7 +726,6 @@ extern u32 gGameTime;
  */
 void thread5_game_loop(UNUSED void *arg) {
     struct LevelCommand *addr;
-    u32 prevTime = 0;
 
     setup_game_memory();
 #if ENABLE_RUMBLE
@@ -779,9 +775,6 @@ void thread5_game_loop(UNUSED void *arg) {
         profiler_log_thread5_time(AFTER_DISPLAY_LISTS);
         profiler_log_thread5_time(THREAD5_END);
         gGameTime = osGetTime() - first;
-        u32 deltaTime = osGetTime() - prevTime;
-        lDelta = 1.0f/(deltaTime*(SECONDS_PER_CYCLE));
-        prevTime = osGetTime();
         osRecvMesg(&gGameVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
         osRecvMesg(&gGameVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
 #if 0
@@ -800,14 +793,12 @@ void thread9_graphics(UNUSED void *arg) {
     set_vblank_handler(3, &gVideoVblankHandler, &gVideoVblankQueue, (OSMesg) 1);
     render_init();
 
-    while (TRUE) {
+    while (gResetTimer == 0) {
         u32 first = osGetTime();
 
         u32 deltaTime = osGetTime() - prevTime;
         prevTime = osGetTime();
-        gDelta = (deltaTime*0.000000666667f);
-        jDelta = 1.0f/(deltaTime*(SECONDS_PER_CYCLE));
-        gLerpSpeed = CLAMP(lDelta/jDelta, 0.01f, 1.0f);
+        gLerpSpeed = OS_CYCLES_TO_USEC(deltaTime) / 33333.33f;
 
         profiler_log_thread9_time(THREAD9_START);
         select_gfx_pool();

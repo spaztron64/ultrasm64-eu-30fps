@@ -9,6 +9,7 @@
 #include "game/area.h"
 #include "game/level_update.h"
 #include "menu/title_screen.h"
+#include "menu/intro_geo.h"
 
 #include "levels/scripts.h"
 #include "levels/menu/header.h"
@@ -34,7 +35,8 @@ const LevelScript level_intro_splash_screen[] = {
     LOAD_AREA(/*area*/ 1),
 
     CALL(/*arg*/ LVL_INTRO_PLAY_ITS_A_ME_MARIO, /*func*/ lvl_intro_update),
-    SLEEP(/*frames*/ 75),
+    CALL_LOOP(0, intro_geo_logic),
+    //SLEEP(/*frames*/ 75),
     TRANSITION(/*transType*/ WARP_TRANSITION_FADE_INTO_COLOR, /*time*/ 16, /*color*/ 0x00, 0x00, 0x00),
     SLEEP(/*frames*/ 16),
     CMD2A(/*unk2*/ 1),

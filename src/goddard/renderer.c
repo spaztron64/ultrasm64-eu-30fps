@@ -1940,7 +1940,7 @@ Vtx *gd_dl_make_vertex(f32 x, f32 y, f32 z, f32 alpha) {
 /* 24E6C0 -> 24E724 */
 void func_8019FEF0(void) {
     sTriangleBufCount++;
-    if (sVertexBufCount >= 24) {
+    if (sVertexBufCount >= 30) {
         gd_dl_flush_vertices();
         func_801A0038();
     }

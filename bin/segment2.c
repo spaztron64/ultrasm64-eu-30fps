@@ -2172,6 +2172,7 @@ const Gfx dl_draw_text_bg_box[] = {
     gsDPSetRenderMode(G_RM_XLU_SURF, G_RM_XLU_SURF2),
     gsSPVertex(vertex_text_bg_box, 4, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  0,  2,  3, 0x0),
+    gsDPPipeSync(),
     gsSPEndDisplayList(),
 };
 
@@ -2305,6 +2306,7 @@ const Gfx dl_draw_triangle[] = {
     gsSPVertex(vertex_triangle, 3, 0),
     gsSP1Triangle( 0,  1,  2, 0x0),
     gsSPSetGeometryMode(G_LIGHTING),
+    gsDPPipeSync(),
     gsDPSetRenderMode(G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2),
     gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
     gsSPEndDisplayList(),
@@ -2648,10 +2650,11 @@ const Gfx dl_skybox_end[] = {
 
 // 0x02014790 - 0x020147D0
 const Gfx dl_waterbox_rgba16_begin[] = {
-    gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGBA, G_CC_MODULATERGBA),
+    gsSPClipRatio(FRUSTRATIO_1),
     gsSPClearGeometryMode(G_LIGHTING | G_CULL_BACK),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
+    gsDPPipeSync(),
+    gsDPSetCombineMode(G_CC_MODULATERGBA, G_CC_MODULATERGBA),
     gsDPTileSync(),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 0, G_TX_RENDERTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, 5, G_TX_NOLOD),
     gsDPSetTileSize(0, 0, 0, (32 - 1) << G_TEXTURE_IMAGE_FRAC, (32 - 1) << G_TEXTURE_IMAGE_FRAC),
@@ -2660,10 +2663,11 @@ const Gfx dl_waterbox_rgba16_begin[] = {
 
 // 0x020147D0 - 0x02014810
 const Gfx dl_waterbox_ia16_begin[] = {
-    gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATEIA, G_CC_MODULATEIA),
+    gsSPClipRatio(FRUSTRATIO_1),
     gsSPClearGeometryMode(G_LIGHTING | G_CULL_BACK),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
+    gsDPPipeSync(),
+    gsDPSetCombineMode(G_CC_MODULATEIA, G_CC_MODULATEIA),
     gsDPTileSync(),
     gsDPSetTile(G_IM_FMT_IA, G_IM_SIZ_16b, 8, 0, G_TX_RENDERTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, 5, G_TX_NOLOD),
     gsDPSetTileSize(0, 0, 0, (32 - 1) << G_TEXTURE_IMAGE_FRAC, (32 - 1) << G_TEXTURE_IMAGE_FRAC),
@@ -2673,6 +2677,7 @@ const Gfx dl_waterbox_ia16_begin[] = {
 // 0x02014810 - 0x02014838
 const Gfx dl_waterbox_end[] = {
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
+    gsSPClipRatio(FRUSTRATIO_2),
     gsDPPipeSync(),
     gsSPSetGeometryMode(G_LIGHTING | G_CULL_BACK),
     gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),

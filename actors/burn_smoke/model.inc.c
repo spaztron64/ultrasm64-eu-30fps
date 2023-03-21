@@ -29,6 +29,7 @@ const Gfx burn_smoke_seg4_dl_04022000[] = {
 const Gfx burn_smoke_seg4_dl_04022028[] = {
     gsSPVertex(burn_smoke_seg4_vertex_040217C0, 4, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  0,  2,  3, 0x0),
+    gsDPPipeSync(),
     gsSPEndDisplayList(),
 };
 

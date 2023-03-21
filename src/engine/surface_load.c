@@ -146,14 +146,16 @@ static void add_surface_to_cell(s16 dynamic, s16 cellX, s16 cellZ, struct Surfac
     }
 
     // Loop until we find the appropriate place for the surface in the list.
-    while (list->next != NULL) {
-        priority = list->next->surface->vertex1[1] * sortDir;
+    if (listIndex == SPATIAL_PARTITION_FLOORS) {
+        while (list->next != NULL) {
+            priority = list->next->surface->vertex1[1] * sortDir;
 
-        if (surfacePriority > priority) {
-            break;
+            if (surfacePriority > priority) {
+                break;
+            }
+
+            list = list->next;
         }
-
-        list = list->next;
     }
 
     newNode->next = list->next;

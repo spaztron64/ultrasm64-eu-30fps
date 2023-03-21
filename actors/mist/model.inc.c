@@ -31,9 +31,9 @@ const Gfx mist_seg3_dl_03000880[] = {
     gsSPVertex(mist_seg3_vertex_03000000, 4, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  0,  2,  3, 0x0),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
+    gsSPSetGeometryMode(G_LIGHTING),
     gsDPPipeSync(),
     gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
-    gsSPSetGeometryMode(G_LIGHTING),
     gsDPSetEnvColor(255, 255, 255, 255),
     gsSPEndDisplayList(),
 };

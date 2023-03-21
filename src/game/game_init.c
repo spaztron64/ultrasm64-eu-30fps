@@ -164,8 +164,8 @@ void init_z_buffer(void) {
     gDPSetFillColor(gDisplayListHead++,
                     GPACK_ZDZ(G_MAXFBZ, 0) << 16 | GPACK_ZDZ(G_MAXFBZ, 0));
 
-    gDPFillRectangle(gDisplayListHead++, 0, gBorderHeight, SCREEN_WIDTH - 1,
-                     SCREEN_HEIGHT - 1 - gBorderHeight);
+    gDPFillRectangle(gDisplayListHead++, 0, 0, SCREEN_WIDTH - 1,
+                     SCREEN_HEIGHT - 1);
 }
 
 /**
@@ -177,8 +177,8 @@ void select_framebuffer(void) {
     gDPSetCycleType(gDisplayListHead++, G_CYC_1CYCLE);
     gDPSetColorImage(gDisplayListHead++, G_IM_FMT_RGBA, G_IM_SIZ_16b, SCREEN_WIDTH,
                      gPhysicalFramebuffers[sRenderingFramebuffer]);
-    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, gBorderHeight, SCREEN_WIDTH,
-                  SCREEN_HEIGHT - gBorderHeight);
+    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, SCREEN_WIDTH,
+                  SCREEN_HEIGHT);
 }
 
 /**
@@ -193,8 +193,8 @@ void clear_framebuffer(s32 color) {
 
     gDPSetFillColor(gDisplayListHead++, color);
     gDPFillRectangle(gDisplayListHead++,
-                     GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(0), gBorderHeight,
-                     GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(0) - 1, SCREEN_HEIGHT - gBorderHeight - 1);
+                     GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(0), 0,
+                     GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(0) - 1, SCREEN_HEIGHT - 1);
 
     gDPPipeSync(gDisplayListHead++);
 
@@ -239,14 +239,6 @@ void draw_screen_borders(void) {
     gDPSetCycleType(gDisplayListHead++, G_CYC_FILL);
 
     gDPSetFillColor(gDisplayListHead++, GPACK_RGBA5551(0, 0, 0, 0) << 16 | GPACK_RGBA5551(0, 0, 0, 0));
-
-    if (gBorderHeight) {
-        gDPFillRectangle(gDisplayListHead++, GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(0), 0,
-                        GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(0) - 1, gBorderHeight - 1);
-        gDPFillRectangle(gDisplayListHead++,
-                        GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(0), SCREEN_HEIGHT - gBorderHeight,
-                        GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(0) - 1, SCREEN_HEIGHT - 1);
-    }
 }
 
 /**
@@ -399,11 +391,9 @@ void check_cache_emulation() {
 void render_init(void) {
     if (IO_READ(DPC_PIPEBUSY_REG) == 0) {
         gIsConsole = 0;
-        gBorderHeight = BORDER_HEIGHT_EMULATOR;
         check_cache_emulation();
     } else {
         gIsConsole = 1;
-        gBorderHeight = BORDER_HEIGHT_CONSOLE;
     }
     gGfxPool = &gGfxPools[0];
     set_segment_base_addr(1, gGfxPool->buffer);

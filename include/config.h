@@ -34,7 +34,7 @@
 #define EU_CUSTOM_CAKE_FIX 1
 
 // Support Rumble Pak
-#define ENABLE_RUMBLE (1 || VERSION_SH)
+#define ENABLE_RUMBLE (0 || VERSION_SH)
 
 // Clear RAM on boot
 #define CLEARRAM 1

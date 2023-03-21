@@ -99,8 +99,11 @@ u8 gDialogCharWidths[256] = { // TODO: Is there a way to auto generate this?
 
 s8 gDialogBoxState = DIALOG_STATE_OPENING;
 f32 gDialogBoxOpenTimer = DEFAULT_DIALOG_BOX_ANGLE;
+f32 gDialogBoxOpenTimerLerp = DEFAULT_DIALOG_BOX_ANGLE;
 f32 gDialogBoxScale = DEFAULT_DIALOG_BOX_SCALE;
+f32 gDialogBoxScaleLerp = DEFAULT_DIALOG_BOX_SCALE;
 s16 gDialogScrollOffsetY = 0;
+f32 gDialogScrollOffsetYLerp = 0.0f;
 s8 gDialogBoxType = DIALOG_TYPE_ROTATE;
 s16 gDialogID = DIALOG_NONE;
 s16 gLastDialogPageStrPos = 0;
@@ -921,7 +924,9 @@ void reset_dialog_render_state(void) {
     }
 
     gDialogBoxScale = 19.0f;
+    gDialogBoxScaleLerp = 19.0f;
     gDialogBoxOpenTimer = 90.0f;
+    gDialogBoxOpenTimerLerp = 90.0f;
     gDialogBoxState = DIALOG_STATE_OPENING;
     gDialogID = DIALOG_NONE;
     gDialogTextPos = 0;
@@ -948,17 +953,17 @@ void render_dialog_box_type(struct DialogEntry *dialog, s8 linesPerBox) {
     switch (gDialogBoxType) {
         case DIALOG_TYPE_ROTATE: // Renders a dialog black box with zoom and rotation
             if (gDialogBoxState == DIALOG_STATE_OPENING || gDialogBoxState == DIALOG_STATE_CLOSING) {
-                create_dl_scale_matrix(MENU_MTX_NOPUSH, 1.0 / gDialogBoxScale, 1.0 / gDialogBoxScale, 1.0f);
+                create_dl_scale_matrix(MENU_MTX_NOPUSH, 1.0 / gDialogBoxScaleLerp, 1.0 / gDialogBoxScaleLerp, 1.0f);
                 // convert the speed into angle
-                create_dl_rotation_matrix(MENU_MTX_NOPUSH, gDialogBoxOpenTimer * 4.0f, 0, 0, 1.0f);
+                create_dl_rotation_matrix(MENU_MTX_NOPUSH, gDialogBoxOpenTimerLerp * 4.0f, 0, 0, 1.0f);
             }
             gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
             break;
         case DIALOG_TYPE_ZOOM: // Renders a dialog white box with zoom
             if (gDialogBoxState == DIALOG_STATE_OPENING || gDialogBoxState == DIALOG_STATE_CLOSING) {
-                create_dl_translation_matrix(MENU_MTX_NOPUSH, 65.0 - (65.0 / gDialogBoxScale),
-                                              (40.0 / gDialogBoxScale) - 40, 0);
-                create_dl_scale_matrix(MENU_MTX_NOPUSH, 1.0 / gDialogBoxScale, 1.0 / gDialogBoxScale, 1.0f);
+                create_dl_translation_matrix(MENU_MTX_NOPUSH, 65.0 - (65.0 / gDialogBoxScaleLerp),
+                                              (40.0 / gDialogBoxScaleLerp) - 40, 0);
+                create_dl_scale_matrix(MENU_MTX_NOPUSH, 1.0 / gDialogBoxScaleLerp, 1.0 / gDialogBoxScaleLerp, 1.0f);
             }
             gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 150);
             break;
@@ -998,12 +1003,12 @@ void change_and_flash_dialog_text_color_lines(s8 colorMode, s8 lineNum) {
 
 #ifdef VERSION_EU
 void render_generic_dialog_char_at_pos(struct DialogEntry *dialog, s16 x, s16 y, u8 c) {
-    s16 width = (8.0 - (gDialogBoxScale * 0.8));
-    s16 height = (16.0 - (gDialogBoxScale * 0.8));
-    s16 tmpX = (dialog->leftOffset + (65.0 - (65.0 / gDialogBoxScale)));
-    s16 tmpY = ((240 - dialog->width) - ((40.0 / gDialogBoxScale) - 40));
-    s16 xCoord = (tmpX + (x / gDialogBoxScale));
-    s16 yCoord = (tmpY + (y / gDialogBoxScale));
+    s16 width = (8.0 - (gDialogBoxScaleLerp * 0.8f));
+    s16 height = (16.0 - (gDialogBoxScaleLerp * 0.8f));
+    s16 tmpX = (dialog->leftOffset + (65.0f - (65.0f / gDialogBoxScaleLerp)));
+    s16 tmpY = ((240 - dialog->width) - ((40.0f / gDialogBoxScaleLerp) - 40));
+    s16 xCoord = (tmpX + (x / gDialogBoxScaleLerp));
+    s16 yCoord = (tmpY + (y / gDialogBoxScaleLerp));
 
     void **fontLUT = segmented_to_virtual(main_font_lut);
     void *packedTexture = segmented_to_virtual(fontLUT[c]);
@@ -1225,9 +1230,9 @@ void handle_dialog_text_and_pages(s8 colorMode, struct DialogEntry *dialog, s8 l
 
     if (gDialogBoxState == DIALOG_STATE_HORIZONTAL) {
 #ifdef VERSION_EU
-        gDialogY -= gDialogScrollOffsetY;
+        gDialogY -= gDialogScrollOffsetYLerp;
 #else
-        create_dl_translation_matrix(MENU_MTX_NOPUSH, 0, (f32) gDialogScrollOffsetY, 0);
+        create_dl_translation_matrix(MENU_MTX_NOPUSH, 0, (f32) gDialogScrollOffsetYLerp, 0);
 #endif
     }
 
@@ -1473,9 +1478,6 @@ void handle_dialog_text_and_pages(s8 colorMode, struct DialogEntry *dialog, s8 l
 #endif
 
 void render_dialog_triangle_choice(void) {
-    if (gDialogBoxState == DIALOG_STATE_VERTICAL) {
-        handle_menu_scrolling(MENU_SCROLL_HORIZONTAL, &gDialogLineNum, 1, 2);
-    }
 
     create_dl_translation_matrix(MENU_MTX_NOPUSH, (gDialogLineNum * X_VAL4_1) - X_VAL4_2, Y_VAL4_1 - (gLastDialogLineNum * Y_VAL4_2), 0);
 
@@ -1709,6 +1711,10 @@ void render_dialog_entries(void) {
         return;
     }
 
+    gDialogScrollOffsetYLerp = approach_f32_asymptotic(gDialogScrollOffsetYLerp, gDialogScrollOffsetY, gLerpSpeed);
+    gDialogBoxOpenTimerLerp = approach_f32_asymptotic(gDialogBoxOpenTimerLerp, gDialogBoxOpenTimer, gLerpSpeed);
+    gDialogBoxScaleLerp = approach_f32_asymptotic(gDialogBoxScaleLerp, gDialogBoxScale, gLerpSpeed);
+
 #ifdef VERSION_EU
     gDialogX = 0;
     gDialogY = 0;
@@ -1716,82 +1722,24 @@ void render_dialog_entries(void) {
 
     switch (gDialogBoxState) {
         case DIALOG_STATE_OPENING:
-            if (gDialogBoxOpenTimer == DEFAULT_DIALOG_BOX_ANGLE) {
-                play_dialog_sound(gDialogID);
-                play_sound(SOUND_MENU_MESSAGE_APPEAR, gGlobalSoundSource);
-            }
-
-            if (gDialogBoxType == DIALOG_TYPE_ROTATE) {
-                gDialogBoxOpenTimer -= 7.5f;
-                gDialogBoxScale -= 1.5f;
-            } else {
-                gDialogBoxOpenTimer -= 10.0f;
-                gDialogBoxScale -= 2.0f;
-            }
-
-            if (gDialogBoxOpenTimer == 0.0f) {
-                gDialogBoxState = DIALOG_STATE_VERTICAL;
-                gDialogLineNum = 1;
-            }
 #ifndef VERSION_JP
             lowerBound = 1;
 #endif
             break;
 
         case DIALOG_STATE_VERTICAL:
-            gDialogBoxOpenTimer = 0.0f;
-
-            if ((gPlayer3Controller->buttonPressed & A_BUTTON)
-                || (gPlayer3Controller->buttonPressed & B_BUTTON)) {
-                if (gLastDialogPageStrPos == -1) {
-                    handle_special_dialog_text(gDialogID);
-                    gDialogBoxState = DIALOG_STATE_CLOSING;
-                } else {
-                    gDialogBoxState = DIALOG_STATE_HORIZONTAL;
-                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
-                }
-            }
 #ifndef VERSION_JP
             lowerBound = 1;
 #endif
             break;
 
         case DIALOG_STATE_HORIZONTAL:
-            gDialogScrollOffsetY += dialog->linesPerBox * 2;
-
-            if (gDialogScrollOffsetY >= dialog->linesPerBox * DIAG_VAL1) {
-                gDialogTextPos = gLastDialogPageStrPos;
-                gDialogBoxState = DIALOG_STATE_VERTICAL;
-                gDialogScrollOffsetY = 0;
-            }
 #ifndef VERSION_JP
-            lowerBound = (gDialogScrollOffsetY / DIAG_VAL1) + 1;
+            lowerBound = (gDialogScrollOffsetYLerp / DIAG_VAL1) + 1;
 #endif
             break;
 
         case DIALOG_STATE_CLOSING:
-            if (gDialogBoxOpenTimer == 20.0f) {
-                level_set_transition(0, NULL);
-                play_sound(SOUND_MENU_MESSAGE_DISAPPEAR, gGlobalSoundSource);
-
-                if (gDialogBoxType == DIALOG_TYPE_ZOOM) {
-                    trigger_cutscene_dialog(2);
-                }
-
-                gDialogResponse = gDialogLineNum;
-            }
-
-            gDialogBoxOpenTimer = gDialogBoxOpenTimer + 10.0f;
-            gDialogBoxScale = gDialogBoxScale + 2.0f;
-
-            if (gDialogBoxOpenTimer == DEFAULT_DIALOG_BOX_ANGLE) {
-                gDialogBoxState = DIALOG_STATE_OPENING;
-                gDialogID = DIALOG_NONE;
-                gDialogTextPos = 0;
-                gLastDialogResponse = 0;
-                gLastDialogPageStrPos = 0;
-                gDialogResponse = DIALOG_RESPONSE_NONE;
-            }
 #ifndef VERSION_JP
             lowerBound = 1;
 #endif
@@ -1813,9 +1761,9 @@ void render_dialog_entries(void) {
 #ifdef WIDESCREEN
         SCREEN_WIDTH,
 #else
-        ensure_nonnegative(dialog->leftOffset + (DIAG_VAL3 / gDialogBoxScale)),
+        ensure_nonnegative(dialog->leftOffset + (DIAG_VAL3 / gDialogBoxScaleLerp)),
 #endif
-        ensure_nonnegative((240 - dialog->width) + (dialog->linesPerBox * 80 / DIAG_VAL4 / gDialogBoxScale))
+        ensure_nonnegative((240 - dialog->width) + (dialog->linesPerBox * 80 / DIAG_VAL4 / gDialogBoxScaleLerp))
 #else
 #ifdef WIDESCREEN
         SCREEN_WIDTH,
@@ -3082,6 +3030,123 @@ void peach_letter_logic(void) {
     gCutsceneMsgTimer++;
 }
 
+void dialogue_logic(void) {
+    
+#ifdef VERSION_EU
+    s8 lowerBound = 0;
+#endif
+    void **dialogTable = NULL;
+    struct DialogEntry *dialog;
+
+#ifdef VERSION_EU
+    gInGameLanguage = eu_get_language();
+    switch (gInGameLanguage) {
+        case LANGUAGE_ENGLISH:
+            dialogTable = segmented_to_virtual(dialog_table_eu_en);
+            break;
+        case LANGUAGE_FRENCH:
+            dialogTable = segmented_to_virtual(dialog_table_eu_fr);
+            break;
+        case LANGUAGE_GERMAN:
+            dialogTable = segmented_to_virtual(dialog_table_eu_de);
+            break;
+    }
+#else
+    dialogTable = segmented_to_virtual(seg2_dialog_table);
+#endif
+    dialog = segmented_to_virtual(dialogTable[gDialogID]);
+
+    // if the dialog entry is invalid, set the ID to DIALOG_NONE.
+    if (segmented_to_virtual(NULL) == dialog) {
+        gDialogID = DIALOG_NONE;
+        return;
+    }
+
+#ifdef VERSION_EU
+    gDialogX = 0;
+    gDialogY = 0;
+#endif
+
+    switch (gDialogBoxState) {
+        case DIALOG_STATE_OPENING:
+            if (gDialogBoxOpenTimer == DEFAULT_DIALOG_BOX_ANGLE) {
+                play_dialog_sound(gDialogID);
+                play_sound(SOUND_MENU_MESSAGE_APPEAR, gGlobalSoundSource);
+            }
+
+            if (gDialogBoxType == DIALOG_TYPE_ROTATE) {
+                gDialogBoxOpenTimer -= 7.5f;
+                gDialogBoxScale -= 1.5f;
+            } else {
+                gDialogBoxOpenTimer -= 10.0f;
+                gDialogBoxScale -= 2.0f;
+            }
+
+            if (gDialogBoxOpenTimer == 0.0f) {
+                gDialogBoxState = DIALOG_STATE_VERTICAL;
+                gDialogLineNum = 1;
+            }
+            break;
+
+        case DIALOG_STATE_VERTICAL:
+            gDialogBoxOpenTimer = 0.0f;
+            gDialogBoxOpenTimerLerp = 0.0f;
+
+            if ((gPlayer3Controller->buttonPressed & A_BUTTON)
+                || (gPlayer3Controller->buttonPressed & B_BUTTON)) {
+                if (gLastDialogPageStrPos == -1) {
+                    handle_special_dialog_text(gDialogID);
+                    gDialogBoxState = DIALOG_STATE_CLOSING;
+                } else {
+                    gDialogBoxState = DIALOG_STATE_HORIZONTAL;
+                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
+                }
+            }
+            break;
+
+        case DIALOG_STATE_HORIZONTAL:
+            gDialogScrollOffsetY += dialog->linesPerBox * 2;
+
+            if (gDialogScrollOffsetY >= dialog->linesPerBox * DIAG_VAL1) {
+                gDialogTextPos = gLastDialogPageStrPos;
+                gDialogBoxState = DIALOG_STATE_VERTICAL;
+                gDialogScrollOffsetY = 0;
+            }
+            break;
+
+        case DIALOG_STATE_CLOSING:
+            if (gDialogBoxOpenTimer == 20.0f) {
+                level_set_transition(0, NULL);
+                play_sound(SOUND_MENU_MESSAGE_DISAPPEAR, gGlobalSoundSource);
+
+                if (gDialogBoxType == DIALOG_TYPE_ZOOM) {
+                    trigger_cutscene_dialog(2);
+                }
+
+                gDialogResponse = gDialogLineNum;
+            }
+
+            gDialogBoxOpenTimer = gDialogBoxOpenTimer + 10.0f;
+            gDialogBoxScale = gDialogBoxScale + 2.0f;
+
+            if (gDialogBoxOpenTimer == DEFAULT_DIALOG_BOX_ANGLE) {
+                gDialogBoxState = DIALOG_STATE_OPENING;
+                gDialogID = DIALOG_NONE;
+                gDialogTextPos = 0;
+                gLastDialogResponse = 0;
+                gLastDialogPageStrPos = 0;
+                gDialogResponse = DIALOG_RESPONSE_NONE;
+            }
+            break;
+    }
+
+    if (gLastDialogPageStrPos == -1 && gLastDialogResponse == 1) {
+        if (gDialogBoxState == DIALOG_STATE_VERTICAL) {
+            handle_menu_scrolling(MENU_SCROLL_HORIZONTAL, &gDialogLineNum, 1, 2);
+        }
+    }
+}
+
 s32 ingame_menu_logic(void) {
     s16 index = MENU_OPT_NONE;
 
@@ -3109,7 +3174,7 @@ s32 ingame_menu_logic(void) {
             return MENU_OPT_NONE;
         }
 
-        render_dialog_entries();
+        dialogue_logic();
         gDialogColorFadeTimer = (s16) gDialogColorFadeTimer + 0x1000;
     }
 

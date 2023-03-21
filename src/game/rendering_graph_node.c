@@ -10,6 +10,9 @@
 #include "rendering_graph_node.h"
 #include "shadow.h"
 #include "sm64.h"
+#include "lerp.h"
+#include "level_update.h"
+#include "memory.h"
 
 /**
  * This file contains the code that processes the scene graph for rendering.
@@ -306,6 +309,19 @@ void geo_process_switch(struct GraphNodeSwitchCase *node) {
     }
 }
 
+void interpolate_node(struct Object *node) {
+    for (u32  i = 0; i < 3; i++) {
+        if (gMoveSpeed == 1)
+            node->header.gfx.posLerp[i] = approach_pos_lerp(node->header.gfx.posLerp[i], node->header.gfx.pos[i]);
+        else
+            node->header.gfx.posLerp[i] = node->header.gfx.pos[i] + ((f32 *) &node->oVelX)[i];
+        node->header.gfx.scaleLerp[i] = approach_pos_lerp(node->header.gfx.scaleLerp[i], node->header.gfx.scale[i]);
+        node->header.gfx.angleLerp[i] = approach_angle_lerp(node->header.gfx.angleLerp[i], node->header.gfx.angle[i]);
+    }
+}
+void geo_process_object(struct Object *node);
+u8 sSkipObject = 0;
+
 /**
  * Process a camera node.
  */
@@ -326,7 +342,32 @@ void geo_process_camera(struct GraphNodeCamera *node) {
 
     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(rollMtx), G_MTX_PROJECTION | G_MTX_MUL | G_MTX_NOPUSH);
 
-    mtxf_lookat(cameraTransform, node->pos, node->focus, node->roll);
+    if (!gMoveSpeed) {
+        node->posLerp[0] = node->pos[0];
+        node->posLerp[1] = node->pos[1];
+        node->posLerp[2] = node->pos[2];
+        node->focusLerp[0] = node->focus[0];
+        node->focusLerp[1] = node->focus[1];
+        node->focusLerp[2] = node->focus[2];
+    } else {
+        node->posLerp[0] = approach_pos_lerp(node->posLerp[0], node->pos[0]);
+        node->posLerp[1] = approach_pos_lerp(node->posLerp[1], node->pos[1]);
+        node->posLerp[2] = approach_pos_lerp(node->posLerp[2], node->pos[2]);
+        node->focusLerp[0] = approach_pos_lerp(node->focusLerp[0], node->focus[0]);
+        node->focusLerp[1] = approach_pos_lerp(node->focusLerp[1], node->focus[1]);
+        node->focusLerp[2] = approach_pos_lerp(node->focusLerp[2], node->focus[2]);
+    }
+
+    if (gMarioState->marioObj) {
+        sSkipObject = TRUE;
+        geo_process_object(gMarioState->marioObj);
+        if (gMarioState->marioObj->platform) {
+            geo_process_object(gMarioState->marioObj->platform);
+        }
+        sSkipObject = FALSE;
+    }
+
+    mtxf_lookat(cameraTransform, node->posLerp, node->focusLerp, node->roll);
     mtxf_mul(gMatStack[gMatStackIndex + 1], cameraTransform, gMatStack[gMatStackIndex]);
     gMatStackIndex++;
     mtxf_to_mtx(mtx, gMatStack[gMatStackIndex]);
@@ -658,8 +699,8 @@ void geo_process_shadow(struct GraphNodeShadow *node) {
                                        *gCurGraphNodeCamera->matrixPtr);
             shadowScale = node->shadowScale;
         } else {
-            vec3f_copy(shadowPos, gCurGraphNodeObject->pos);
-            shadowScale = node->shadowScale * gCurGraphNodeObject->scale[0];
+            vec3f_copy(shadowPos, gCurGraphNodeObject->posLerp);
+            shadowScale = node->shadowScale * gCurGraphNodeObject->scaleLerp[0];
         }
 
         objScale = 1.0f;
@@ -808,6 +849,16 @@ s32 obj_is_in_view(struct GraphNodeObject *node, Mat4 matrix) {
 void geo_process_object(struct Object *node) {
     Mat4 mtxf;
 
+    if (sSkipObject) {
+        return;
+    }
+
+    if (gMoveSpeed && node->header.gfx.bothMats >= 2) {
+        interpolate_node(node);
+    } else {
+        warp_node(node);
+    }
+
     if (node->header.gfx.matrixID[gThrowMatSwap ^ 1] != MATRIX_NULL) {
         node->header.gfx.throwMatrix = &gThrowMatStack[gThrowMatSwap ^ 1][node->header.gfx.matrixID[gThrowMatSwap ^ 1]];
     } else {
@@ -820,14 +871,14 @@ void geo_process_object(struct Object *node) {
                      gMatStack[gMatStackIndex]);
         } else if (node->header.gfx.node.flags & GRAPH_RENDER_BILLBOARD) {
             mtxf_billboard(gMatStack[gMatStackIndex + 1], gMatStack[gMatStackIndex],
-                           node->header.gfx.pos, gCurGraphNodeCamera->roll);
+                           node->header.gfx.posLerp, gCurGraphNodeCamera->roll);
         } else {
-            mtxf_rotate_zxy_and_translate(mtxf, node->header.gfx.pos, node->header.gfx.angle);
+            mtxf_rotate_zxy_and_translate(mtxf, node->header.gfx.posLerp, node->header.gfx.angleLerp);
             mtxf_mul(gMatStack[gMatStackIndex + 1], mtxf, gMatStack[gMatStackIndex]);
         }
 
         mtxf_scale_vec3f(gMatStack[gMatStackIndex + 1], gMatStack[gMatStackIndex + 1],
-                         node->header.gfx.scale);
+                         node->header.gfx.scaleLerp);
         node->header.gfx.throwMatrix = &gMatStack[++gMatStackIndex];
         node->header.gfx.cameraToObject[0] = gMatStack[gMatStackIndex][3][0];
         node->header.gfx.cameraToObject[1] = gMatStack[gMatStackIndex][3][1];

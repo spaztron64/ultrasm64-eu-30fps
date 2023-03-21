@@ -237,6 +237,7 @@ void load_area(s32 index) {
 
         load_obj_warp_nodes();
         geo_call_global_function_nodes(&gCurrentArea->unk04->node, GEO_CONTEXT_AREA_LOAD);
+        gLoadReset = TRUE;
     }
 }
 

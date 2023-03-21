@@ -776,6 +776,10 @@ void thread5_game_loop(UNUSED void *arg) {
     }
 }
 extern u32 gVideoTime;
+u8 gInstantWarp = 0;
+u8 gInstantWarpReady;
+u32 lastRenderedFrame = 0xFFFFFFFF;
+u8 gLoadReset = 0;
 
 void thread9_graphics(UNUSED void *arg) {
     u32 prevTime = 0;
@@ -789,8 +793,28 @@ void thread9_graphics(UNUSED void *arg) {
         u32 deltaTime = osGetTime() - prevTime;
         prevTime = osGetTime();
         gLerpSpeed = OS_CYCLES_TO_USEC(deltaTime) / 33333.33f;
+        if (gLoadReset) {
+            gLoadReset = 0;
+            gLerpSpeed = 1.0f;
+        }
 
         profiler_log_thread9_time(THREAD9_START);
+        if (deltaTime < OS_USEC_TO_CYCLES(33333)/* || gPlatform & EMULATOR*/) { // > 30 fps
+                if (lastRenderedFrame - gGlobalTimer == 1) {
+                    gMoveSpeed = 0; // Full
+                } else {
+                    gMoveSpeed = 1; // Half
+                }
+            } else if (deltaTime > OS_USEC_TO_CYCLES(66666)) { // < 15fps
+                if (gGlobalTimer - lastRenderedFrame == 1) {
+                    gMoveSpeed = 2; // Full and a half
+                } else {
+                    gMoveSpeed = 0; // Full
+                }
+            } else {
+                gMoveSpeed = 0;
+            }
+            lastRenderedFrame = gGlobalTimer;
         select_gfx_pool();
         init_rcp();
         render_game();

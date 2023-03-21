@@ -114,6 +114,10 @@ struct AnimInfo {
     /*0x0A 0x42*/ u16 animTimer;
     /*0x0C 0x44*/ s32 animFrameAccelAssist;
     /*0x10 0x48*/ s32 animAccel;
+    u8 animRotStackNum;
+    u8 animPosStackNum;
+    s16 *animRotStack[32][3];
+    f32 *animPosStack[32][3];
 };
 
 struct GraphNodeObject {

@@ -19,6 +19,7 @@
 #include "platform_displacement.h"
 #include "profiler.h"
 #include "spawn_object.h"
+#include "rendering_graph_node.h"
 
 
 /**
@@ -681,6 +682,11 @@ void update_objects(UNUSED s32 unused) {
     } else {
         gTimeStopState &= ~TIME_STOP_ACTIVE;
     }
+
+    gThrowMatIndex = 0;
+    gThrowMatSwap ^= 1;
+    bzero(gThrowMatStack[gThrowMatSwap], sizeof(Mat4) * THROWMATSTACK);
+    gPrevFrameObjectCount = gObjectCounter;
 
     gPrevFrameObjectCount = gObjectCounter;
 }

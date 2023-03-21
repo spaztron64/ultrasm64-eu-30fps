@@ -51,12 +51,15 @@ s8 gEepromProbe;
 s8 gSramProbe;
 #endif
 OSMesgQueue gGameVblankQueue;
+OSMesgQueue gVideoVblankQueue;
 OSMesgQueue gGfxVblankQueue;
 OSMesg gGameMesgBuf[1];
+OSMesg gVideoMesgBuf[1];
 OSMesg gGfxMesgBuf[1];
 
 // Vblank Handler
 struct VblankHandler gGameVblankHandler;
+struct VblankHandler gVideoVblankHandler;
 
 // Buffers
 uintptr_t gPhysicalFramebuffers[3];
@@ -74,6 +77,7 @@ UNUSED static s32 sUnusedGameInitValue = 0;
 
 // General timer that runs as the game starts
 u32 gGlobalTimer = 0;
+u32 gVideoTimer = 0;
 
 // Framebuffer rendering values (max 3)
 u16 sRenderedFramebuffer = 0;
@@ -396,7 +400,7 @@ void render_init(void) {
     } else {
         gIsConsole = 1;
         gBorderHeight = BORDER_HEIGHT_CONSOLE;
-    }    
+    }
     gGfxPool = &gGfxPools[0];
     set_segment_base_addr(1, gGfxPool->buffer);
     gGfxSPTask = &gGfxPool->spTask;
@@ -411,14 +415,14 @@ void render_init(void) {
     if (gIsConsole || gCacheEmulated) { // Read RDP Clock Register, has a value of zero on emulators
         sRenderingFramebuffer++;
     }
-    gGlobalTimer++;
+    gVideoTimer++;
 }
 
 /**
  * Selects the location of the F3D output buffer (gDisplayListHead).
  */
 void select_gfx_pool(void) {
-    gGfxPool = &gGfxPools[gGlobalTimer % ARRAY_COUNT(gGfxPools)];
+    gGfxPool = &gGfxPools[gVideoTimer % ARRAY_COUNT(gGfxPools)];
     set_segment_base_addr(1, gGfxPool->buffer);
     gGfxSPTask = &gGfxPool->spTask;
     gDisplayListHead = gGfxPool->buffer;
@@ -433,18 +437,13 @@ void select_gfx_pool(void) {
  * - Selects which framebuffer will be rendered and displayed to next time.
  */
 void display_and_vsync(void) {
-    profiler_log_thread5_time(BEFORE_DISPLAY_LISTS);
     osRecvMesg(&gGfxVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
     if (gGoddardVblankCallback != NULL) {
         gGoddardVblankCallback();
         gGoddardVblankCallback = NULL;
     }
     exec_display_list(&gGfxPool->spTask);
-    profiler_log_thread5_time(AFTER_DISPLAY_LISTS);
-    //osRecvMesg(&gGameVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
     osViSwapBuffer((void *) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[sRenderedFramebuffer]));
-    profiler_log_thread5_time(THREAD5_END);
-    osRecvMesg(&gGameVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
     // Skip swapping buffers on emulator other than Ares so that they display immediately as the Gfx task finishes
     if (gIsConsole || gCacheEmulated) { // Read RDP Clock Register, has a value of zero on emulators
         if (++sRenderedFramebuffer == 3) {
@@ -454,7 +453,7 @@ void display_and_vsync(void) {
             sRenderingFramebuffer = 0;
         }
     }
-    gGlobalTimer++;
+    gVideoTimer++;
 }
 
 // this function records distinct inputs over a 255-frame interval to RAM locations and was likely
@@ -648,6 +647,7 @@ void init_controllers(void) {
     gControllers[0].statusData = &gControllerStatuses[0];
     gControllers[0].controllerData = &gControllerPads[0];
     osContInit(&gSIEventMesgQueue, &gControllerBits, &gControllerStatuses[0]);
+    //osContSetCh(1);
 
 #ifdef EEP
     // strangely enough, the EEPROM probe for save data is done in this function.
@@ -693,6 +693,7 @@ void setup_game_memory(void) {
     // Create Mesg Queues
     osCreateMesgQueue(&gGfxVblankQueue, gGfxMesgBuf, ARRAY_COUNT(gGfxMesgBuf));
     osCreateMesgQueue(&gGameVblankQueue, gGameMesgBuf, ARRAY_COUNT(gGameMesgBuf));
+    osCreateMesgQueue(&gVideoVblankQueue, gVideoMesgBuf, ARRAY_COUNT(gVideoMesgBuf));
     // Setup z buffer and framebuffer
     gPhysicalZBuffer = VIRTUAL_TO_PHYSICAL(gZBuffer);
     gPhysicalFramebuffers[0] = VIRTUAL_TO_PHYSICAL(gFramebuffer0);
@@ -712,6 +713,7 @@ void setup_game_memory(void) {
     load_segment_decompress(2, _segment2_mio0SegmentRomStart, _segment2_mio0SegmentRomEnd);
 }
 
+extern u32 gGameTime;
 /**
  * Main game loop thread. Runs forever as long as the game continues.
  */
@@ -738,9 +740,9 @@ void thread5_game_loop(UNUSED void *arg) {
 
     play_music(SEQ_PLAYER_SFX, SEQUENCE_ARGS(0, SEQ_SOUND_PLAYER), 0);
     set_sound_mode(save_file_get_sound_mode());
-    render_init();
 
     while (TRUE) {
+        u32 first = osGetTime();
         // If the reset timer is active, run the process to reset the game.
         if (gResetTimer != 0) {
             draw_reset_bars();
@@ -758,23 +760,41 @@ void thread5_game_loop(UNUSED void *arg) {
         }
 
         audio_game_loop_tick();
-        select_gfx_pool();
         read_controller_inputs();
         addr = level_script_execute(addr);
-
-        display_and_vsync();
-
-        // when debug info is enabled, print the "BUF %d" information.
-        if (gShowDebugText) {
-            // subtract the end of the gfx pool with the display list to obtain the
-            // amount of free space remaining.
-            print_text_fmt_int(180, 20, "BUF %d", gGfxPoolEnd - (u8 *) gDisplayListHead);
-        }
+        gGlobalTimer++;
+        profiler_log_thread5_time(BEFORE_DISPLAY_LISTS);
+        profiler_log_thread5_time(AFTER_DISPLAY_LISTS);
+        profiler_log_thread5_time(THREAD5_END);
+        gGameTime = osGetTime() - first;
+        osRecvMesg(&gGameVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
+        osRecvMesg(&gGameVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
 #if 0
         if (gPlayer1Controller->buttonPressed & L_TRIG) {
             osStartThread(&hvqmThread);
             osRecvMesg(&gDmaMesgQueue, NULL, OS_MESG_BLOCK);
         }
 #endif
+    }
+}
+extern u32 gVideoTime;
+void thread9_graphics(UNUSED void *arg) {
+
+    set_vblank_handler(3, &gVideoVblankHandler, &gVideoVblankQueue, (OSMesg) 1);
+    render_init();
+
+    while (TRUE) {
+        u32 first = osGetTime();
+        profiler_log_thread9_time(THREAD9_START);
+        select_gfx_pool();
+        init_rcp();
+        render_game();
+        end_master_display_list();
+        alloc_display_list(0);
+        gVideoTime = osGetTime() - first;
+        profiler_log_thread9_time(THREAD9_END);
+
+        display_and_vsync();
+        osRecvMesg(&gVideoVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
     }
 }

@@ -411,8 +411,12 @@ u8 gFPS = 30;
 OSTime frameTimes[FRAMETIME_COUNT];
 u8 curFrameTimeIndex = 0;
 extern s16 gCurrentFrameIndex1;
+extern s16 gCurrentFrameIndex3;
 extern struct ProfilerFrameData gProfilerFrameData[2];
 u8 gShowProfilerNew = TRUE;
+u32 gVideoTime = 0;
+u32 gSoundTime = 0;
+u32 gGameTime = 0;
 
 // Call once per frame
 void calculate_and_update_fps(void) {
@@ -429,17 +433,21 @@ void calculate_and_update_fps(void) {
 
 void render_profiler(void) {
     struct ProfilerFrameData *profiler;
+    struct ProfilerFrameData *profilerGfx;
     u32 clockStart;
     u32 levelScriptDuration;
     u32 renderDuration;
     u32 soundDuration;
     u32 taskStart;
+    u32 videoDuration;
     u32 i;
     taskStart = 0;
     profiler = &gProfilerFrameData[gCurrentFrameIndex1 ^ 1];
+    profilerGfx = &gProfilerFrameData[gCurrentFrameIndex3 ^ 1];
     clockStart = profiler->gameTimes[0] <= profiler->soundTimes[0] ? profiler->gameTimes[0] : profiler->soundTimes[0];
     levelScriptDuration = profiler->gameTimes[1] - clockStart;
     renderDuration = profiler->gameTimes[2] - profiler->gameTimes[1];
+    videoDuration = profilerGfx->videoTimes[1] - profilerGfx->videoTimes[0];
     profiler->numSoundTimes &= 0xFFFE;
     for (i = 0; i < profiler->numSoundTimes; i += 2) {
         // calculate sound duration of max - min
@@ -457,9 +465,9 @@ void render_profiler(void) {
     calculate_and_update_fps();
     profiler->numSoundTimes &= 0xFFFE;
     print_text_fmt_int(32, 240 - 32, "FPS %d", gFPS);
-    print_text_fmt_int(32, 240 - 48, "CPU %d", OS_CYCLES_TO_USEC(taskStart + levelScriptDuration + renderDuration));
-    print_text_fmt_int(32, 240 - 64, "RSP %d", OS_CYCLES_TO_USEC(profiler->gfxTimes[1] - profiler->gfxTimes[0]));
-    print_text_fmt_int(32, 240 - 80, "RDP %d", OS_CYCLES_TO_USEC(profiler->gfxTimes[2] - profiler->gfxTimes[0]));
+    print_text_fmt_int(32, 240 - 48, "CPU %d", (u32) OS_CYCLES_TO_USEC(gVideoTime + (gSoundTime * 2) + gGameTime));
+    print_text_fmt_int(32, 240 - 64, "RSP %d", (u32) OS_CYCLES_TO_USEC(profilerGfx->gfxTimes[1] - profilerGfx->gfxTimes[0]));
+    print_text_fmt_int(32, 240 - 80, "RDP %d", (u32) OS_CYCLES_TO_USEC(profilerGfx->gfxTimes[2] - profilerGfx->gfxTimes[0]));
 }
 
 /**

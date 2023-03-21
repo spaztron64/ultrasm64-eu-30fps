@@ -12,6 +12,7 @@
 #include "object_list_processor.h"
 #include "spawn_object.h"
 #include "types.h"
+#include "rendering_graph_node.h"
 
 /**
  * An unused linked list struct that seems to have been replaced by ObjectNode.
@@ -289,6 +290,8 @@ struct Object *allocate_object(struct ObjectNode *objList) {
     obj->header.gfx.pos[1] = -10000.0f;
     obj->header.gfx.pos[2] = -10000.0f;
     obj->header.gfx.throwMatrix = NULL;
+    obj->header.gfx.matrixID[0] = MATRIX_NULL;
+    obj->header.gfx.matrixID[1] = MATRIX_NULL;
 
     return obj;
 }

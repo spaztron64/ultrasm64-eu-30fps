@@ -39,6 +39,9 @@
 s16 gMatStackIndex;
 Mat4 gMatStack[32];
 Mtx *gMatStackFixed[32];
+Mat4 gThrowMatStack[2][THROWMATSTACK];
+u16 gThrowMatIndex = 0;
+u8 gThrowMatSwap = 0;
 
 /**
  * Animation nodes have state in global variables, so this struct captures
@@ -808,6 +811,12 @@ s32 obj_is_in_view(struct GraphNodeObject *node, Mat4 matrix) {
 void geo_process_object(struct Object *node) {
     Mat4 mtxf;
     s32 hasAnimation = (node->header.gfx.node.flags & GRAPH_RENDER_HAS_ANIMATION) != 0;
+
+    if (node->header.gfx.matrixID[gThrowMatSwap ^ 1] != MATRIX_NULL) {
+        node->header.gfx.throwMatrix = &gThrowMatStack[gThrowMatSwap ^ 1][node->header.gfx.matrixID[gThrowMatSwap ^ 1]];
+    } else {
+        node->header.gfx.throwMatrix = NULL;
+    }
 
     if (node->header.gfx.areaIndex == gCurGraphNodeRoot->areaIndex) {
         if (node->header.gfx.throwMatrix != NULL) {

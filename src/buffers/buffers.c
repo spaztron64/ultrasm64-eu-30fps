@@ -20,6 +20,7 @@ ALIGNED8 u8 gIdleThreadStack[0x800];
 ALIGNED8 u8 gThread3Stack[0x2000];
 ALIGNED8 u8 gThread4Stack[0x2000];
 ALIGNED8 u8 gThread5Stack[0x2000];
+ALIGNED8 u8 gThread9Stack[0x2000];
 #if ENABLE_RUMBLE
 ALIGNED8 u8 gThread6Stack[0x2000];
 #endif

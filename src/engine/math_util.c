@@ -204,11 +204,12 @@ void mtxf_lookat(Mat4 mtx, Vec3f from, Vec3f to, s16 roll) {
     f32 xColX;
     f32 yColX;
     f32 zColX;
+    f32 divVal;
 
     dx = to[0] - from[0];
     dz = to[2] - from[2];
 
-    invLength = -1.0 / sqrtf(dx * dx + dz * dz);
+    invLength = -1.0 / MAX(sqrtf(dx * dx + dz * dz), 0.0001f);
     dx *= invLength;
     dz *= invLength;
 
@@ -220,7 +221,7 @@ void mtxf_lookat(Mat4 mtx, Vec3f from, Vec3f to, s16 roll) {
     yColZ = to[1] - from[1];
     zColZ = to[2] - from[2];
 
-    invLength = -1.0 / sqrtf(xColZ * xColZ + yColZ * yColZ + zColZ * zColZ);
+    invLength = -1.0 / MAX(sqrtf(xColZ * xColZ + yColZ * yColZ + zColZ * zColZ), 0.0001f);
     xColZ *= invLength;
     yColZ *= invLength;
     zColZ *= invLength;
@@ -229,7 +230,7 @@ void mtxf_lookat(Mat4 mtx, Vec3f from, Vec3f to, s16 roll) {
     yColX = zColY * xColZ - xColY * zColZ;
     zColX = xColY * yColZ - yColY * xColZ;
 
-    invLength = 1.0 / sqrtf(xColX * xColX + yColX * yColX + zColX * zColX);
+    invLength = 1.0 / MAX(sqrtf(xColX * xColX + yColX * yColX + zColX * zColX), 0.0001f);
 
     xColX *= invLength;
     yColX *= invLength;
@@ -239,7 +240,7 @@ void mtxf_lookat(Mat4 mtx, Vec3f from, Vec3f to, s16 roll) {
     yColY = zColZ * xColX - xColZ * zColX;
     zColY = xColZ * yColX - yColZ * xColX;
 
-    invLength = 1.0 / sqrtf(xColY * xColY + yColY * yColY + zColY * zColY);
+    invLength = 1.0 / MAX(sqrtf(xColY * xColY + yColY * yColY + zColY * zColY), 0.0001f);
     xColY *= invLength;
     yColY *= invLength;
     zColY *= invLength;

@@ -328,7 +328,7 @@ void play_menu_sounds_extra(s32 a, void *b) {
 void audio_game_loop_tick(void) {
     audio_signal_game_loop_tick();
 }
-
+extern u32 gSoundTime;
 /**
  * Sound processing thread. Runs at 60 FPS.
  */
@@ -346,6 +346,7 @@ void thread4_sound(UNUSED void *arg) {
         OSMesg msg;
 
         osRecvMesg(&sSoundMesgQueue, &msg, OS_MESG_BLOCK);
+        u32 first = osGetTime();
         if (gResetTimer < 25) {
             struct SPTask *spTask;
             profiler_log_thread4_time();
@@ -355,5 +356,6 @@ void thread4_sound(UNUSED void *arg) {
             }
             profiler_log_thread4_time();
         }
+        gSoundTime = osGetTime() - first;
     }
 }

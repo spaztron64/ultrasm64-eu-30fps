@@ -13,6 +13,7 @@ s16 gProfilerMode = 0;
 // state.
 s16 gCurrentFrameIndex1 = 1;
 s16 gCurrentFrameIndex2 = 0;
+s16 gCurrentFrameIndex3 = 1;
 
 struct ProfilerFrameData gProfilerFrameData[2];
 
@@ -25,6 +26,16 @@ void profiler_log_thread5_time(enum ProfilerGameEvent eventID) {
     if (eventID == THREAD5_END) {
         gCurrentFrameIndex1 ^= 1;
         gProfilerFrameData[gCurrentFrameIndex1].numSoundTimes = 0;
+    }
+}
+
+void profiler_log_thread9_time(enum ProfilerGameEvent9 eventID) {
+    gProfilerFrameData[gCurrentFrameIndex3].videoTimes[eventID] = osGetTime();
+
+    // event ID 4 is the last profiler event for after swapping
+    // buffers: switch the Info after updating.
+    if (eventID == THREAD9_END) {
+        gCurrentFrameIndex3 ^= 1;
     }
 }
 

@@ -97,8 +97,7 @@ void render_power_meter_health_segment(s16 numHealthWedges) {
                        (*healthLUT)[numHealthWedges - 1]);
     gDPLoadSync(gDisplayListHead++);
     gDPLoadBlock(gDisplayListHead++, G_TX_LOADTILE, 0, 0, 32 * 32 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES));
-    gSP1Triangle(gDisplayListHead++, 0, 1, 2, 0);
-    gSP1Triangle(gDisplayListHead++, 0, 2, 3, 0);
+    gSP2Triangles(gDisplayListHead++, 0, 1, 2, 0, 0, 2, 3, 0);
 }
 
 /**
@@ -135,7 +134,7 @@ void animate_power_meter_emphasized(void) {
     s16 hudDisplayFlags = gHudDisplay.flags;
 
     if (!(hudDisplayFlags & HUD_DISPLAY_FLAG_EMPHASIZE_POWER)) {
-        if (sPowerMeterVisibleTimer == 45.0) {
+        if (sPowerMeterVisibleTimer == 45) {
             sPowerMeterHUD.animation = POWER_METER_DEEMPHASIZING;
         }
     } else {
@@ -483,6 +482,9 @@ void ui_logic(void) {
         }
         sPowerMeterVisibleTimer++;
     }
+    if (gPlayer1Controller->buttonDown & U_JPAD && gPlayer1Controller->buttonPressed & L_TRIG) {
+        gShowProfilerNew ^= 1;
+    }
 }
 
 /**
@@ -544,9 +546,6 @@ void render_hud(void) {
         }
     }
 
-    if (gPlayer1Controller->buttonDown & U_JPAD && gPlayer1Controller->buttonPressed & L_TRIG) {
-        gShowProfilerNew ^= 1;
-    }
     if (gShowProfilerNew) {
         render_profiler();
     }

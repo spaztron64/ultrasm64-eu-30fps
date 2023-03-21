@@ -1652,6 +1652,7 @@ u8 *gEndCutsceneStringsDe[] = {
 #endif
 
 u16 gCutsceneMsgFade = 0;
+f32 gCutsceneMsgFadeLerp = 0.0f;
 s16 gCutsceneMsgIndex = -1;
 s16 gCutsceneMsgDuration = -1;
 s16 gCutsceneMsgTimer = 0;
@@ -1849,11 +1850,12 @@ void set_menu_mode(s16 mode) {
 
 void reset_cutscene_msg_fade(void) {
     gCutsceneMsgFade = 0;
+    gCutsceneMsgFadeLerp = 0.0f;
 }
 
 void dl_rgba16_begin_cutscene_msg_fade(void) {
     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_begin);
-    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gCutsceneMsgFade);
+    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gCutsceneMsgFadeLerp);
 }
 
 void dl_rgba16_stop_cutscene_msg_fade(void) {
@@ -1922,6 +1924,7 @@ void set_cutscene_message(s16 xOffset, s16 yOffset, s16 msgIndex, s16 msgDuratio
         gCutsceneMsgXOffset = xOffset;
         gCutsceneMsgYOffset = yOffset;
         gCutsceneMsgFade = 0;
+        gCutsceneMsgFadeLerp = 0;
     }
 }
 
@@ -1936,7 +1939,7 @@ void do_cutscene_handler(void) {
     create_dl_ortho_matrix();
 
     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
-    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gCutsceneMsgFade);
+    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gCutsceneMsgFadeLerp);
 
 #ifdef VERSION_EU
     switch (eu_get_language()) {
@@ -1960,6 +1963,13 @@ void do_cutscene_handler(void) {
 #endif
 
     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
+}
+
+void cutscene_handler_logic(void) {
+    // is a cutscene playing? do not perform this handler's actions if so.
+    if (gCutsceneMsgIndex == -1) {
+        return;
+    }
 
     // if the timing variable is less than 5, increment
     // the fade until we are at full opacity.
@@ -2030,11 +2040,11 @@ void print_peach_letter_message(void) {
 
     create_dl_translation_matrix(MENU_MTX_PUSH, 97.0f, 118.0f, 0);
 
-    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gCutsceneMsgFade);
+    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gCutsceneMsgFadeLerp);
     gSPDisplayList(gDisplayListHead++, castle_grounds_seg7_dl_0700EA58);
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
-    gDPSetEnvColor(gDisplayListHead++, 20, 20, 20, gCutsceneMsgFade);
+    gDPSetEnvColor(gDisplayListHead++, 20, 20, 20, gCutsceneMsgFadeLerp);
 
     print_generic_string(STR_X, STR_Y, str);
 #if defined(VERSION_JP)
@@ -2043,36 +2053,11 @@ void print_peach_letter_message(void) {
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
 #ifndef VERSION_JP
     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
-    gDPSetEnvColor(gDisplayListHead++, 200, 80, 120, gCutsceneMsgFade);
+    gDPSetEnvColor(gDisplayListHead++, 200, 80, 120, gCutsceneMsgFadeLerp);
     gSPDisplayList(gDisplayListHead++, castle_grounds_seg7_us_dl_0700F2E8);
 #endif
 
-    // at the start/end of message, reset the fade.
-    if (gCutsceneMsgTimer == 0) {
-        gCutsceneMsgFade = 0;
-    }
-
-    // we're less than 20 increments, so increase the fade.
-    if (gCutsceneMsgTimer < 20) {
-        gCutsceneMsgFade += 10;
-    }
-
-    // we're after PEACH_MESSAGE_TIMER increments, so decrease the fade.
-    if (gCutsceneMsgTimer > PEACH_MESSAGE_TIMER) {
-        gCutsceneMsgFade -= 10;
-    }
-
-    // 20 increments after the start of the decrease, we're
-    // back where we are, so reset everything at the end.
-    if (gCutsceneMsgTimer > (PEACH_MESSAGE_TIMER + 20)) {
-        gCutsceneMsgIndex = -1;
-        gCutsceneMsgFade = 0; //! uselessly reset since the next execution will just set it to 0 again.
-        gDialogID = DIALOG_NONE;
-        gCutsceneMsgTimer = 0;
-        return; // return to avoid incrementing the timer
-    }
-
-    gCutsceneMsgTimer++;
+    gCutsceneMsgFadeLerp = approach_f32_asymptotic(gCutsceneMsgFadeLerp, gCutsceneMsgFade, gLerpSpeed);
 }
 
 /**
@@ -2382,8 +2367,6 @@ void render_pause_course_options(s16 x, s16 y, s8 *index, s16 yIndex) {
     u8 textCameraAngleR[] = { TEXT_CAMERA_ANGLE_R };
 #endif
 
-    handle_menu_scrolling(MENU_SCROLL_VERTICAL, index, 1, 3);
-
     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
 
@@ -2531,11 +2514,6 @@ void render_pause_castle_main_strings(s16 x, s16 y) {
     }
 #endif
 
-    handle_menu_scrolling(
-        MENU_SCROLL_VERTICAL, &gDialogLineNum,
-        COURSE_NUM_TO_INDEX(COURSE_MIN) - 1, COURSE_NUM_TO_INDEX(COURSE_BONUS_STAGES) + 1
-    );
-
     if (gDialogLineNum == COURSE_NUM_TO_INDEX(COURSE_BONUS_STAGES) + 1) {
         gDialogLineNum = COURSE_NUM_TO_INDEX(COURSE_MIN); // Exceeded max, set to min
     }
@@ -2598,29 +2576,9 @@ s32 gCourseDoneMenuTimer = 0;
 s32 gCourseCompleteCoins = 0;
 s8 gHudFlash = 0;
 
-s16 render_pause_courses_and_castle(void) {
-    s16 index;
-
-#ifdef VERSION_EU
-    gInGameLanguage = eu_get_language();
-#endif
+void render_pause_courses_and_castle(void) {
 
     switch (gDialogBoxState) {
-        case DIALOG_STATE_OPENING:
-            gDialogLineNum = MENU_OPT_DEFAULT;
-            gDialogTextAlpha = 0;
-            level_set_transition(-1, NULL);
-            play_sound(SOUND_MENU_PAUSE, gGlobalSoundSource);
-
-            if (gCurrCourseNum >= COURSE_MIN && gCurrCourseNum <= COURSE_MAX) {
-                change_dialog_camera_angle();
-                gDialogBoxState = DIALOG_STATE_VERTICAL;
-            } else {
-                highlight_last_course_complete_stars();
-                gDialogBoxState = DIALOG_STATE_HORIZONTAL;
-            }
-            break;
-
         case DIALOG_STATE_VERTICAL:
             shade_screen();
             render_pause_my_score_coins();
@@ -2629,27 +2587,6 @@ s16 render_pause_courses_and_castle(void) {
             if (gMarioStates[0].action & ACT_FLAG_PAUSE_EXIT) {
                 render_pause_course_options(99, 93, &gDialogLineNum, 15);
             }
-
-#ifdef VERSION_EU
-            if (gPlayer3Controller->buttonPressed & (A_BUTTON | Z_TRIG | START_BUTTON))
-#else
-            if (gPlayer3Controller->buttonPressed & A_BUTTON
-                || gPlayer3Controller->buttonPressed & START_BUTTON)
-#endif
-            {
-                level_set_transition(0, NULL);
-                play_sound(SOUND_MENU_PAUSE_2, gGlobalSoundSource);
-                gDialogBoxState = DIALOG_STATE_OPENING;
-                gMenuMode = MENU_MODE_NONE;
-
-                if (gDialogLineNum == MENU_OPT_EXIT_COURSE) {
-                    index = gDialogLineNum;
-                } else { // MENU_OPT_CONTINUE or MENU_OPT_CAMERA_ANGLE_R
-                    index = MENU_OPT_DEFAULT;
-                }
-
-                return index;
-            }
             break;
 
         case DIALOG_STATE_HORIZONTAL:
@@ -2657,29 +2594,8 @@ s16 render_pause_courses_and_castle(void) {
             print_hud_pause_colorful_str();
             render_pause_castle_menu_box(160, 143);
             render_pause_castle_main_strings(104, 60);
-
-#ifdef VERSION_EU
-            if (gPlayer3Controller->buttonPressed & (A_BUTTON | Z_TRIG | START_BUTTON))
-#else
-            if (gPlayer3Controller->buttonPressed & A_BUTTON
-                || gPlayer3Controller->buttonPressed & START_BUTTON)
-#endif
-            {
-                level_set_transition(0, NULL);
-                play_sound(SOUND_MENU_PAUSE_2, gGlobalSoundSource);
-                gMenuMode = MENU_MODE_NONE;
-                gDialogBoxState = DIALOG_STATE_OPENING;
-
-                return MENU_OPT_DEFAULT;
-            }
             break;
     }
-
-    if (gDialogTextAlpha < 250) {
-        gDialogTextAlpha += 25;
-    }
-
-    return MENU_OPT_NONE;
 }
 
 #if defined(VERSION_JP)
@@ -2751,25 +2667,8 @@ void print_hud_course_complete_coins(s16 x, s16 y) {
     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_end);
 
     if (gCourseCompleteCoins >= gHudDisplay.coins) {
-        gCourseCompleteCoinsEqual = TRUE;
-        gCourseCompleteCoins = gHudDisplay.coins;
-
         if (gGotFileCoinHiScore) {
             print_hud_course_complete_string(HUD_PRINT_HISCORE);
-        }
-    } else {
-        if ((gCourseDoneMenuTimer & 1) || gHudDisplay.coins > 70) {
-            gCourseCompleteCoins++;
-            play_sound(SOUND_MENU_YOSHI_GAIN_LIVES, gGlobalSoundSource);
-
-            if (gCourseCompleteCoins == 50 || gCourseCompleteCoins == 100 || gCourseCompleteCoins == 150) {
-                play_sound(SOUND_GENERAL_COLLECT_1UP, gGlobalSoundSource);
-                gMarioState->numLives++;
-            }
-        }
-
-        if (gHudDisplay.coins == gCourseCompleteCoins && gGotFileCoinHiScore) {
-            play_sound(SOUND_MENU_MARIO_CASTLE_WARP2, gGlobalSoundSource);
         }
     }
 }
@@ -2846,7 +2745,6 @@ void render_course_complete_lvl_info_and_hud_str(void) {
 
     if (gLastCompletedCourseNum <= COURSE_STAGES_MAX) { // Main courses
         print_hud_course_complete_coins(118, 103);
-        play_star_fanfare_and_flash_hud(1, 1 << (gLastCompletedStarNum - 1));
 
         if (gLastCompletedStarNum == 7) {
             name = segmented_to_virtual(actNameTbl[COURSE_STAGES_MAX * 6 + 1]);
@@ -2893,14 +2791,12 @@ void render_course_complete_lvl_info_and_hud_str(void) {
 
         print_hud_course_complete_string(HUD_PRINT_CONGRATULATIONS);
         print_hud_course_complete_coins(118, 111);
-        play_star_fanfare_and_flash_hud(2, 0); //! 2 isn't defined, originally for key hud?
 
         return;
     } else { // Castle secret stars
         name = segmented_to_virtual(actNameTbl[COURSE_STAGES_MAX * 6]);
 
         print_hud_course_complete_coins(118, 103);
-        play_star_fanfare_and_flash_hud(1, 1 << (gLastCompletedStarNum - 1));
     }
 
     // Print star glyph
@@ -2977,8 +2873,6 @@ void render_save_confirmation(s16 x, s16 y, s8 *index, s16 sp6e)
     u8 textContinueWithoutSave[] = { TEXT_CONTINUE_WITHOUT_SAVING };
 #endif
 
-    handle_menu_scrolling(MENU_SCROLL_VERTICAL, index, 1, 3);
-
     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
 
@@ -2996,8 +2890,7 @@ void render_save_confirmation(s16 x, s16 y, s8 *index, s16 sp6e)
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 }
 
-s16 render_course_complete_screen(void) {
-    s16 index;
+void render_course_complete_screen(void) {
 #ifdef VERSION_EU
     gInGameLanguage = eu_get_language();
 #endif
@@ -3005,12 +2898,6 @@ s16 render_course_complete_screen(void) {
     switch (gDialogBoxState) {
         case DIALOG_STATE_OPENING:
             render_course_complete_lvl_info_and_hud_str();
-            if (gCourseDoneMenuTimer > 100 && gCourseCompleteCoinsEqual == TRUE) {
-                gDialogBoxState = DIALOG_STATE_VERTICAL;
-                level_set_transition(-1, NULL);
-                gDialogTextAlpha = 0;
-                gDialogLineNum = MENU_OPT_DEFAULT;
-            }
             break;
 
         case DIALOG_STATE_VERTICAL:
@@ -3021,14 +2908,127 @@ s16 render_course_complete_screen(void) {
 #else
             render_save_confirmation(100, 86, &gDialogLineNum, 20);
 #endif
+            break;
+    }
+}
 
-            if (gCourseDoneMenuTimer > 110
-                && (gPlayer3Controller->buttonPressed & A_BUTTON
-                 || gPlayer3Controller->buttonPressed & START_BUTTON
+s32 pause_menu_logic(void) {
+    s32 index;
+
 #ifdef VERSION_EU
-                 || gPlayer3Controller->buttonPressed & Z_TRIG
+    gInGameLanguage = eu_get_language();
 #endif
-                )) {
+
+    switch (gDialogBoxState) {
+        case DIALOG_STATE_OPENING:
+            gDialogLineNum = MENU_OPT_DEFAULT;
+            gDialogTextAlpha = 0;
+            level_set_transition(-1, NULL);
+            play_sound(SOUND_MENU_PAUSE, gGlobalSoundSource);
+
+            if (gCurrCourseNum >= COURSE_MIN && gCurrCourseNum <= COURSE_MAX) {
+                change_dialog_camera_angle();
+                gDialogBoxState = DIALOG_STATE_VERTICAL;
+            } else {
+                highlight_last_course_complete_stars();
+                gDialogBoxState = DIALOG_STATE_HORIZONTAL;
+            }
+            break;
+
+        case DIALOG_STATE_VERTICAL:
+            if (gMarioStates[0].action & ACT_FLAG_PAUSE_EXIT) {
+                handle_menu_scrolling(MENU_SCROLL_VERTICAL, &gDialogLineNum, 1, 3);
+            }
+
+            if (gPlayer3Controller->buttonPressed & (A_BUTTON | Z_TRIG | START_BUTTON)) {
+                level_set_transition(0, NULL);
+                play_sound(SOUND_MENU_PAUSE_2, gGlobalSoundSource);
+                gDialogBoxState = DIALOG_STATE_OPENING;
+                gMenuMode = MENU_MODE_NONE;
+
+                if (gDialogLineNum == MENU_OPT_EXIT_COURSE) {
+                    index = gDialogLineNum;
+                } else { // MENU_OPT_CONTINUE or MENU_OPT_CAMERA_ANGLE_R
+                    index = MENU_OPT_DEFAULT;
+                }
+
+                return index;
+            }
+            break;
+
+        case DIALOG_STATE_HORIZONTAL:
+        handle_menu_scrolling(MENU_SCROLL_VERTICAL, &gDialogLineNum, COURSE_NUM_TO_INDEX(COURSE_MIN) - 1, COURSE_NUM_TO_INDEX(COURSE_BONUS_STAGES) + 1);
+
+            if (gPlayer3Controller->buttonPressed & (A_BUTTON | Z_TRIG | START_BUTTON)) {
+                level_set_transition(0, NULL);
+                play_sound(SOUND_MENU_PAUSE_2, gGlobalSoundSource);
+                gMenuMode = MENU_MODE_NONE;
+                gDialogBoxState = DIALOG_STATE_OPENING;
+
+                return MENU_OPT_DEFAULT;
+            }
+            break;
+    }
+
+    if (gDialogTextAlpha < 250) {
+        gDialogTextAlpha += 25;
+    }
+
+    return MENU_OPT_NONE;
+}
+
+void increment_coin_score(void) {
+    if (gCourseCompleteCoins >= gHudDisplay.coins) {
+        gCourseCompleteCoinsEqual = TRUE;
+        gCourseCompleteCoins = gHudDisplay.coins;
+    } else {
+        if ((gCourseDoneMenuTimer & 1) || gHudDisplay.coins > 70) {
+            gCourseCompleteCoins++;
+            play_sound(SOUND_MENU_YOSHI_GAIN_LIVES, gGlobalSoundSource);
+
+            if (gCourseCompleteCoins == 50 || gCourseCompleteCoins == 100 || gCourseCompleteCoins == 150) {
+                play_sound(SOUND_GENERAL_COLLECT_1UP, gGlobalSoundSource);
+                gMarioState->numLives++;
+            }
+        }
+
+        if (gHudDisplay.coins == gCourseCompleteCoins && gGotFileCoinHiScore) {
+            play_sound(SOUND_MENU_MARIO_CASTLE_WARP2, gGlobalSoundSource);
+        }
+    }
+    if (gLastCompletedCourseNum <= COURSE_STAGES_MAX) {
+        print_hud_course_complete_coins(118, 103);
+        play_star_fanfare_and_flash_hud(1, 1 << (gLastCompletedStarNum - 1));
+    } else if (gLastCompletedCourseNum == COURSE_BITDW || gLastCompletedCourseNum == COURSE_BITFS) {
+        play_star_fanfare_and_flash_hud(2, 0);
+    } else {
+        play_star_fanfare_and_flash_hud(1, 1 << (gLastCompletedStarNum - 1));
+    }
+}
+
+s32 clear_menu_logic(void) {
+    s32 index;
+#ifdef VERSION_EU
+    gInGameLanguage = eu_get_language();
+#endif
+
+    switch (gDialogBoxState) {
+        case DIALOG_STATE_OPENING:
+            increment_coin_score();
+            if (gCourseDoneMenuTimer > 100 && gCourseCompleteCoinsEqual == TRUE) {
+                gDialogBoxState = DIALOG_STATE_VERTICAL;
+                level_set_transition(-1, NULL);
+                gDialogTextAlpha = 0;
+                gDialogLineNum = MENU_OPT_DEFAULT;
+            }
+            break;
+
+        case DIALOG_STATE_VERTICAL:
+            increment_coin_score();
+            handle_menu_scrolling(MENU_SCROLL_VERTICAL, &gDialogLineNum, 1, 3);
+
+            if (gCourseDoneMenuTimer > 110 && (gPlayer3Controller->buttonPressed & A_BUTTON
+                 || gPlayer3Controller->buttonPressed & START_BUTTON || gPlayer3Controller->buttonPressed & Z_TRIG )) {
                 level_set_transition(0, NULL);
                 play_sound(SOUND_MENU_STAR_SOUND, gGlobalSoundSource);
                 gDialogBoxState = DIALOG_STATE_OPENING;
@@ -3053,24 +3053,51 @@ s16 render_course_complete_screen(void) {
     return MENU_OPT_NONE;
 }
 
-s16 render_menus_and_dialogs(void) {
-    s16 index = MENU_OPT_NONE;
+void peach_letter_logic(void) {
+    // at the start/end of message, reset the fade.
+    if (gCutsceneMsgTimer == 0) {
+        gCutsceneMsgFade = 0;
+    }
 
-    create_dl_ortho_matrix();
+    // we're less than 20 increments, so increase the fade.
+    if (gCutsceneMsgTimer < 20) {
+        gCutsceneMsgFade += 10;
+    }
+
+    // we're after PEACH_MESSAGE_TIMER increments, so decrease the fade.
+    if (gCutsceneMsgTimer > PEACH_MESSAGE_TIMER) {
+        gCutsceneMsgFade -= 10;
+    }
+
+    // 20 increments after the start of the decrease, we're
+    // back where we are, so reset everything at the end.
+    if (gCutsceneMsgTimer > (PEACH_MESSAGE_TIMER + 20)) {
+        gCutsceneMsgIndex = -1;
+        gCutsceneMsgFade = 0; //! uselessly reset since the next execution will just set it to 0 again.
+        gDialogID = DIALOG_NONE;
+        gCutsceneMsgTimer = 0;
+        return; // return to avoid incrementing the timer
+    }
+
+    gCutsceneMsgTimer++;
+}
+
+s32 ingame_menu_logic(void) {
+    s16 index = MENU_OPT_NONE;
 
     if (gMenuMode != MENU_MODE_NONE) {
         switch (gMenuMode) {
             case MENU_MODE_UNUSED_0:
-                index = render_pause_courses_and_castle();
+                index = pause_menu_logic();
                 break;
             case MENU_MODE_RENDER_PAUSE_SCREEN:
-                index = render_pause_courses_and_castle();
+                index = pause_menu_logic();
                 break;
             case MENU_MODE_RENDER_COURSE_COMPLETE_SCREEN:
-                index = render_course_complete_screen();
+                index = clear_menu_logic();
                 break;
             case MENU_MODE_UNUSED_3:
-                index = render_course_complete_screen();
+                index = clear_menu_logic();
                 break;
         }
 
@@ -3078,8 +3105,8 @@ s16 render_menus_and_dialogs(void) {
     } else if (gDialogID != DIALOG_NONE) {
         // The Peach "Dear Mario" message needs to be repositioned separately
         if (gDialogID == DIALOG_020) {
-            print_peach_letter_message();
-            return index;
+            peach_letter_logic();
+            return MENU_OPT_NONE;
         }
 
         render_dialog_entries();
@@ -3087,4 +3114,33 @@ s16 render_menus_and_dialogs(void) {
     }
 
     return index;
+}
+
+void render_menus_and_dialogs(void) {
+
+    create_dl_ortho_matrix();
+
+    if (gMenuMode != MENU_MODE_NONE) {
+        switch (gMenuMode) {
+            case MENU_MODE_UNUSED_0:
+                render_pause_courses_and_castle();
+                break;
+            case MENU_MODE_RENDER_PAUSE_SCREEN:
+                render_pause_courses_and_castle();
+                break;
+            case MENU_MODE_RENDER_COURSE_COMPLETE_SCREEN:
+                render_course_complete_screen();
+                break;
+            case MENU_MODE_UNUSED_3:
+                render_course_complete_screen();
+                break;
+        }
+    } else if (gDialogID != DIALOG_NONE) {
+        // The Peach "Dear Mario" message needs to be repositioned separately
+        if (gDialogID == DIALOG_020) {
+            print_peach_letter_message();
+            return;
+        }
+        render_dialog_entries();
+    }
 }

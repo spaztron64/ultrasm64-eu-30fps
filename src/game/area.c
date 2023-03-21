@@ -361,21 +361,25 @@ void play_transition_after_delay(s16 transType, s16 time, u8 red, u8 green, u8 b
 }
 
 void hud_logic(void) {
-    if (gWarpTransition.isActive) {
-        if (gWarpTransDelay == 0) {
-            gWarpTransition.isActive = !screen_transition_logic(0, gWarpTransition.type, gWarpTransition.time, &gWarpTransition.data);
-            if (!gWarpTransition.isActive) {
-                if (gWarpTransition.type & 1) {
-                    gWarpTransition.pauseRendering = TRUE;
-                } else {
-                    set_warp_transition_rgb(0, 0, 0);
+    if (gCurrentArea != NULL && !gWarpTransition.pauseRendering) {
+        cutscene_handler_logic();
+        ui_logic();
+        gMenuOptSelectIndex = ingame_menu_logic();
+        if (gWarpTransition.isActive) {
+            if (gWarpTransDelay == 0) {
+                gWarpTransition.isActive = !screen_transition_logic(0, gWarpTransition.type, gWarpTransition.time, &gWarpTransition.data);
+                if (!gWarpTransition.isActive) {
+                    if (gWarpTransition.type & 1) {
+                        gWarpTransition.pauseRendering = TRUE;
+                    } else {
+                        set_warp_transition_rgb(0, 0, 0);
+                    }
                 }
+            } else {
+                    gWarpTransDelay--;
             }
-        } else {
-                gWarpTransDelay--;
         }
     }
-    ui_logic();
 }
 
 void render_game(void) {
@@ -394,7 +398,7 @@ void render_game(void) {
         print_displaying_credits_entry();
         gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, gBorderHeight, SCREEN_WIDTH,
                       SCREEN_HEIGHT - gBorderHeight);
-        gMenuOptSelectIndex = render_menus_and_dialogs();
+        render_menus_and_dialogs();
 
         if (gMenuOptSelectIndex != 0) {
             gSaveOptSelectIndex = gMenuOptSelectIndex;

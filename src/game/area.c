@@ -375,6 +375,7 @@ void hud_logic(void) {
                 gWarpTransDelay--;
         }
     }
+    ui_logic();
 }
 
 void render_game(void) {

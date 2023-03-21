@@ -13,8 +13,6 @@
 #include "game/object_list_processor.h"
 #include "surface_load.h"
 
-s32 unused8038BE90;
-
 /**
  * Partitions for course and object surfaces. The arrays represent
  * the 16x16 cells that each level is split into.
@@ -40,8 +38,6 @@ struct Surface *sSurfacePool;
  * The size of the surface pool (2300).
  */
 s16 sSurfacePoolSize;
-
-u8 unused8038EEA8[0x30];
 
 /**
  * Allocate the part of the surface node pool to contain a surface node.
@@ -611,7 +607,6 @@ void load_area_terrain(s16 index, s16 *data, s8 *surfaceRooms, s16 *macroObjects
 
     // Initialize the data for this.
     gEnvironmentRegions = NULL;
-    unused8038BE90 = 0;
     gSurfaceNodesAllocated = 0;
     gSurfacesAllocated = 0;
     sNumCellsUsed = 0;

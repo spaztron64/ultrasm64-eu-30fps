@@ -24,7 +24,7 @@ struct PowerMeterHUD {
     s8 animation;
     s16 x;
     s16 y;
-    f32 unused;
+    f32 lerpY;
 };
 
 struct UnusedHUDStruct {
@@ -45,7 +45,7 @@ static struct PowerMeterHUD sPowerMeterHUD = {
     POWER_METER_HIDDEN,
     140,
     166,
-    1.0,
+    1.0f,
 };
 
 // Power Meter timer that keeps counting when it's visible.
@@ -191,6 +191,7 @@ void handle_power_meter_actions(s16 numHealthWedges) {
         && sPowerMeterHUD.animation == POWER_METER_HIDDEN) {
         sPowerMeterHUD.animation = POWER_METER_EMPHASIZED;
         sPowerMeterHUD.y = 166;
+        sPowerMeterHUD.lerpY = 166;
     }
 
     // Show power meter if health is full, has 8
@@ -199,7 +200,7 @@ void handle_power_meter_actions(s16 numHealthWedges) {
     }
 
     // After health is full, hide power meter
-    if (numHealthWedges == 8 && sPowerMeterVisibleTimer > 45.0) {
+    if (numHealthWedges == 8 && sPowerMeterVisibleTimer > 45) {
         sPowerMeterHUD.animation = POWER_METER_HIDING;
     }
 
@@ -212,6 +213,7 @@ void handle_power_meter_actions(s16 numHealthWedges) {
             || sPowerMeterHUD.animation == POWER_METER_EMPHASIZED) {
             sPowerMeterHUD.animation = POWER_METER_DEEMPHASIZING;
             sPowerMeterHUD.y = 166;
+            sPowerMeterHUD.lerpY = 166;
         }
         sPowerMeterVisibleTimer = 0;
     }
@@ -225,31 +227,13 @@ void handle_power_meter_actions(s16 numHealthWedges) {
 void render_hud_power_meter(void) {
     s16 shownHealthWedges = gHudDisplay.wedges;
 
-    if (sPowerMeterHUD.animation != POWER_METER_HIDING) {
-        handle_power_meter_actions(shownHealthWedges);
-    }
-
     if (sPowerMeterHUD.animation == POWER_METER_HIDDEN) {
         return;
     }
 
-    switch (sPowerMeterHUD.animation) {
-        case POWER_METER_EMPHASIZED:
-            animate_power_meter_emphasized();
-            break;
-        case POWER_METER_DEEMPHASIZING:
-            animate_power_meter_deemphasizing();
-            break;
-        case POWER_METER_HIDING:
-            animate_power_meter_hiding();
-            break;
-        default:
-            break;
-    }
+    sPowerMeterHUD.lerpY = approach_f32_asymptotic(sPowerMeterHUD.lerpY, sPowerMeterHUD.y, gLerpSpeed);
 
     render_dl_power_meter(shownHealthWedges);
-
-    sPowerMeterVisibleTimer++;
 }
 
 #ifdef VERSION_JP
@@ -468,6 +452,37 @@ void render_profiler(void) {
     print_text_fmt_int(32, 240 - 48, "CPU %d", (u32) OS_CYCLES_TO_USEC(gVideoTime + (gSoundTime * 2) + gGameTime));
     print_text_fmt_int(32, 240 - 64, "RSP %d", (u32) OS_CYCLES_TO_USEC(profilerGfx->gfxTimes[1] - profilerGfx->gfxTimes[0]));
     print_text_fmt_int(32, 240 - 80, "RDP %d", (u32) OS_CYCLES_TO_USEC(profilerGfx->gfxTimes[2] - profilerGfx->gfxTimes[0]));
+}
+
+void ui_logic(void) {
+    s16 hudDisplayFlags = gHudDisplay.flags;
+
+    if (hudDisplayFlags & HUD_DISPLAY_FLAG_CAMERA_AND_POWER) {
+        s16 shownHealthWedges = gHudDisplay.wedges;
+
+        if (sPowerMeterHUD.animation != POWER_METER_HIDING) {
+            handle_power_meter_actions(shownHealthWedges);
+        }
+
+        if (sPowerMeterHUD.animation == POWER_METER_HIDDEN) {
+            return;
+        }
+
+        switch (sPowerMeterHUD.animation) {
+            case POWER_METER_EMPHASIZED:
+                animate_power_meter_emphasized();
+                break;
+            case POWER_METER_DEEMPHASIZING:
+                animate_power_meter_deemphasizing();
+                break;
+            case POWER_METER_HIDING:
+                animate_power_meter_hiding();
+                break;
+            default:
+                break;
+        }
+        sPowerMeterVisibleTimer++;
+    }
 }
 
 /**

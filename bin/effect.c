@@ -129,6 +129,7 @@ const Gfx tiny_bubble_dl_0B006A50[] = {
 
 // 0x0B006AB0 - 0x0B006AD8
 const Gfx tiny_bubble_dl_0B006AB0[] = {
+    gsDPPipeSync(),
     gsSPTexture(0x0001, 0x0001, 0, G_TX_RENDERTILE, G_OFF),
     gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
     gsDPSetRenderMode(G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2),
@@ -169,6 +170,7 @@ const Gfx tiny_bubble_dl_0B006D38[] = {
 
 // 0x0B006D68 - 0x0B006D98
 const Gfx tiny_bubble_dl_0B006D68[] = {
+    gsDPPipeSync(),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_CLAMP, 5, G_TX_NOLOD, G_TX_CLAMP, 5, G_TX_NOLOD),
     gsDPLoadSync(),
     gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 32 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),

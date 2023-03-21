@@ -982,6 +982,10 @@ void cur_obj_update(void) {
         obj_update_gfx_pos_and_angle(gCurrentObject);
     }
 
+    if (gCurrentObject->header.gfx.animInfo.curAnim != NULL)
+        gCurrentObject->header.gfx.animInfo.animFrame = geo_update_animation_frame(&gCurrentObject->header.gfx.animInfo, &gCurrentObject->header.gfx.animInfo.animFrameAccelAssist);
+
+
     // Handle visibility of object
     if (gCurrentObject->oRoom != -1) {
         // If the object is in a room, only show it when Mario is in the room.

@@ -122,7 +122,7 @@ void bhv_flame_moving_forward_growing_loop(void) {
     UNUSED struct Object *flame;
 
     obj_set_hitbox(o, &sGrowingBowserFlameHitbox);
-    o->oFlameScale = o->oFlameScale + 0.5;
+    o->oFlameScale = o->oFlameScale + 0.5f;
     cur_obj_scale(o->oFlameScale);
 
     if (o->oMoveAnglePitch > 0x800) {
@@ -191,7 +191,7 @@ void bhv_blue_bowser_flame_init(void) {
     o->oVelY = 7.0f;
     o->oForwardVel = 35.0f;
     o->oFlameScale = 3.0f;
-    o->oFlameUnusedRand = random_float() * 0.5;
+    o->oFlameUnusedRand = random_float() * 0.5f;
     o->oGravity = 1.0f;
     o->oFlameSpeedTimerOffset = (s32)(random_float() * 64.0f);
 }
@@ -202,7 +202,7 @@ void bhv_blue_bowser_flame_loop(void) {
     obj_set_hitbox(o, &sGrowingBowserFlameHitbox);
 
     if (o->oFlameScale < 16.0f) {
-        o->oFlameScale = o->oFlameScale + 0.5;
+        o->oFlameScale = o->oFlameScale + 0.5f;
     }
 
     cur_obj_scale(o->oFlameScale);
@@ -277,7 +277,7 @@ void bhv_blue_flames_group_loop(void) {
                 flame->oMoveAngleYaw += i * 0x5555;
                 flame->header.gfx.scale[0] = o->oBlueFlameNextScale;
             }
-            o->oBlueFlameNextScale -= 0.5;
+            o->oBlueFlameNextScale -= 0.5f;
         }
     } else {
         obj_mark_for_deletion(o);

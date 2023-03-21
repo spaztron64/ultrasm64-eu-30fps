@@ -105,7 +105,7 @@ void water_ring_act_collected(void) {
 }
 
 void water_ring_act_not_collected(void) {
-    f32 avgScale = (f32) o->oTimer / 225.0 * 3.0 + 0.5;
+    f32 avgScale = (f32) o->oTimer / 225.0 * 3.0 + 0.5f;
 
     //! In this case ringSpawner and ringManager are the same object,
     //  because the Jet Stream Ring Spawner is its own parent object.
@@ -198,12 +198,12 @@ void bhv_manta_ray_water_ring_init(void) {
 }
 
 void manta_water_ring_act_not_collected(void) {
-    f32 avgScale = (f32) o->oTimer / 50 * 1.3 + 0.1;
+    f32 avgScale = (f32) o->oTimer / 50 * 1.3 + 0.1f;
     struct Object *ringSpawner = o->parentObj;
     struct Object *ringManager = ringSpawner->parentObj;
 
     if (avgScale > 1.3) {
-        avgScale = 1.3;
+        avgScale = 1.3f;
     }
 
     if (o->oTimer > 150) {

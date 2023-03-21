@@ -129,7 +129,7 @@ void bhv_wave_trail_shrink(void) {
     }
 
     if (o->oAnimState > 3) {
-        o->oWaveTrailSize = o->oWaveTrailSize - 0.1; // Shrink the wave
+        o->oWaveTrailSize = o->oWaveTrailSize - 0.1f; // Shrink the wave
         if (o->oWaveTrailSize < 0.0f) {
             o->oWaveTrailSize = 0.0f;
         }

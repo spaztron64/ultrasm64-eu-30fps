@@ -132,7 +132,7 @@ void yoshi_finish_jumping_and_despawn_loop(void) {
     cur_obj_extend_animation_if_at_end();
     obj_move_xyz_using_fvel_and_yaw(o);
 
-    o->oVelY -= 2.0;
+    o->oVelY -= 2.0f;
 
     if (o->oPosY < 2100.0f) {
         set_mario_npc_dialog(MARIO_DIALOG_STOP);

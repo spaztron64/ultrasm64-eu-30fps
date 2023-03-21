@@ -38,7 +38,7 @@ void floating_platform_act_0(void) {
         o->oFaceAnglePitch /= 2;
         o->oFaceAngleRoll /= 2;
 
-        o->oFloatingPlatformUnkF8 -= 5.0;
+        o->oFloatingPlatformUnkF8 -= 5.0f;
 
         o->oVelY = 10.0f;
 

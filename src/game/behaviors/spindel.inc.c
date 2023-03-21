@@ -70,7 +70,7 @@ void bhv_spindel_loop(void) {
             cur_obj_play_sound_2(SOUND_GENERAL2_SPINDEL_ROLL);
         }
 
-        sp1C = sins(o->oMoveAnglePitch * 4) * 23.0;
+        sp1C = sins(o->oMoveAnglePitch * 4) * 23.0f;
         if (sp1C < 0.0f) {
             sp1C *= -1.0f;
         }

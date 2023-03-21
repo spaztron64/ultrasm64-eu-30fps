@@ -112,7 +112,7 @@ f64 root_newton_step(f64 x, s32 k, f64 d) {
  * @return the root, or 1.0 if d is 0
  */
 f64 kth_root(f64 d, s32 k) {
-    f64 root = 1.5;
+    f64 root = 1.5f;
     f64 next;
     f64 diff;
     s32 i;

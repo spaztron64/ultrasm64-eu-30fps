@@ -47,7 +47,7 @@ $(eval $(call validate-option,COMPILER,gcc clang))
 #   trap - GCC default behavior, uses teq instructions which some emulators don't like
 #   divbreak - this is similar to IDO behavior, and is default.
 #   nocheck - never checks for dividing by 0. Technically fastest, but also UB so not recommended
-LIBGCCDIR ?= divbreak
+LIBGCCDIR ?= nocheck
 $(eval $(call validate-option,LIBGCCDIR,trap divbreak nocheck))
 
 
@@ -94,7 +94,7 @@ TARGET := sm64
 #   l3dex2  - F3DEX2 version that only renders in wireframe
 #   f3dzex  - newer, experimental microcode used in Animal Crossing
 #   super3d - extremely experimental version of Fast3D lacking many features for speed
-GRUCODE ?= f3dzex
+GRUCODE ?= f3dex2
 $(eval $(call validate-option,GRUCODE,f3dex f3dex2 f3dex2pl f3dzex super3d l3dex2))
 
 ifeq ($(GRUCODE),f3dex) # Fast3DEX
@@ -185,7 +185,7 @@ BUILD_DIR_BASE := build
 # BUILD_DIR is the location where all build artifacts are placed
 BUILD_DIR      := $(BUILD_DIR_BASE)/$(VERSION)_$(CONSOLE)
 
-COMPRESS ?= rnc1
+COMPRESS ?= gzip
 $(eval $(call validate-option,COMPRESS,mio0 yay0 gzip rnc1 rnc2 uncomp))
 ifeq ($(COMPRESS),gzip)
   DEFINES += GZIP=1
@@ -203,13 +203,13 @@ else ifeq ($(COMPRESS),uncomp)
   DEFINES += UNCOMPRESSED=1
 endif
 
-GZIPVER ?= std
+GZIPVER ?= libdef
 $(eval $(call validate-option,GZIPVER,std libdef))
 
 # GODDARD - whether to use libgoddard (Mario Head)
 #   1 - includes code in ROM
 #   0 - does not 
-GODDARD ?= 0
+GODDARD ?= 1
 $(eval $(call validate-option,GODDARD,0 1))
 ifeq ($(GODDARD),1)
   GODDARDRULE := $(BUILD_DIR)/libgoddard.a
@@ -736,7 +736,7 @@ $(ELF): $(O_FILES) $(YAY0_OBJ_FILES) $(SEG_FILES) $(BUILD_DIR)/$(LD_SCRIPT) unde
 $(ROM): $(ELF)
 	$(call print,Building ROM:,$<,$@)
 ifeq      ($(CONSOLE),n64)
-	$(V)$(OBJCOPY) --pad-to=0x800000 --gap-fill=0xFF $< $@ -O binary
+	$(V)$(OBJCOPY) --pad-to=0x101000 --gap-fill=0xFF $< $@ -O binary
 else ifeq ($(CONSOLE),bb)
 	$(V)$(OBJCOPY) --gap-fill=0x00 $< $@ -O binary
 	$(V)dd if=$@ of=tmp bs=16K conv=sync status=none

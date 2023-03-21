@@ -330,7 +330,8 @@ static Gfx gd_dl_star_common[] = {
     gsSP2Triangles( 0,  1,  2, 0x0,  0,  2,  3, 0x0),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
-    gsDPSetRenderMode(G_RM_AA_ZB_OPA_INTER, G_RM_NOOP2),
+    gsDPPipeSync(),
+    gsDPSetRenderMode(G_RM_ZB_OPA_SURF, G_RM_NOOP2),
     gsSPEndDisplayList(),
 };
 
@@ -517,7 +518,8 @@ static Gfx gd_dl_sparkle[] = {
     gsSP2Triangles(0,  1,  2, 0x0,  0,  2,  3, 0x0),
     gsSPTexture(0x0001, 0x0001, 0, G_TX_RENDERTILE, G_OFF),
     gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
-    gsDPSetRenderMode(G_RM_AA_ZB_OPA_INTER, G_RM_NOOP2),
+    gsDPPipeSync(),
+    gsDPSetRenderMode(G_RM_ZB_OPA_SURF, G_RM_NOOP2),
     gsSPEndDisplayList(),
 };
 
@@ -692,7 +694,7 @@ static Gfx gd_dl_rdp_init[] = {
 
 UNUSED static u32 gd_unused_pad1 = 0;
 
-float sGdPerspTimer = 1.0;
+float sGdPerspTimer = 1.0f;
 
 UNUSED static u32 gd_unused_pad2 = 0;
 
@@ -853,7 +855,7 @@ f64 gd_cos_d(f64 x) {
 /* 249B2C -> 249BA4 */
 f64 gd_sqrt_d(f64 x) {
     if (x < 1.0e-7) {
-        return 0.0;
+        return 0.0f;
     }
     return sqrtf(x);
 }
@@ -1540,7 +1542,7 @@ void gd_draw_rect(f32 ulx, f32 uly, f32 lrx, f32 lry) {
 
     gDPPipeSync(next_gfx());
     gDPSetCycleType(next_gfx(), G_CYC_1CYCLE);
-    gDPSetRenderMode(next_gfx(), G_RM_AA_ZB_OPA_INTER, G_RM_NOOP2);
+    gDPSetRenderMode(next_gfx(), G_RM_ZB_OPA_SURF, G_RM_NOOP2);
 }
 
 /* 24BED8 -> 24CAC8; orig name: func_8019D708 */
@@ -1565,7 +1567,7 @@ void gd_draw_border_rect(f32 ulx, f32 uly, f32 lrx, f32 lry) {
 
     gDPPipeSync(next_gfx());
     gDPSetCycleType(next_gfx(), G_CYC_1CYCLE);
-    gDPSetRenderMode(next_gfx(), G_RM_AA_ZB_OPA_INTER, G_RM_NOOP2);
+    gDPSetRenderMode(next_gfx(), G_RM_ZB_OPA_SURF, G_RM_NOOP2);
 }
 
 /* 24CAC8 -> 24CDB4; orig name: func_8019E2F8 */
@@ -1938,7 +1940,7 @@ Vtx *gd_dl_make_vertex(f32 x, f32 y, f32 z, f32 alpha) {
 /* 24E6C0 -> 24E724 */
 void func_8019FEF0(void) {
     sTriangleBufCount++;
-    if (sVertexBufCount >= 12) {
+    if (sVertexBufCount >= 24) {
         gd_dl_flush_vertices();
         func_801A0038();
     }
@@ -1978,11 +1980,13 @@ void gd_dl_flush_vertices(void) {
         gSPVertex(next_gfx(), osVirtualToPhysical(&sCurrentGdDl->vtx[sVertexBufStartIndex]), sVertexBufCount, 0);
         // load triangle data
         for (i = 0; i < sTriangleBufCount; i++) {
-            gSP1Triangle(next_gfx(),
-                sTriangleBuf[i][0] - sVertexBufStartIndex,
-                sTriangleBuf[i][1] - sVertexBufStartIndex,
-                sTriangleBuf[i][2] - sVertexBufStartIndex,
-                0);
+            if (sTriangleBufCount - i > 1) {
+                gSP2Triangles(next_gfx(), sTriangleBuf[i][0] - sVertexBufStartIndex, sTriangleBuf[i][1] - sVertexBufStartIndex, sTriangleBuf[i][2] - sVertexBufStartIndex, 0,
+                                        sTriangleBuf[i + 1][0] - sVertexBufStartIndex, sTriangleBuf[i + 1][1] - sVertexBufStartIndex, sTriangleBuf[i + 1][2] - sVertexBufStartIndex, 0);
+                                        i++;
+            } else {
+                gSP1Triangle(next_gfx(), sTriangleBuf[i][0] - sVertexBufStartIndex, sTriangleBuf[i][1] - sVertexBufStartIndex, sTriangleBuf[i][2] - sVertexBufStartIndex, 0);
+            }
         }
     }
     func_801A0038();
@@ -2244,15 +2248,15 @@ static void gd_dl_viewport(void) {
 static void update_render_mode(void) {
     if ((sActiveView->flags & VIEW_ALLOC_ZBUF) != 0) {
         if (sAlpha != 0xff) {
-            gDPSetRenderMode(next_gfx(), G_RM_AA_ZB_XLU_SURF, G_RM_AA_ZB_XLU_SURF2);
+            gDPSetRenderMode(next_gfx(), G_RM_ZB_XLU_SURF, G_RM_ZB_XLU_SURF2);
         } else {
-            gDPSetRenderMode(next_gfx(), G_RM_AA_ZB_OPA_INTER, G_RM_NOOP2);
+            gDPSetRenderMode(next_gfx(), G_RM_ZB_OPA_SURF, G_RM_NOOP2);
         }
     } else {
         if (sAlpha != 0xff) {
-            gDPSetRenderMode(next_gfx(), G_RM_AA_XLU_SURF, G_RM_AA_XLU_SURF2);
+            gDPSetRenderMode(next_gfx(), G_RM_XLU_SURF, G_RM_XLU_SURF2);
         } else {
-            gDPSetRenderMode(next_gfx(), G_RM_AA_ZB_OPA_INTER, G_RM_NOOP2);
+            gDPSetRenderMode(next_gfx(), G_RM_ZB_OPA_SURF, G_RM_NOOP2);
         }
     }
 }
@@ -2451,10 +2455,10 @@ void parse_p1_controller(void) {
 
     // deadzone checks
     if (ABS(gdctrl->stickX) >= 6) {
-        gdctrl->csrX += gdctrl->stickX * 0.1;
+        gdctrl->csrX += gdctrl->stickX * 0.1f;
     }
     if (ABS(gdctrl->stickY) >= 6) {
-        gdctrl->csrY -= gdctrl->stickY * 0.1;
+        gdctrl->csrY -= gdctrl->stickY * 0.1f;
     }
 
     // clamp cursor position within screen view bounds
@@ -2642,7 +2646,7 @@ void gd_create_perspective_matrix(f32 fovy, f32 aspect, f32 near, f32 far) {
     UNUSED u8 filler2[4];
     UNUSED f32 unused = 0.0625f;
 
-    sGdPerspTimer += 0.1;
+    sGdPerspTimer += 0.1f;
     guPerspective(&DL_CURRENT_MTX(sCurrentGdDl), &perspNorm, fovy, aspect, near, far, 1.0f);
 
     gSPPerspNormalize(next_gfx(), perspNorm);
@@ -3083,7 +3087,7 @@ void add_debug_view(struct ObjView *view) {
 union ObjVarVal *cvrt_val_to_kb(union ObjVarVal *dst, union ObjVarVal src) {
     union ObjVarVal temp;
 
-    temp.f = src.f / 1024.0; //? 1024.0f
+    temp.f = src.f / 1024.0f; //? 1024.0f
     return (*dst = temp, dst);
 }
 
@@ -3245,7 +3249,7 @@ void gd_put_sprite(u16 *sprite, s32 x, s32 y, s32 wx, s32 wy) {
 
     gDPPipeSync(next_gfx());
     gDPSetCycleType(next_gfx(), G_CYC_1CYCLE);
-    gDPSetRenderMode(next_gfx(), G_RM_AA_ZB_OPA_INTER, G_RM_NOOP2);
+    gDPSetRenderMode(next_gfx(), G_RM_ZB_OPA_SURF, G_RM_NOOP2);
     gSPTexture(next_gfx(), 0x8000, 0x8000, 0, G_TX_RENDERTILE, G_OFF);
 }
 

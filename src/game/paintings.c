@@ -214,10 +214,10 @@ void stop_other_paintings(s16 *idptr, struct Painting *paintingGroup[]) {
 f32 painting_mario_y(struct Painting *painting) {
     //! Unnecessary use of double constants
     // Add 50 to make the ripple closer to Mario's center of mass.
-    f32 relY = gPaintingMarioYPos - painting->posY + 50.0;
+    f32 relY = gPaintingMarioYPos - painting->posY + 50.0f;
 
     if (relY < 0.0) {
-        relY = 0.0;
+        relY = 0.0f;
     } else if (relY > painting->size) {
         relY = painting->size;
     }
@@ -231,7 +231,7 @@ f32 painting_mario_z(struct Painting *painting) {
     f32 relZ = painting->posZ - gPaintingMarioZPos;
 
     if (relZ < 0.0) {
-        relZ = 0.0;
+        relZ = 0.0f;
     } else if (relZ > painting->size) {
         relZ = painting->size;
     }
@@ -251,7 +251,7 @@ f32 painting_ripple_y(struct Painting *painting, s8 ySource) {
             return painting_mario_z(painting); // floor paintings use X and Z
             break;
         case MIDDLE_Y:
-            return painting->size / 2.0; // some concentric ripples don't care about Mario
+            return painting->size / 2.0f; // some concentric ripples don't care about Mario
             break;
     }
 #ifdef AVOID_UB
@@ -263,9 +263,9 @@ f32 painting_ripple_y(struct Painting *painting, s8 ySource) {
  * Return the quarter of the painting that is closest to the floor Mario entered.
  */
 f32 painting_nearest_4th(struct Painting *painting) {
-    f32 firstQuarter = painting->size / 4.0;       // 1/4 of the way across the painting
-    f32 secondQuarter = painting->size / 2.0;      // 1/2 of the way across the painting
-    f32 thirdQuarter = painting->size * 3.0 / 4.0; // 3/4 of the way across the painting
+    f32 firstQuarter = painting->size / 4.0f;       // 1/4 of the way across the painting
+    f32 secondQuarter = painting->size / 2.0f;      // 1/2 of the way across the painting
+    f32 thirdQuarter = painting->size * 3.0 / 4.0f; // 3/4 of the way across the painting
 
     if (painting->floorEntered & RIPPLE_LEFT) {
         return firstQuarter;
@@ -294,7 +294,7 @@ f32 painting_mario_x(struct Painting *painting) {
     f32 relX = gPaintingMarioXPos - painting->posX;
 
     if (relX < 0.0) {
-        relX = 0.0;
+        relX = 0.0f;
     } else if (relX > painting->size) {
         relX = painting->size;
     }
@@ -313,7 +313,7 @@ f32 painting_ripple_x(struct Painting *painting, s8 xSource) {
             return painting_mario_x(painting);
             break;
         case MIDDLE_X: // concentric rippling may not care about Mario
-            return painting->size / 2.0;
+            return painting->size / 2.0f;
             break;
     }
 #ifdef AVOID_UB
@@ -587,7 +587,7 @@ void painting_update_ripple_state(struct Painting *painting) {
         //! 16777216 (1 << 24), at which point it will freeze (due to floating-point
         //! imprecision?) and the painting will stop rippling. This happens to HMC, DDD, and
         //! CotMC.
-        painting->rippleTimer += 1.0;
+        painting->rippleTimer += 1.0f;
     }
     if (painting->rippleTrigger == RIPPLE_TRIGGER_PROXIMITY) {
         // if the painting is barely rippling, make it stop rippling
@@ -752,9 +752,9 @@ s8 normalize_component(f32 comp) {
     s8 rounded;
 
     if (comp > 0.0) {
-        rounded = comp * 127.0 + 0.5; // round up
+        rounded = comp * 127.0 + 0.5f; // round up
     } else if (comp < 0.0) {
-        rounded = comp * 128.0 - 0.5; // round down
+        rounded = comp * 128.0 - 0.5f; // round down
     } else {
         rounded = 0;                  // don't round 0
     }

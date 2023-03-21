@@ -154,7 +154,7 @@ void Unknown801781DC(struct ObjZone *zone) {
         if (sp2C > 600.0f) {
             sp2C = 600.0f;
         }
-        sp2C = 1.0 - sp2C / 600.0;
+        sp2C = 1.0 - sp2C / 600.0f;
         unk->unk30->normal.x = sp2C * light->colour.r;
         unk->unk30->normal.y = sp2C * light->colour.g;
         unk->unk30->normal.z = sp2C * light->colour.b;
@@ -289,7 +289,7 @@ void draw_light(struct ObjLight *light) {
         sp94.y = -light->unk80.y;
         sp94.z = -light->unk80.z;
         gd_create_origin_lookat(&sp54, &sp94, 0.0f);
-        uMultiplier = light->unk38 / 45.0;
+        uMultiplier = light->unk38 / 45.0f;
         shape = gSpotShape;
         uMatPtr = &sp54;
     } else {
@@ -425,7 +425,7 @@ void Unknown80178ECC(f32 v0X, f32 v0Y, f32 v0Z, f32 v1X, f32 v1Y, f32 v1Z) {
     f32 difX = v1X - v0X;
     f32 difZ = v1Z - v0Z;
 
-    gd_dl_make_triangle(v0X, v0Y, v0Z, v1X, v1Y, v1Z, v0X + difY * 0.1, v0Y + difX * 0.1, v0Z + difZ * 0.1);
+    gd_dl_make_triangle(v0X, v0Y, v0Z, v1X, v1Y, v1Z, v0X + difY * 0.1f, v0Y + difX * 0.1f, v0Z + difZ * 0.1f);
 }
 
 /**
@@ -876,7 +876,7 @@ void draw_particle(struct GdObj *obj) {
     if (ptc->timeout > 0) {
         white = sColourPalette[0];
         black = sWhiteBlack[1];
-        brightness = ptc->timeout / 10.0;
+        brightness = ptc->timeout / 10.0f;
         sLightColours[0].r = (white->r - black->r) * brightness + black->r;
         sLightColours[0].g = (white->g - black->g) * brightness + black->g;
         sLightColours[0].b = (white->b - black->b) * brightness + black->b;
@@ -1041,11 +1041,11 @@ void Proc8017A980(struct ObjLight *light) {
     sp24 = light->unk30;
     if (light->flags & LIGHT_UNK02) {
         sp20 = -gd_dot_vec3f(&sLightPositionCache[light->id], &light->unk80);
-        sp1C = 1.0 - light->unk38 / 90.0;
+        sp1C = 1.0 - light->unk38 / 90.0f;
         if (sp20 > sp1C) {
             sp20 = (sp20 - sp1C) * (1.0 / (1.0 - sp1C));
             if (sp20 > 1.0) {
-                sp20 = 1.0;
+                sp20 = 1.0f;
             } else if (sp20 < 0.0f) {
                 sp20 = 0.0f;
             }

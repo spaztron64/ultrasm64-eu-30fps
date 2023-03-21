@@ -154,9 +154,9 @@ void func_80182088(struct Connection *cxn) {
     sp4C.x /= sp20;
     sp4C.y /= sp20;
     sp4C.z /= sp20;
-    sp4C.x *= sp24 * 0.1;
-    sp4C.y *= sp24 * 0.1;
-    sp4C.z *= sp24 * 0.1;
+    sp4C.x *= sp24 * 0.1f;
+    sp4C.y *= sp24 * 0.1f;
+    sp4C.z *= sp24 * 0.1f;
     sp1C->unk38.x -= sp4C.x;
     sp1C->unk38.y -= sp4C.y;
     sp1C->unk38.z -= sp4C.z;
@@ -299,9 +299,9 @@ void func_80182A08(struct ObjParticle *ptc, struct GdVec3f *b) {
                 sp20->pos.z = ptc->pos.z;
                 sp20->timeout = 12.0f - gd_rand_float() * 5.0f;
                 do {
-                    sp20->unk38.x = gd_rand_float() * 50.0 - 25.0;
-                    sp20->unk38.y = gd_rand_float() * 50.0 - 25.0;
-                    sp20->unk38.z = gd_rand_float() * 50.0 - 25.0;
+                    sp20->unk38.x = gd_rand_float() * 50.0 - 25.0f;
+                    sp20->unk38.y = gd_rand_float() * 50.0 - 25.0f;
+                    sp20->unk38.z = gd_rand_float() * 50.0 - 25.0f;
                 } while (gd_vec3f_magnitude(&sp20->unk38) > 30.0);
                 sp20->unk38.x += b->x;
                 sp20->unk38.y += b->y;
@@ -400,9 +400,9 @@ void move_particle(struct ObjParticle *ptc) {
         default:
             break;
     }
-    ptc->unk38.x *= 0.9;
-    ptc->unk38.y *= 0.9;
-    ptc->unk38.z *= 0.9;
+    ptc->unk38.x *= 0.9f;
+    ptc->unk38.y *= 0.9f;
+    ptc->unk38.z *= 0.9f;
     if (ptc->unk60 == 3) {
         switch (ptc->unk64) {
             case 1:
@@ -424,9 +424,9 @@ void move_particle(struct ObjParticle *ptc) {
                         sp2C->pos.z = ptc->pos.z;
                         sp2C->timeout = 20;
                         do {
-                            sp2C->unk38.x = gd_rand_float() * 64.0 - 32.0;
-                            sp2C->unk38.y = gd_rand_float() * 64.0 - 32.0;
-                            sp2C->unk38.z = gd_rand_float() * 64.0 - 32.0;
+                            sp2C->unk38.x = gd_rand_float() * 64.0 - 32.0f;
+                            sp2C->unk38.y = gd_rand_float() * 64.0 - 32.0f;
+                            sp2C->unk38.z = gd_rand_float() * 64.0 - 32.0f;
                         } while (gd_vec3f_magnitude(&sp2C->unk38) > 32.0);
                         sp2C->unk30 = gd_rand_float() * 180.0f;
                         sp2C->header.drawFlags &= ~OBJ_INVISIBLE;

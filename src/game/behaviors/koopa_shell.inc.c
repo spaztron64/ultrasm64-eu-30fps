@@ -42,7 +42,7 @@ void bhv_koopa_shell_flame_loop(void) {
         obj_mark_for_deletion(o);
     }
 
-    o->oKoopaShellFlameScale += -0.3;
+    o->oKoopaShellFlameScale += -0.3f;
     cur_obj_scale(o->oKoopaShellFlameScale);
 }
 

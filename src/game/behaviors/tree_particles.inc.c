@@ -32,7 +32,7 @@ void bhv_tree_snow_or_leaf_loop(void) {
     }
 
     if (o->oForwardVel > 0) {
-        o->oForwardVel -= 0.3;
+        o->oForwardVel -= 0.3f;
     } else {
         o->oForwardVel = 0;
     }

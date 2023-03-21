@@ -787,10 +787,10 @@ s16 get_str_x_pos_from_center_scale(s16 centerPos, u8 *str, f32 scale) {
     while (str[strPos] != DIALOG_CHAR_TERMINATOR) {
         //! EU checks for dakuten and handakuten despite dialog code unable to handle it
         if (str[strPos] == DIALOG_CHAR_SPACE) {
-            spacesWidth += 1.0;
+            spacesWidth += 1.0f;
         } else if (str[strPos] != DIALOG_CHAR_DAKUTEN
                    && str[strPos] != DIALOG_CHAR_PERIOD_OR_HANDAKUTEN) {
-            charsWidth += 1.0;
+            charsWidth += 1.0f;
         }
         strPos++;
     }
@@ -1721,11 +1721,11 @@ void render_dialog_entries(void) {
             }
 
             if (gDialogBoxType == DIALOG_TYPE_ROTATE) {
-                gDialogBoxOpenTimer -= 7.5;
-                gDialogBoxScale -= 1.5;
+                gDialogBoxOpenTimer -= 7.5f;
+                gDialogBoxScale -= 1.5f;
             } else {
-                gDialogBoxOpenTimer -= 10.0;
-                gDialogBoxScale -= 2.0;
+                gDialogBoxOpenTimer -= 10.0f;
+                gDialogBoxScale -= 2.0f;
             }
 
             if (gDialogBoxOpenTimer == 0.0f) {

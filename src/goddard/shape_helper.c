@@ -83,7 +83,7 @@ UNUSED static struct DynList sDynlist801A8604[4] = {
     SetFriction(0.005, 0.005, 0.005),
     EndList(),
 };
-static f64 D_801A8668 = 0.0;
+static f64 D_801A8668 = 0.0f;
 
 // bss
 UNUSED static u8 sUnrefSpaceB00[0x2C];    // @ 801BAB00
@@ -587,7 +587,7 @@ void Unknown80198524(struct ObjVertex *vtx) {
 void Unknown801985E8(struct ObjShape *shape) {
     struct GdBoundingBox bbox;
 
-    D_801A8668 = 0.0;
+    D_801A8668 = 0.0f;
     reset_bounding_box();
     apply_to_obj_types_in_group(OBJ_TYPE_VERTICES, (applyproc_t) Unknown80198444, shape->vtxGroup);
 
@@ -1084,8 +1084,8 @@ struct ObjShape *make_grid_shape(enum ObjTypeFlag gridType, s32 a1, s32 a2, s32 
                 objBuf[row][col] = gd_make_vertex(sp68, sp6C, sp70);
             } else if (gridType == OBJ_TYPE_PARTICLES) {
                 objBuf[row][col] = make_particle(0, 0, sp68, sp6C + 2.0f, sp70);
-                ((struct ObjParticle *) objBuf[row][col])->unk44 = (1.0 + sp68) / 2.0;
-                ((struct ObjParticle *) objBuf[row][col])->unk48 = (1.0 + sp70) / 2.0;
+                ((struct ObjParticle *) objBuf[row][col])->unk44 = (1.0 + sp68) / 2.0f;
+                ((struct ObjParticle *) objBuf[row][col])->unk48 = (1.0 + sp70) / 2.0f;
             }
             sp68 += sp44;
         }

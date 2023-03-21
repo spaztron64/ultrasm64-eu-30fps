@@ -74,46 +74,46 @@ struct RenderModeContainer {
 /* Rendermode settings for cycle 1 for all 8 layers. */
 struct RenderModeContainer renderModeTable_1Cycle[2] = { { {
     G_RM_OPA_SURF,
-    G_RM_AA_OPA_SURF,
-    G_RM_AA_OPA_SURF,
-    G_RM_AA_OPA_SURF,
+    G_RM_OPA_SURF,
+    G_RM_OPA_SURF,
+    G_RM_OPA_SURF,
     G_RM_AA_TEX_EDGE,
-    G_RM_AA_XLU_SURF,
-    G_RM_AA_XLU_SURF,
-    G_RM_AA_XLU_SURF,
+    G_RM_XLU_SURF,
+    G_RM_XLU_SURF,
+    G_RM_XLU_SURF,
     } },
     { {
     /* z-buffered */
     G_RM_ZB_OPA_SURF,
-    G_RM_AA_ZB_OPA_SURF,
-    G_RM_AA_ZB_OPA_DECAL,
+    G_RM_ZB_OPA_SURF,
+    G_RM_ZB_OPA_DECAL,
     G_RM_AA_ZB_OPA_INTER,
     G_RM_AA_ZB_TEX_EDGE,
-    G_RM_AA_ZB_XLU_SURF,
-    G_RM_AA_ZB_XLU_DECAL,
+    G_RM_ZB_XLU_SURF,
+    G_RM_ZB_XLU_DECAL,
     G_RM_AA_ZB_XLU_INTER,
     } } };
 
 /* Rendermode settings for cycle 2 for all 8 layers. */
 struct RenderModeContainer renderModeTable_2Cycle[2] = { { {
     G_RM_OPA_SURF2,
-    G_RM_AA_OPA_SURF2,
-    G_RM_AA_OPA_SURF2,
-    G_RM_AA_OPA_SURF2,
+    G_RM_OPA_SURF2,
+    G_RM_OPA_SURF2,
+    G_RM_OPA_SURF2,
     G_RM_AA_TEX_EDGE2,
-    G_RM_AA_XLU_SURF2,
-    G_RM_AA_XLU_SURF2,
-    G_RM_AA_XLU_SURF2,
+    G_RM_XLU_SURF2,
+    G_RM_XLU_SURF2,
+    G_RM_XLU_SURF2,
     } },
     { {
     /* z-buffered */
     G_RM_ZB_OPA_SURF2,
-    G_RM_AA_ZB_OPA_SURF2,
-    G_RM_AA_ZB_OPA_DECAL2,
+    G_RM_ZB_OPA_SURF2,
+    G_RM_ZB_OPA_DECAL2,
     G_RM_AA_ZB_OPA_INTER2,
     G_RM_AA_ZB_TEX_EDGE2,
-    G_RM_AA_ZB_XLU_SURF2,
-    G_RM_AA_ZB_XLU_DECAL2,
+    G_RM_ZB_XLU_SURF2,
+    G_RM_ZB_XLU_DECAL2,
     G_RM_AA_ZB_XLU_INTER2,
     } } };
 
@@ -138,6 +138,7 @@ void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
     s32 enableZBuffer = (node->node.flags & GRAPH_RENDER_Z_BUFFER) != 0;
     struct RenderModeContainer *modeList = &renderModeTable_1Cycle[enableZBuffer];
     struct RenderModeContainer *mode2List = &renderModeTable_2Cycle[enableZBuffer];
+    Gfx *gfx = gDisplayListHead;
 
     // @bug This is where the LookAt values should be calculated but aren't.
     // As a result, environment mapping is broken on Fast3DEX2 without the
@@ -148,25 +149,26 @@ void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
 #endif
 
     if (enableZBuffer != 0) {
-        gDPPipeSync(gDisplayListHead++);
-        gSPSetGeometryMode(gDisplayListHead++, G_ZBUFFER);
+        gDPPipeSync(gfx++);
+        gSPSetGeometryMode(gfx++, G_ZBUFFER);
     }
 
     for (i = 0; i < GFX_NUM_MASTER_LISTS; i++) {
         if ((currList = node->listHeads[i]) != NULL) {
-            gDPSetRenderMode(gDisplayListHead++, modeList->modes[i], mode2List->modes[i]);
+            gDPSetRenderMode(gfx++, modeList->modes[i], mode2List->modes[i]);
             while (currList != NULL) {
-                gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(currList->transform),
+                gSPMatrix(gfx++, VIRTUAL_TO_PHYSICAL(currList->transform),
                           G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
-                gSPDisplayList(gDisplayListHead++, currList->displayList);
+                gSPDisplayList(gfx++, currList->displayList);
                 currList = currList->next;
             }
         }
     }
     if (enableZBuffer != 0) {
-        gDPPipeSync(gDisplayListHead++);
-        gSPClearGeometryMode(gDisplayListHead++, G_ZBUFFER);
+        gDPPipeSync(gfx++);
+        gSPClearGeometryMode(gfx++, G_ZBUFFER);
     }
+    gDisplayListHead = gfx;
 }
 
 /**
@@ -176,9 +178,6 @@ void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
  */
 void geo_append_display_list(void *displayList, s16 layer) {
 
-#ifdef F3DEX_GBI_2
-    gSPLookAt(gDisplayListHead++, &lookAt);
-#endif
     if (gCurGraphNodeMasterList != 0) {
         struct DisplayListNode *listNode =
             alloc_only_pool_alloc(gDisplayListHeap, sizeof(struct DisplayListNode));
@@ -315,6 +314,11 @@ void geo_process_camera(struct GraphNodeCamera *node) {
     if (node->fnNode.func != NULL) {
         node->fnNode.func(GEO_CONTEXT_RENDER, &node->fnNode.node, gMatStack[gMatStackIndex]);
     }
+
+
+#ifdef F3DEX_GBI_2
+    gSPLookAt(gDisplayListHead++, &lookAt);
+#endif
     mtxf_rotate_xy(rollMtx, node->rollScreen);
 
     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(rollMtx), G_MTX_PROJECTION | G_MTX_MUL | G_MTX_NOPUSH);

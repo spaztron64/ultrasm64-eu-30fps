@@ -10,9 +10,9 @@ void bhv_flamethrower_flame_loop(void) {
     }
 
     if (o->oBehParams2ndByte == 2) {
-        scale = o->oTimer * (o->oForwardVel - 6.0f) / 100.0 + 2.0;
+        scale = o->oTimer * (o->oForwardVel - 6.0f) / 100.0 + 2.0f;
     } else {
-        scale = o->oTimer * (o->oForwardVel - 20.0) / 100.0 + 1.0;
+        scale = o->oTimer * (o->oForwardVel - 20.0) / 100.0 + 1.0f;
     }
 
     if (o->oBehParams2ndByte == 3) {
@@ -27,7 +27,7 @@ void bhv_flamethrower_flame_loop(void) {
             o->oPosY = o->oFloorHeight + 25.0f * scale;
         }
 
-        sp18 = o->parentObj->oFlameThowerFlameUnk110 / 1.2;
+        sp18 = o->parentObj->oFlameThowerFlameUnk110 / 1.2f;
     } else {
         sp18 = o->parentObj->oFlameThowerFlameUnk110;
     }

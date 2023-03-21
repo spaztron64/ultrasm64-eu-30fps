@@ -9,7 +9,7 @@ void bhv_warp_loop(void) {
         } else if (sp6 == 0xFF) {
             o->hitboxRadius = 10000.0f;
         } else {
-            o->hitboxRadius = sp6 * 10.0;
+            o->hitboxRadius = sp6 * 10.0f;
         }
         o->hitboxHeight = 50.0f;
     }
@@ -27,7 +27,7 @@ void bhv_fading_warp_loop() {
         } else if (sp6 == 0xFF) {
             o->hitboxRadius = 10000.0f;
         } else {
-            o->hitboxRadius = sp6 * 10.0;
+            o->hitboxRadius = sp6 * 10.0f;
         }
         o->hitboxHeight = 50.0f;
     }

@@ -10,7 +10,7 @@ void bhv_orange_number_loop(void) {
     o->oVelY -= 2.0f;
 
     if (o->oVelY < -21.0f) {
-        o->oVelY = 14.0;
+        o->oVelY = 14.0f;
     }
 
     if (o->oTimer == 35) {

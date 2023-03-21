@@ -112,7 +112,7 @@ void bhv_wing_cap_init(void) {
 
 void cap_scale_vertically(void) {
     o->oCapUnkF8 += 0x2000;
-    o->header.gfx.scale[1] = coss(o->oCapUnkF8) * 0.3 + 0.7;
+    o->header.gfx.scale[1] = coss(o->oCapUnkF8) * 0.3 + 0.7f;
     if (o->oCapUnkF8 == 0x10000) {
         o->oCapUnkF8 = 0;
         o->oCapUnkF4 = 2;

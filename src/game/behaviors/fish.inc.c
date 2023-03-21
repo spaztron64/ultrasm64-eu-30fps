@@ -185,7 +185,7 @@ static void fish_act_flee(void) {
 
     // Accelerate over time.
     if (o->oForwardVel < o->oFishGoalVel) {
-        o->oForwardVel = o->oForwardVel + 0.5;
+        o->oForwardVel = o->oForwardVel + 0.5f;
     }
 
     o->oFishGoalY = gMarioObject->oPosY + o->oFishHeightOffset;

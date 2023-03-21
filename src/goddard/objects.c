@@ -645,7 +645,7 @@ struct ObjView *make_view(const char *name, s32 flags, s32 projectionType, s32 u
     newView->unk48 = 1.0f;
     newView->unk4C = 1.0f;
 
-    newView->colour.r = newView->id * 0.1; //? 0.1f, unless the extra precision was wanted for the tenth
+    newView->colour.r = newView->id * 0.1f; //? 0.1f, unless the extra precision was wanted for the tenth
     newView->colour.g = 0.06f;
     newView->colour.b = 1.0f;
 
@@ -1007,7 +1007,7 @@ void func_8017E584(struct ObjNet *a0, struct GdVec3f *a1, struct GdVec3f *a2) {
         sp2C = 1000.0f;
     }
 
-    sp2C /= 1000.0;    //? 1000.0f
+    sp2C /= 1000.0f;    //? 1000.0f
     sp2C = 1.0 - sp2C; //? 1.0f - sp2C
 
     sp88.x = a2->x * sp2C;
@@ -1674,7 +1674,7 @@ void func_8018100C(struct ObjLight *light) {
 
     if (light->unk40 == 3) {
         if (light->unk30 > 0.0) { //? 0.0f
-            light->unk30 -= 0.2;  //? 0.2f
+            light->unk30 -= 0.2f;  //? 0.2f
         }
 
         if (light->unk30 < 0.0f) {
@@ -1709,8 +1709,8 @@ void func_8018100C(struct ObjLight *light) {
 
     return;
     // more unreachable
-    D_801A81C0 += 1.0; //? 1.0f
-    D_801A81C4 += 0.6; //? 0.6f
+    D_801A81C0 += 1.0f; //? 1.0f
+    D_801A81C4 += 0.6f; //? 0.6f
 
     gd_set_identity_mat4(&mtx);
     gd_absrot_mat4(&mtx, GD_Y_AXIS, light->unk68.y);

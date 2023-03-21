@@ -615,7 +615,7 @@ static void big_boo_act_3(void) {
     } else {
         if (o->oTimer == 0) {
             spawn_mist_particles();
-            o->oBooBaseScale -= 0.5;
+            o->oBooBaseScale -= 0.5f;
         }
 
         if (big_boo_update_during_nonlethal_hit(40.0f)) {

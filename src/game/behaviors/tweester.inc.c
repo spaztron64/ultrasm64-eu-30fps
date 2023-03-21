@@ -24,7 +24,7 @@ struct ObjectHitbox sTweesterHitbox = {
  */
 void tweester_scale_and_move(f32 preScale) {
     s16 dYaw  = 0x2C00;
-    f32 scale = preScale * 0.4;
+    f32 scale = preScale * 0.4f;
 
     o->header.gfx.scale[0]
         = (( coss(o->oTweesterScaleTimer) + 1.0) * 0.5 * 0.3 + 1.0) * scale;

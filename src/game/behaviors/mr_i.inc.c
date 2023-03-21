@@ -123,7 +123,7 @@ void mr_i_act_3(void) {
         o->oMoveAnglePitch = (1.0 - coss(0x4000 * sp2C)) * -0x4000;
 
         cur_obj_shake_y((s32)((1.0f - sp30) * 4)); // trucating the f32?
-        sp20 = coss(0x4000 * sp30) * 0.4 + 0.6;
+        sp20 = coss(0x4000 * sp30) * 0.4 + 0.6f;
         cur_obj_scale(sp20 * sp1C);
     } else if (o->oTimer < 104) {
         // do nothing
@@ -131,7 +131,7 @@ void mr_i_act_3(void) {
         if (o->oTimer == 104) {
             cur_obj_become_intangible();
             spawn_mist_particles();
-            o->oMrIScale = sp1C * 0.6;
+            o->oMrIScale = sp1C * 0.6f;
             if (o->oBehParams2ndByte != 0) {
                 o->oPosY += 100.0f;
                 spawn_default_star(1370, 2000.0f, -320.0f);

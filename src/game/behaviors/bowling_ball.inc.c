@@ -93,7 +93,7 @@ void bhv_bowling_ball_roll_loop(void) {
     o->oBowlingBallTargetYaw = o->oPathedTargetYaw;
     o->oMoveAngleYaw = approach_s16_symmetric(o->oMoveAngleYaw, o->oBowlingBallTargetYaw, 0x400);
     if (o->oForwardVel > 70.0) {
-        o->oForwardVel = 70.0;
+        o->oForwardVel = 70.0f;
     }
 
     bowling_ball_set_hitbox();

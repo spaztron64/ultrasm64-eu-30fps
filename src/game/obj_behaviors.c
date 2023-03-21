@@ -263,10 +263,10 @@ void calc_new_obj_vel_and_pos_y(struct Surface *objFloor, f32 objFloorY, f32 obj
     // Caps vertical speed with a "terminal velocity".
     o->oVelY -= o->oGravity;
     if (o->oVelY > 75.0) {
-        o->oVelY = 75.0;
+        o->oVelY = 75.0f;
     }
     if (o->oVelY < -75.0) {
-        o->oVelY = -75.0;
+        o->oVelY = -75.0f;
     }
 
     o->oPosY += o->oVelY;
@@ -322,10 +322,10 @@ void calc_new_obj_vel_and_pos_y_underwater(struct Surface *objFloor, f32 floorY,
 
     // Caps vertical speed with a "terminal velocity".
     if (o->oVelY > 75.0) {
-        o->oVelY = 75.0;
+        o->oVelY = 75.0f;
     }
     if (o->oVelY < -75.0) {
-        o->oVelY = -75.0;
+        o->oVelY = -75.0f;
     }
 
     o->oPosY += o->oVelY;
@@ -374,8 +374,8 @@ void calc_new_obj_vel_and_pos_y_underwater(struct Surface *objFloor, f32 floorY,
 
     // Decreases both vertical velocity and forward velocity. Likely so that skips above
     // don't loop infinitely.
-    o->oForwardVel = sqrtf(objVelX * objVelX + objVelZ * objVelZ) * 0.8;
-    o->oVelY *= 0.8;
+    o->oForwardVel = sqrtf(objVelX * objVelX + objVelZ * objVelZ) * 0.8f;
+    o->oVelY *= 0.8f;
 }
 
 /**

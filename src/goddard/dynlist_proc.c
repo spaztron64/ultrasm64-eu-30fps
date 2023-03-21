@@ -1679,9 +1679,9 @@ void d_set_rel_pos(f32 x, f32 y, f32 z) {
             ((struct ObjCamera *) dynobj)->zoomPositions[0].y = y;
             ((struct ObjCamera *) dynobj)->zoomPositions[0].z = z;
 
-            ((struct ObjCamera *) dynobj)->zoomPositions[1].x = x * 1.5; //? 1.5f
-            ((struct ObjCamera *) dynobj)->zoomPositions[1].y = y * 1.5; //? 1.5f
-            ((struct ObjCamera *) dynobj)->zoomPositions[1].z = z * 1.5; //? 1.5f
+            ((struct ObjCamera *) dynobj)->zoomPositions[1].x = x * 1.5f; //? 1.5f
+            ((struct ObjCamera *) dynobj)->zoomPositions[1].y = y * 1.5f; //? 1.5f
+            ((struct ObjCamera *) dynobj)->zoomPositions[1].z = z * 1.5f; //? 1.5f
 
             ((struct ObjCamera *) dynobj)->zoomPositions[2].x = x * 2.0f;
             ((struct ObjCamera *) dynobj)->zoomPositions[2].y = y * 2.0f;
@@ -2152,9 +2152,9 @@ void d_get_world_pos(struct GdVec3f *dst) {
             dst->y += ((struct ObjPlane *) sDynListCurObj)->boundingBox.maxY;
             dst->z += ((struct ObjPlane *) sDynListCurObj)->boundingBox.maxZ;
 
-            dst->x *= 0.5; //? 0.5f
-            dst->y *= 0.5; //? 0.5f
-            dst->z *= 0.5; //? 0.5f
+            dst->x *= 0.5f; //? 0.5f
+            dst->y *= 0.5f; //? 0.5f
+            dst->z *= 0.5f; //? 0.5f
             break;
         case OBJ_TYPE_ZONES:
             dst->x = ((struct ObjZone *) sDynListCurObj)->boundingBox.minX;
@@ -2165,9 +2165,9 @@ void d_get_world_pos(struct GdVec3f *dst) {
             dst->y += ((struct ObjZone *) sDynListCurObj)->boundingBox.maxY;
             dst->z += ((struct ObjZone *) sDynListCurObj)->boundingBox.maxZ;
 
-            dst->x *= 0.5; //? 0.5f
-            dst->y *= 0.5; //? 0.5f
-            dst->z *= 0.5; //? 0.5f
+            dst->x *= 0.5f; //? 0.5f
+            dst->y *= 0.5f; //? 0.5f
+            dst->z *= 0.5f; //? 0.5f
             break;
         case OBJ_TYPE_LIGHTS:
             dst->x = ((struct ObjLight *) sDynListCurObj)->position.x;

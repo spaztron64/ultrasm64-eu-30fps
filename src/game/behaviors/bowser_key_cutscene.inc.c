@@ -18,7 +18,7 @@ void bhv_bowser_key_unlock_door_loop(void) {
     } else if (animFrame < 49) {
         o->oBowserKeyScale = 0.2f;
     } else if (animFrame < 58) {
-        o->oBowserKeyScale = (animFrame - 53) * 0.11875f + 0.2; // 0.11875?
+        o->oBowserKeyScale = (animFrame - 53) * 0.11875f + 0.2f; // 0.11875?
     } else if (animFrame < 59) {
         o->oBowserKeyScale = 1.1f;
     } else if (animFrame < 60) {
@@ -40,11 +40,11 @@ void bhv_bowser_key_course_exit_loop(void) {
     if (animFrame < 38) {
         o->oBowserKeyScale = 0.2f;
     } else if (animFrame < 52) {
-        o->oBowserKeyScale = (animFrame - 42) * 0.042857f + 0.2; // TODO 3/70?
+        o->oBowserKeyScale = (animFrame - 42) * 0.042857f + 0.2f; // TODO 3/70?
     } else if (animFrame < 94) {
         o->oBowserKeyScale = 0.8f;
     } else if (animFrame < 101) {
-        o->oBowserKeyScale = (101 - animFrame) * 0.085714f + 0.2; // TODO 6/70?
+        o->oBowserKeyScale = (101 - animFrame) * 0.085714f + 0.2f; // TODO 6/70?
     } else {
         o->oBowserKeyScale = 0.2f;
     }

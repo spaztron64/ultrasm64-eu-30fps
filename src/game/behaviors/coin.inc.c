@@ -184,7 +184,7 @@ void spawn_coin_in_formation(s32 sp50, s32 sp54) {
             break;
         case 1:
             sp38 = 0;
-            sp40[1] = 160 * sp50 * 0.8; // 128 * sp50
+            sp40[1] = 160 * sp50 * 0.8f; // 128 * sp50
             if (sp50 > 4) {
                 sp3C = 0;
             }

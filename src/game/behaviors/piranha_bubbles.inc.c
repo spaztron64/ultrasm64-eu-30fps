@@ -67,13 +67,13 @@ void bhv_piranha_plant_bubble_loop(void) {
                     // Note that the bubble always starts this loop at its largest.
                     if (animFrame < doneShrinkingFrame) {
                         // Shrink from 5.0f to 1.0f.
-                        scale = coss(animFrame / doneShrinkingFrame * 0x4000) * 4.0f + 1.0;
+                        scale = coss(animFrame / doneShrinkingFrame * 0x4000) * 4.0f + 1.0f;
                     } else if (animFrame > beginGrowingFrame) {
                         // Grow from 1.0f to 5.0f.
                         scale = sins((
                                     // they should have used beginGrowingFrame here:
                                     (animFrame - (lastFrame / 2.0f + 4.0f)) / beginGrowingFrame
-                                    ) * 0x4000) * 4.0f + 1.0;
+                                    ) * 0x4000) * 4.0f + 1.0f;
                     } else {
                         // Stay at 1.0f for a few frames.
                         scale = 1.0f;

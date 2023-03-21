@@ -53,7 +53,7 @@ void bhv_bouncing_fireball_loop(void) {
 
         case 1:
             sp2C = spawn_object(o, MODEL_RED_FLAME, bhvBouncingFireballFlame);
-            sp28 = (10 - o->oTimer) * 0.5;
+            sp28 = (10 - o->oTimer) * 0.5f;
 
             obj_scale_xyz(sp2C, sp28, sp28, sp28);
 

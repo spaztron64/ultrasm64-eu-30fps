@@ -799,6 +799,7 @@ void thread9_graphics(UNUSED void *arg) {
         if (gLoadReset) {
             gLoadReset = 0;
             gLerpSpeed = 1.0f;
+            gMoveSpeed = 1;
         }
 
         if (gInstantWarp == FALSE || gInstantWarpReady == FALSE) {

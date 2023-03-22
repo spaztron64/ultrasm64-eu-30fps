@@ -34,19 +34,27 @@ void warp_node(struct Object *node) {
 }
 
 s32 approach_angle_lerp(s32 current, s32 target) {
-    if ((abs_angle_diff(current, target)) >= LERP_THRESHOLD_ANGLE) {
+    s32 diff1;
+    s32 ret;
+    //return target - localLerp((s16) (target - current), 0, gLerpSpeed);
+    if ((diff1 = abs_angle_diff(current, target)) >= 0x2000) {
         return target;
     }
-
-    s32 move = localLerp((s16) (target - current), 0, gMoveSpeed);
     if (gMoveSpeed == 1) {
-        return (target + move);
+        ret = (target + current) >> 1;
     } else {
-        return (target - move);
+        ret = current - (target - current) >> 1;
+    }
+    if ((diff1 < (absi(target - current + 0x10000)))
+               && (diff1 < (absi(target - current - 0x10000)))) {
+        return ret;
+    } else {
+        return ret + 0x8000;
     }
 }
 
 f32 approach_pos_lerp(f32 current, f32 target) {
+    //return localLerp(current, target, gLerpSpeed);
     if (ABS(target - current) >= LERP_THRESHOLD)
         return target;
     if (gMoveSpeed == 1) {

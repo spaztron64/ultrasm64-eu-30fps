@@ -384,7 +384,7 @@ void hud_logic(void) {
 }
 
 void render_game(void) {
-    if (gCurrentArea != NULL && !gWarpTransition.pauseRendering) {
+    if (gCurrentArea != NULL && !gWarpTransition.pauseRendering && (gAreaUpdateCounter > 2 || gCurrLevelNum < 3)) {
         geo_process_root(gCurrentArea->unk04, D_8032CE74, D_8032CE78, gFBSetColor);
 
         gSPViewport(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&D_8032CF00));

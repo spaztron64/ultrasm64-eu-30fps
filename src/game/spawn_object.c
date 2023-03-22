@@ -243,15 +243,8 @@ struct Object *allocate_object(struct ObjectNode *objList) {
     obj->collidedObjInteractTypes = 0;
     obj->numCollidedObjs = 0;
 
-#if IS_64_BIT
-    for (i = 0; i < 0x50; i++) {
-        obj->rawData.asS32[i] = 0;
-        obj->ptrData.asVoidPtr[i] = NULL;
-    }
-#else
     // -O2 needs everything until = on the same line
     for (i = 0; i < 0x50; i++) obj->rawData.asS32[i] = 0;
-#endif
 
     obj->unused1 = 0;
     obj->bhvStackIndex = 0;
@@ -292,6 +285,9 @@ struct Object *allocate_object(struct ObjectNode *objList) {
     obj->header.gfx.throwMatrix = NULL;
     obj->header.gfx.matrixID[0] = MATRIX_NULL;
     obj->header.gfx.matrixID[1] = MATRIX_NULL;
+    obj->header.gfx.bothMats = 0;
+    obj->header.gfx.animInfo.animRotStackNum = 0;
+    obj->header.gfx.animInfo.animPosStackNum = 0;
 
     return obj;
 }

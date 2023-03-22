@@ -754,7 +754,7 @@ void geo_process_animated_part(const struct GraphNodeAnimatedPart *node) {
             vec3f_set(translation, gCurGraphNodeObjectNode->header.gfx.animInfo.animPosStack[gCurrAnimPos][0], gCurGraphNodeObjectNode->header.gfx.animInfo.animPosStack[gCurrAnimPos][1], gCurGraphNodeObjectNode->header.gfx.animInfo.animPosStack[gCurrAnimPos][2]);
         }
         gCurrAnimType = ANIM_TYPE_ROTATION;
-        if ((gMoveSpeed == 0)) {
+        if (gMoveSpeed == 0) {
             gCurGraphNodeObjectNode->header.gfx.animInfo.animRotStack[gCurrAnimPos][0] = gCurrAnimData[retrieve_animation_index(gCurrAnimFrame, &gCurrAnimAttribute)];
             gCurGraphNodeObjectNode->header.gfx.animInfo.animRotStack[gCurrAnimPos][1] = gCurrAnimData[retrieve_animation_index(gCurrAnimFrame, &gCurrAnimAttribute)];
             gCurGraphNodeObjectNode->header.gfx.animInfo.animRotStack[gCurrAnimPos][2] = gCurrAnimData[retrieve_animation_index(gCurrAnimFrame, &gCurrAnimAttribute)];
@@ -767,7 +767,7 @@ void geo_process_animated_part(const struct GraphNodeAnimatedPart *node) {
     mtxf_rot_trans_mul(gCurGraphNodeObjectNode->header.gfx.animInfo.animRotStack[gCurrAnimPos], translation, gMatStack[gMatStackIndex + 1], gMatStack[gMatStackIndex]);
     gCurrAnimPos++;
     incrementMatStack();
-    appendDLandReturn(node);
+    appendDLandReturn((struct GraphNodeDisplayList *) node);
 }
 
 void load_mario_anim_gfx(void) {

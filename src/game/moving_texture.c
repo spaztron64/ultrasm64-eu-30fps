@@ -197,20 +197,20 @@ struct MovtexObject gMovtexNonColored[] = {
     { MOVTEX_PYRAMID_SAND_PATHWAY_FRONT, TEX_PYRAMID_SAND_SSL, 8,
       ssl_movtex_tris_pyramid_sand_pathway_front, ssl_dl_pyramid_sand_pathway_begin,
       ssl_dl_pyramid_sand_pathway_end, ssl_dl_pyramid_sand_pathway_front_end, 0xff, 0xff, 0xff, 0xff,
-      LAYER_TRANSPARENT_INTER },
+      LAYER_TRANSPARENT },
     { MOVTEX_PYRAMID_SAND_PATHWAY_FLOOR, TEX_PYRAMID_SAND_SSL, 8,
       ssl_movtex_tris_pyramid_sand_pathway_floor, ssl_dl_pyramid_sand_pathway_floor_begin,
       ssl_dl_pyramid_sand_pathway_floor_end, ssl_dl_pyramid_sand_pathway_front_end, 0xff, 0xff, 0xff,
-      0xff, LAYER_OPAQUE_INTER },
+      0xff, LAYER_OPAQUE },
     { MOVTEX_PYRAMID_SAND_PATHWAY_SIDE, TEX_PYRAMID_SAND_SSL, 6,
       ssl_movtex_tris_pyramid_sand_pathway_side, ssl_dl_pyramid_sand_pathway_begin,
       ssl_dl_pyramid_sand_pathway_end, ssl_dl_pyramid_sand_pathway_side_end, 0xff, 0xff, 0xff, 0xff,
-      LAYER_TRANSPARENT_INTER },
+      LAYER_TRANSPARENT },
 
     // The waterfall outside the castle
     { MOVTEX_CASTLE_WATERFALL, TEXTURE_WATER, 15, castle_grounds_movtex_tris_waterfall,
       dl_waterbox_rgba16_begin, dl_waterbox_end, castle_grounds_dl_waterfall, 0xff, 0xff, 0xff, 0xb4,
-      LAYER_TRANSPARENT_INTER },
+      LAYER_TRANSPARENT },
 
     // Bowser in the Fire Sea has lava at 3 heights, lava_floor is the lowest
     // and lava_second_section is the highest
@@ -235,13 +235,13 @@ struct MovtexObject gMovtexNonColored[] = {
       dl_waterbox_end, lll_dl_lava_floor, 0xff, 0xff, 0xff, 0xc8, LAYER_TRANSPARENT },
     { MOVTEX_VOLCANO_LAVA_FALL, TEXTURE_LAVA, 16, lll_movtex_tris_lavafall_volcano,
       dl_waterbox_rgba16_begin, dl_waterbox_end, lll_dl_lavafall_volcano, 0xff, 0xff, 0xff, 0xb4,
-      LAYER_TRANSPARENT_INTER },
+      LAYER_TRANSPARENT },
 
     // Cavern of the metal Cap has a waterfall source above the switch platform,
     // the stream, around the switch, and the waterfall that's the same as the one
     // outside the castle. They are all part of the same mesh.
     { MOVTEX_COTMC_WATER, TEXTURE_WATER, 14, cotmc_movtex_tris_water, cotmc_dl_water_begin,
-      cotmc_dl_water_end, cotmc_dl_water, 0xff, 0xff, 0xff, 0xb4, LAYER_TRANSPARENT_INTER },
+      cotmc_dl_water_end, cotmc_dl_water, 0xff, 0xff, 0xff, 0xb4, LAYER_TRANSPARENT },
 
     // Tall Tall mountain has water going from the top to the bottom of the mountain.
     { MOVTEX_TTM_BEGIN_WATERFALL, TEXTURE_WATER, 6, ttm_movtex_tris_begin_waterfall,
@@ -252,13 +252,13 @@ struct MovtexObject gMovtexNonColored[] = {
       LAYER_TRANSPARENT },
     { MOVTEX_TTM_BEGIN_PUDDLE_WATERFALL, TEXTURE_WATER, 4, ttm_movtex_tris_begin_puddle_waterfall,
       dl_waterbox_rgba16_begin, dl_waterbox_end, ttm_dl_bottom_waterfall, 0xff, 0xff, 0xff, 0xb4,
-      LAYER_TRANSPARENT_INTER },
+      LAYER_TRANSPARENT },
     { MOVTEX_TTM_END_PUDDLE_WATERFALL, TEXTURE_WATER, 4, ttm_movtex_tris_end_puddle_waterfall,
       dl_waterbox_rgba16_begin, dl_waterbox_end, ttm_dl_bottom_waterfall, 0xff, 0xff, 0xff, 0xb4,
-      LAYER_TRANSPARENT_INTER },
+      LAYER_TRANSPARENT },
     { MOVTEX_TTM_PUDDLE_WATERFALL, TEXTURE_WATER, 8, ttm_movtex_tris_puddle_waterfall,
       dl_waterbox_rgba16_begin, dl_waterbox_end, ttm_dl_puddle_waterfall, 0xff, 0xff, 0xff, 0xb4,
-      LAYER_TRANSPARENT_INTER },
+      LAYER_TRANSPARENT },
     { 0x00000000, 0x00000000, 0, NULL, NULL, NULL, NULL, 0x00, 0x00, 0x00, 0x00, 0x00000000 },
 };
 
@@ -662,7 +662,7 @@ Gfx *geo_movtex_draw_water_regions(s32 callContext, struct GraphNode *node, UNUS
         }
 
         asGenerated->fnNode.node.flags =
-            (asGenerated->fnNode.node.flags & 0xFF) | (LAYER_TRANSPARENT_INTER << 8);
+            (asGenerated->fnNode.node.flags & 0xFF) | (LAYER_TRANSPARENT << 8);
 
         movtex_change_texture_format(asGenerated->parameter, &gfx);
         gMovetexLastTextureId = -1;

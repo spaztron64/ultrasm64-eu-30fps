@@ -113,7 +113,9 @@ struct GraphNodePerspective {
 struct DisplayListNode {
     Mtx *transform;
     void *displayList;
+    void *material;
     struct DisplayListNode *next;
+    u8 aaSetting;
 };
 
 /** GraphNode that manages the 8 top-level display lists that will be drawn

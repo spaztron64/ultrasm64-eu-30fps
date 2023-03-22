@@ -13,6 +13,7 @@
 #include "lerp.h"
 #include "level_update.h"
 #include "memory.h"
+#include "string.h"
 
 /**
  * This file contains the code that processes the scene graph for rendering.
@@ -70,6 +71,7 @@ s16 gCurrAnimFrame;
 f32 gCurrAnimTranslationMultiplier;
 u16 *gCurrAnimAttribute;
 s16 *gCurrAnimData;
+Mat4 gCameraTransform;
 
 struct AllocOnlyPool *gDisplayListHeap;
 
@@ -82,9 +84,7 @@ struct RenderModeContainer renderModeTable_1Cycle[2] = { { {
     G_RM_OPA_SURF,
     G_RM_OPA_SURF,
     G_RM_OPA_SURF,
-    G_RM_OPA_SURF,
     G_RM_AA_TEX_EDGE,
-    G_RM_XLU_SURF,
     G_RM_XLU_SURF,
     G_RM_XLU_SURF,
     } },
@@ -93,11 +93,9 @@ struct RenderModeContainer renderModeTable_1Cycle[2] = { { {
     G_RM_ZB_OPA_SURF,
     G_RM_ZB_OPA_SURF,
     G_RM_ZB_OPA_DECAL,
-    G_RM_AA_ZB_OPA_INTER,
     G_RM_AA_ZB_TEX_EDGE,
     G_RM_ZB_XLU_SURF,
     G_RM_ZB_XLU_DECAL,
-    G_RM_AA_ZB_XLU_INTER,
     } } };
 
 /* Rendermode settings for cycle 2 for all 8 layers. */
@@ -105,9 +103,7 @@ struct RenderModeContainer renderModeTable_2Cycle[2] = { { {
     G_RM_OPA_SURF2,
     G_RM_OPA_SURF2,
     G_RM_OPA_SURF2,
-    G_RM_OPA_SURF2,
     G_RM_AA_TEX_EDGE2,
-    G_RM_XLU_SURF2,
     G_RM_XLU_SURF2,
     G_RM_XLU_SURF2,
     } },
@@ -116,11 +112,9 @@ struct RenderModeContainer renderModeTable_2Cycle[2] = { { {
     G_RM_ZB_OPA_SURF2,
     G_RM_ZB_OPA_SURF2,
     G_RM_ZB_OPA_DECAL2,
-    G_RM_AA_ZB_OPA_INTER2,
     G_RM_AA_ZB_TEX_EDGE2,
     G_RM_ZB_XLU_SURF2,
     G_RM_ZB_XLU_DECAL2,
-    G_RM_AA_ZB_XLU_INTER2,
     } } };
 
 struct GraphNodeRoot *gCurGraphNodeRoot = NULL;
@@ -130,10 +124,7 @@ struct GraphNodeCamera *gCurGraphNodeCamera = NULL;
 struct GraphNodeObject *gCurGraphNodeObject = NULL;
 struct GraphNodeHeldObject *gCurGraphNodeHeldObject = NULL;
 u16 gAreaUpdateCounter = 0;
-
-#ifdef F3DEX_GBI_2
 LookAt lookAt;
-#endif
 
 /**
  * Process a master list node.
@@ -177,6 +168,24 @@ void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
     gDisplayListHead = gfx;
 }
 
+#define ALIGN8(val) (((val) + 0x7) & ~0x7)
+
+static void *alloc_only_pool_allocGRAPH(struct AllocOnlyPool *pool, s32 size) { // refreshes once per frame
+    void *addr;
+
+    //   if (size > 0 && pool->usedSpace + size <= pool->totalSpace) {
+    addr = pool->freePtr;
+    pool->freePtr += size;
+    pool->usedSpace += size;
+    //   }
+    return addr;
+}
+
+static void *alloc_display_listGRAPH(u32 size) {
+    gGfxPoolEnd -= size;
+    return gGfxPoolEnd;
+}
+
 /**
  * Appends the display list to one of the master lists based on the layer
  * parameter. Look at the RenderModeContainer struct to see the corresponding
@@ -186,7 +195,7 @@ void geo_append_display_list(void *displayList, s16 layer) {
 
     if (gCurGraphNodeMasterList != 0) {
         struct DisplayListNode *listNode =
-            alloc_only_pool_alloc(gDisplayListHeap, sizeof(struct DisplayListNode));
+            alloc_only_pool_allocGRAPH(gDisplayListHeap, sizeof(struct DisplayListNode));
 
         listNode->transform = gMatStackFixed[gMatStackIndex];
         listNode->displayList = displayList;
@@ -198,6 +207,25 @@ void geo_append_display_list(void *displayList, s16 layer) {
         }
         gCurGraphNodeMasterList->listTails[layer] = listNode;
     }
+}
+
+void incrementMatStack() {
+    Mtx *mtx = alloc_display_listGRAPH(sizeof(*mtx));
+    gMatStackIndex++;
+    mtxf_to_mtx(mtx, gMatStack[gMatStackIndex]);
+    gMatStackFixed[gMatStackIndex] = mtx;
+}
+void appendDLandReturn(const struct GraphNodeDisplayList *node) {
+    if (node->displayList != NULL) {
+        geo_append_display_list(node->displayList, node->node.flags >> 8);
+    }
+    if (((struct GraphNodeRoot *) node)->node.children != NULL) {
+        geo_process_node_and_siblings(((struct GraphNodeRoot *) node)->node.children);
+    }
+    /*if (node->node.children != NULL) {
+        geo_process_node_and_siblings(node->node.children);
+    }*/
+    gMatStackIndex--;
 }
 
 /**
@@ -223,7 +251,7 @@ void geo_process_master_list(struct GraphNodeMasterList *node) {
  */
 void geo_process_ortho_projection(struct GraphNodeOrthoProjection *node) {
     if (node->node.children != NULL) {
-        Mtx *mtx = alloc_display_list(sizeof(*mtx));
+        Mtx *mtx = alloc_display_listGRAPH(sizeof(*mtx));
         f32 left = (gCurGraphNodeRoot->x - gCurGraphNodeRoot->width) / 2.0f * node->scale;
         f32 right = (gCurGraphNodeRoot->x + gCurGraphNodeRoot->width) / 2.0f * node->scale;
         f32 top = (gCurGraphNodeRoot->y - gCurGraphNodeRoot->height) / 2.0f * node->scale;
@@ -246,7 +274,7 @@ void geo_process_perspective(struct GraphNodePerspective *node) {
     }
     if (node->fnNode.node.children != NULL) {
         u16 perspNorm;
-        Mtx *mtx = alloc_display_list(sizeof(*mtx));
+        Mtx *mtx = alloc_display_listGRAPH(sizeof(*mtx));
 
 #ifdef VERSION_EU
         f32 aspect = ((f32) gCurGraphNodeRoot->width / (f32) gCurGraphNodeRoot->height) * 1.1f;
@@ -310,11 +338,12 @@ void geo_process_switch(struct GraphNodeSwitchCase *node) {
 }
 
 void interpolate_node(struct Object *node) {
-    for (u32  i = 0; i < 3; i++) {
-        if (gMoveSpeed == 1)
+    for (u32 i = 0; i < 3; i++) {
+        if (gMoveSpeed == 1) {
             node->header.gfx.posLerp[i] = approach_pos_lerp(node->header.gfx.posLerp[i], node->header.gfx.pos[i]);
-        else
+        } else {
             node->header.gfx.posLerp[i] = node->header.gfx.pos[i] + ((f32 *) &node->oVelX)[i];
+        }
         node->header.gfx.scaleLerp[i] = approach_pos_lerp(node->header.gfx.scaleLerp[i], node->header.gfx.scale[i]);
         node->header.gfx.angleLerp[i] = approach_angle_lerp(node->header.gfx.angleLerp[i], node->header.gfx.angle[i]);
     }
@@ -327,8 +356,8 @@ u8 sSkipObject = 0;
  */
 void geo_process_camera(struct GraphNodeCamera *node) {
     Mat4 cameraTransform;
-    Mtx *rollMtx = alloc_display_list(sizeof(*rollMtx));
-    Mtx *mtx = alloc_display_list(sizeof(*mtx));
+    Mtx *rollMtx = alloc_display_listGRAPH(sizeof(*rollMtx));
+    Mtx *mtx = alloc_display_listGRAPH(sizeof(*mtx));
 
     if (node->fnNode.func != NULL) {
         node->fnNode.func(GEO_CONTEXT_RENDER, &node->fnNode.node, gMatStack[gMatStackIndex]);
@@ -361,6 +390,9 @@ void geo_process_camera(struct GraphNodeCamera *node) {
     if (gMarioState->marioObj) {
         sSkipObject = TRUE;
         geo_process_object(gMarioState->marioObj);
+        if (gMarioState->riddenObj) {
+            geo_process_object(gMarioState->riddenObj);
+        }
         if (gMarioState->marioObj->platform) {
             geo_process_object(gMarioState->marioObj->platform);
         }
@@ -390,7 +422,7 @@ void geo_process_camera(struct GraphNodeCamera *node) {
 void geo_process_translation_rotation(struct GraphNodeTranslationRotation *node) {
     Mat4 mtxf;
     Vec3f translation;
-    Mtx *mtx = alloc_display_list(sizeof(*mtx));
+    Mtx *mtx = alloc_display_listGRAPH(sizeof(*mtx));
 
     vec3s_to_vec3f(translation, node->translation);
     mtxf_rotate_zxy_and_translate(mtxf, translation, node->rotation);
@@ -415,7 +447,7 @@ void geo_process_translation_rotation(struct GraphNodeTranslationRotation *node)
 void geo_process_translation(struct GraphNodeTranslation *node) {
     Mat4 mtxf;
     Vec3f translation;
-    Mtx *mtx = alloc_display_list(sizeof(*mtx));
+    Mtx *mtx = alloc_display_listGRAPH(sizeof(*mtx));
 
     vec3s_to_vec3f(translation, node->translation);
     mtxf_rotate_zxy_and_translate(mtxf, translation, gVec3sZero);
@@ -439,7 +471,7 @@ void geo_process_translation(struct GraphNodeTranslation *node) {
  */
 void geo_process_rotation(struct GraphNodeRotation *node) {
     Mat4 mtxf;
-    Mtx *mtx = alloc_display_list(sizeof(*mtx));
+    Mtx *mtx = alloc_display_listGRAPH(sizeof(*mtx));
 
     mtxf_rotate_zxy_and_translate(mtxf, gVec3fZero, node->rotation);
     mtxf_mul(gMatStack[gMatStackIndex + 1], mtxf, gMatStack[gMatStackIndex]);
@@ -463,7 +495,7 @@ void geo_process_rotation(struct GraphNodeRotation *node) {
 void geo_process_scale(struct GraphNodeScale *node) {
     UNUSED Mat4 transform;
     Vec3f scaleVec;
-    Mtx *mtx = alloc_display_list(sizeof(*mtx));
+    Mtx *mtx = alloc_display_listGRAPH(sizeof(*mtx));
 
     vec3f_set(scaleVec, node->scale, node->scale, node->scale);
     mtxf_scale_vec3f(gMatStack[gMatStackIndex + 1], gMatStack[gMatStackIndex], scaleVec);
@@ -560,9 +592,9 @@ void geo_process_background(struct GraphNodeBackground *node) {
         geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(list), node->fnNode.node.flags >> 8);
     } else if (gCurGraphNodeMasterList != NULL) {
 #ifndef F3DEX_GBI_2E
-        Gfx *gfxStart = alloc_display_list(sizeof(Gfx) * 7);
+        Gfx *gfxStart = alloc_display_listGRAPH(sizeof(Gfx) * 7);
 #else
-        Gfx *gfxStart = alloc_display_list(sizeof(Gfx) * 8);
+        Gfx *gfxStart = alloc_display_listGRAPH(sizeof(Gfx) * 8);
 #endif
         Gfx *gfx = gfxStart;
 
@@ -590,7 +622,7 @@ void geo_process_animated_part(struct GraphNodeAnimatedPart *node) {
     Mat4 matrix;
     Vec3s rotation;
     Vec3f translation;
-    Mtx *matrixPtr = alloc_display_list(sizeof(*matrixPtr));
+    Mtx *matrixPtr = alloc_display_listGRAPH(sizeof(*matrixPtr));
 
     vec3s_copy(rotation, gVec3sZero);
     vec3f_set(translation, node->translation[0], node->translation[1], node->translation[2]);
@@ -733,18 +765,18 @@ void geo_process_shadow(struct GraphNodeShadow *node) {
         shadowList = create_shadow_below_xyz(shadowPos[0], shadowPos[1], shadowPos[2], shadowScale,
                                              node->shadowSolidity, node->shadowType);
         if (shadowList != NULL) {
-            mtx = alloc_display_list(sizeof(*mtx));
+            mtx = alloc_display_listGRAPH(sizeof(*mtx));
             gMatStackIndex++;
             mtxf_translate(mtxf, shadowPos);
             mtxf_mul(gMatStack[gMatStackIndex], mtxf, *gCurGraphNodeCamera->matrixPtr);
             mtxf_to_mtx(mtx, gMatStack[gMatStackIndex]);
             gMatStackFixed[gMatStackIndex] = mtx;
             if (gShadowAboveWaterOrLava == TRUE) {
-                geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(shadowList), 4);
+                geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(shadowList), LAYER_ALPHA);
             } else if (gMarioOnIceOrCarpet == 1) {
-                geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(shadowList), 5);
+                geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(shadowList), LAYER_TRANSPARENT);
             } else {
-                geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(shadowList), 6);
+                geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(shadowList), LAYER_TRANSPARENT_DECAL);
             }
             gMatStackIndex--;
         }
@@ -889,7 +921,7 @@ void geo_process_object(struct Object *node) {
             geo_set_animation_globals(&node->header.gfx.animInfo);
         }
         if (obj_is_in_view(&node->header.gfx, gMatStack[gMatStackIndex])) {
-            Mtx *mtx = alloc_display_list(sizeof(*mtx));
+            Mtx *mtx = alloc_display_listGRAPH(sizeof(*mtx));
 
             mtxf_to_mtx(mtx, gMatStack[gMatStackIndex]);
             gMatStackFixed[gMatStackIndex] = mtx;
@@ -933,7 +965,7 @@ void geo_process_object_parent(struct GraphNodeObjectParent *node) {
 void geo_process_held_object(struct GraphNodeHeldObject *node) {
     Mat4 mat;
     Vec3f translation;
-    Mtx *mtx = alloc_display_list(sizeof(*mtx));
+    Mtx *mtx = alloc_display_listGRAPH(sizeof(*mtx));
 
 #ifdef F3DEX_GBI_2
     gSPLookAt(gDisplayListHead++, &lookAt);
@@ -1103,11 +1135,11 @@ void geo_process_root(struct GraphNodeRoot *node, Vp *b, Vp *c, s32 clearColor) 
 
     if (node->node.flags & GRAPH_RENDER_ACTIVE) {
         Mtx *initialMatrix;
-        Vp *viewport = alloc_display_list(sizeof(*viewport));
+        Vp *viewport = alloc_display_listGRAPH(sizeof(*viewport));
 
         gDisplayListHeap = alloc_only_pool_init(main_pool_available() - sizeof(struct AllocOnlyPool),
                                                 MEMORY_POOL_LEFT);
-        initialMatrix = alloc_display_list(sizeof(*initialMatrix));
+        initialMatrix = alloc_display_listGRAPH(sizeof(*initialMatrix));
         gMatStackIndex = 0;
         gCurrAnimType = 0;
         vec3s_set(viewport->vp.vtrans, node->x * 4, node->y * 4, 511);

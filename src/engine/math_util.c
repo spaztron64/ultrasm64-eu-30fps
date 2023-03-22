@@ -534,20 +534,6 @@ void mtxf_mul(Mat4 dest, Mat4 a, Mat4 b) {
 }
 
 /**
- * Set matrix 'dest' to 'mtx' scaled by vector s
- */
-void mtxf_scale_vec3f(Mat4 dest, Mat4 mtx, Vec3f s) {
-    register s32 i;
-
-    for (i = 0; i < 4; i++) {
-        dest[0][i] = mtx[0][i] * s[0];
-        dest[1][i] = mtx[1][i] * s[1];
-        dest[2][i] = mtx[2][i] * s[2];
-        dest[3][i] = mtx[3][i];
-    }
-}
-
-/**
  * Multiply a vector with a transformation matrix, which applies the transformation
  * to the point. Note that the bottom row is assumed to be [0, 0, 0, 1], which is
  * true for transformation matrices if the translation has a w component of 1.

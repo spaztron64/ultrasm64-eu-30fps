@@ -61,6 +61,7 @@ extern struct DemoInput gRecordedDemoInput;
 extern f32 gLerpSpeed;
 extern u32 gMoveSpeed;
 extern u8 gLoadReset;
+extern u8 gInstantWarp;
 
 // this area is the demo input + the header. when the demo is loaded in, there is a header the size
 // of a single word next to the input list. this word is the current ID count.

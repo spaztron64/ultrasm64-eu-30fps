@@ -115,7 +115,7 @@ void alloc_pool(void) {
 
     main_pool_init(start, end);
     gEffectsMemoryPool = mem_pool_init(0x4000, MEMORY_POOL_LEFT);
-    gAnimationsMemoryPool = mem_pool_init(0x4000, MEMORY_POOL_LEFT);
+    gAnimationsMemoryPool = mem_pool_init(0x8000, MEMORY_POOL_LEFT);
 }
 
 void create_thread(OSThread *thread, OSId id, void (*entry)(void *), void *arg, void *sp, OSPri pri) {

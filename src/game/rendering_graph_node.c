@@ -14,6 +14,7 @@
 #include "level_update.h"
 #include "memory.h"
 #include "string.h"
+#include "game_init.h"
 
 /**
  * This file contains the code that processes the scene graph for rendering.
@@ -74,6 +75,7 @@ s16 *gCurrAnimData;
 Mat4 gCameraTransform;
 f32 gHalfFovVert;
 f32 gHalfFovHor;
+u32 gCurrAnimPos;
 
 struct AllocOnlyPool *gDisplayListHeap;
 
@@ -462,28 +464,31 @@ void geo_process_rotation(struct GraphNodeRotation *node) {
     appendDLandReturn((struct GraphNodeDisplayList *) node);
 }
 
+void mtxf_scale_vec3f(Mat4 dest, Mat4 mtx, Vec3f s) {
+    f32 *temp = (f32 *) dest;
+    f32 *temp2 = (f32 *) mtx;
+    while (temp < ((f32 *) dest) + 4) {
+        for (s32 i = 0; i < 3; i++) {
+            temp[i * 4] = temp2[i * 4] * s[i];
+        }
+        temp[12] = temp2[12];
+        temp++;
+        temp2++;
+    }
+}
+
 /**
  * Process a scaling node. A transformation matrix based on the node's
  * scale is created and pushed on both the float and fixed point matrix stacks.
  * For the rest it acts as a normal display list node.
  */
-void geo_process_scale(struct GraphNodeScale *node) {
-    UNUSED Mat4 transform;
+void geo_process_scale(const struct GraphNodeScale *node) {
     Vec3f scaleVec;
-    Mtx *mtx = alloc_display_listGRAPH(sizeof(*mtx));
 
     vec3f_set(scaleVec, node->scale, node->scale, node->scale);
     mtxf_scale_vec3f(gMatStack[gMatStackIndex + 1], gMatStack[gMatStackIndex], scaleVec);
-    gMatStackIndex++;
-    mtxf_to_mtx(mtx, gMatStack[gMatStackIndex]);
-    gMatStackFixed[gMatStackIndex] = mtx;
-    if (node->displayList != NULL) {
-        geo_append_display_list(node->displayList, node->node.flags >> 8);
-    }
-    if (node->node.children != NULL) {
-        geo_process_node_and_siblings(node->node.children);
-    }
-    gMatStackIndex--;
+    incrementMatStack();
+    appendDLandReturn((struct GraphNodeDisplayList *) node);
 }
 
 /**
@@ -492,31 +497,17 @@ void geo_process_scale(struct GraphNodeScale *node) {
  * point matrix stacks.
  * For the rest it acts as a normal display list node.
  */
-void geo_process_billboard(struct GraphNodeBillboard *node) {
+void geo_process_billboard(const struct GraphNodeBillboard *node) {
     Vec3f translation;
-    Mtx *mtx = alloc_display_list(sizeof(*mtx));
 
-    gMatStackIndex++;
-    vec3s_to_vec3f(translation, node->translation);
-    mtxf_billboard(gMatStack[gMatStackIndex], gMatStack[gMatStackIndex - 1], translation,
-                   gCurGraphNodeCamera->roll);
-    if (gCurGraphNodeHeldObject != NULL) {
-        mtxf_scale_vec3f(gMatStack[gMatStackIndex], gMatStack[gMatStackIndex],
-                         gCurGraphNodeHeldObject->objNode->header.gfx.scale);
-    } else if (gCurGraphNodeObject != NULL) {
-        mtxf_scale_vec3f(gMatStack[gMatStackIndex], gMatStack[gMatStackIndex],
-                         gCurGraphNodeObject->scale);
-    }
+    translation[0] = node->translation[0];
+    translation[1] = node->translation[1];
+    translation[2] = node->translation[2];
+    mtxf_billboard(gMatStack[gMatStackIndex + 1], gMatStack[gMatStackIndex], translation, gCurGraphNodeCamera->roll);
+    mtxf_scale_vec3f(gMatStack[gMatStackIndex + 1], gMatStack[gMatStackIndex + 1], gCurGraphNodeObject->scale);
 
-    mtxf_to_mtx(mtx, gMatStack[gMatStackIndex]);
-    gMatStackFixed[gMatStackIndex] = mtx;
-    if (node->displayList != NULL) {
-        geo_append_display_list(node->displayList, node->node.flags >> 8);
-    }
-    if (node->node.children != NULL) {
-        geo_process_node_and_siblings(node->node.children);
-    }
-    gMatStackIndex--;
+    incrementMatStack();
+    appendDLandReturn((struct GraphNodeDisplayList *) node);
 }
 
 /**
@@ -524,13 +515,10 @@ void geo_process_billboard(struct GraphNodeBillboard *node) {
  * a transformation on the stack, so all transformations are inherited from the
  * parent node. It processes its children if it has them.
  */
-void geo_process_display_list(struct GraphNodeDisplayList *node) {
-    if (node->displayList != NULL) {
-        geo_append_display_list(node->displayList, node->node.flags >> 8);
-    }
-    if (node->node.children != NULL) {
-        geo_process_node_and_siblings(node->node.children);
-    }
+void geo_process_display_list(const struct GraphNodeDisplayList *node) {
+
+    appendDLandReturn((struct GraphNodeDisplayList *) node);
+    gMatStackIndex++;
 }
 
 /**
@@ -539,8 +527,7 @@ void geo_process_display_list(struct GraphNodeDisplayList *node) {
  */
 void geo_process_generated_list(struct GraphNodeGenerated *node) {
     if (node->fnNode.func != NULL) {
-        Gfx *list = node->fnNode.func(GEO_CONTEXT_RENDER, &node->fnNode.node,
-                                     (struct AllocOnlyPool *) gMatStack[gMatStackIndex]);
+        Gfx *list = node->fnNode.func(GEO_CONTEXT_RENDER, &node->fnNode.node, (struct AllocOnlyPool *) gMatStack[gMatStackIndex]);
 
         if (list != NULL) {
             geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(list), node->fnNode.node.flags >> 8);
@@ -560,24 +547,18 @@ void geo_process_background(struct GraphNodeBackground *node) {
     Gfx *list = NULL;
 
     if (node->fnNode.func != NULL) {
-        list = node->fnNode.func(GEO_CONTEXT_RENDER, &node->fnNode.node,
-                                 (struct AllocOnlyPool *) gMatStack[gMatStackIndex]);
+        list = node->fnNode.func(GEO_CONTEXT_RENDER, &node->fnNode.node, (struct AllocOnlyPool *) gMatStack[gMatStackIndex]);
     }
     if (list != NULL) {
         geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(list), node->fnNode.node.flags >> 8);
     } else if (gCurGraphNodeMasterList != NULL) {
-#ifndef F3DEX_GBI_2E
-        Gfx *gfxStart = alloc_display_listGRAPH(sizeof(Gfx) * 7);
-#else
         Gfx *gfxStart = alloc_display_listGRAPH(sizeof(Gfx) * 8);
-#endif
         Gfx *gfx = gfxStart;
 
         gDPPipeSync(gfx++);
         gDPSetCycleType(gfx++, G_CYC_FILL);
         gDPSetFillColor(gfx++, node->background);
-        gDPFillRectangle(gfx++, GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(0), gBorderHeight,
-        GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(0) - 1, SCREEN_HEIGHT - gBorderHeight - 1);
+        gDPFillRectangle(gfx++, 0, 0, SCREEN_WIDTH - 1, SCREEN_HEIGHT - 1);
         gDPPipeSync(gfx++);
         gDPSetCycleType(gfx++, G_CYC_1CYCLE);
         gSPEndDisplayList(gfx++);
@@ -675,6 +656,7 @@ void geo_set_animation_globals(struct AnimInfo *node) {
     gCurrAnimEnabled = (anim->flags & ANIM_FLAG_5) == 0;
     gCurrAnimAttribute = segmented_to_virtual((void *) anim->index);
     gCurrAnimData = segmented_to_virtual((void *) anim->values);
+    gCurrAnimPos = 0;
 
     if (anim->animYTransDivisor == 0) {
         gCurrAnimTranslationMultiplier = 1.0f;

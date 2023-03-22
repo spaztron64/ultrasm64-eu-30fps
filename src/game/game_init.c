@@ -699,7 +699,6 @@ void setup_game_memory(void) {
     gMarioAnimsMemAlloc = main_pool_alloc(0x4000, MEMORY_POOL_LEFT);
     set_segment_base_addr(17, (void *) gMarioAnimsMemAlloc);
     setup_dma_table_list(&gMarioAnimsBuf, gMarioAnims, gMarioAnimsMemAlloc);
-    set_segment_base_addr(29, (void *) gMarioAnimsMemAlloc);
     setup_dma_table_list(&gMarioGfxAnimBuf, gMarioAnims, &gMarioAnimHeap);
     // Setup Demo Inputs List
     gDemoInputsMemAlloc = main_pool_alloc(0x800, MEMORY_POOL_LEFT);

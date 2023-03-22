@@ -323,7 +323,7 @@ const Gfx bullet_bill_seg5_dl_0500E730[] = {
 // 0x0500E8A8 - 0x0500E918
 const Gfx bullet_bill_seg5_dl_0500E8A8[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_BLENDRGBA, G_CC_BLENDRGBA),
+    gsDPSetCombineMode(G_CC_BLENDRGBA, G_CC_PASS2),
     gsSPNumLights(NUMLIGHTS_1),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
     gsDPTileSync(),
@@ -333,7 +333,7 @@ const Gfx bullet_bill_seg5_dl_0500E8A8[] = {
     gsSPDisplayList(bullet_bill_seg5_dl_0500E678),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPDisplayList(bullet_bill_seg5_dl_0500E730),
     gsSPEndDisplayList(),
 };

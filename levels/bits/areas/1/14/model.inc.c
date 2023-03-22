@@ -421,7 +421,7 @@ static const Gfx bits_seg7_dl_0700CDA0[] = {
 // 0x0700CDC0 - 0x0700CE50
 const Gfx bits_seg7_dl_0700CDC0[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_MODULATERGB),
+    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_PASS2),
     gsSPClearGeometryMode(G_LIGHTING),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -434,7 +434,7 @@ const Gfx bits_seg7_dl_0700CDC0[] = {
     gsSPDisplayList(bits_seg7_dl_0700CAF0),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPDisplayList(bits_seg7_dl_0700CDA0),
     gsSPSetGeometryMode(G_LIGHTING),
     gsSPEndDisplayList(),

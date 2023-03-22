@@ -131,7 +131,7 @@ static const Gfx rr_seg7_dl_0700E6C8[] = {
 const Gfx rr_seg7_dl_0700E830[] = {
     gsDPPipeSync(),
     gsDPSetEnvColor(255, 255, 255, 200),
-    gsDPSetCombineMode(G_CC_MODULATERGBFADEA, G_CC_MODULATERGBFADEA),
+    gsDPSetCombineMode(G_CC_MODULATERGBFADEA, G_CC_PASS2),
     gsSPClearGeometryMode(G_LIGHTING | G_CULL_BACK),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -141,7 +141,7 @@ const Gfx rr_seg7_dl_0700E830[] = {
     gsSPDisplayList(rr_seg7_dl_0700E6C8),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_LIGHTING | G_CULL_BACK),
     gsDPSetEnvColor(255, 255, 255, 255),
     gsSPEndDisplayList(),

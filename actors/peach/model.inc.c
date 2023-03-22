@@ -488,7 +488,7 @@ const Gfx peach_seg5_dl_050058E0[] = {
 // 0x05005C48 - 0x05005CB0
 const Gfx peach_seg5_dl_05005C48[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_MODULATERGBFADE),
+    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_PASS2),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
     gsDPTileSync(),
@@ -506,7 +506,7 @@ const Gfx peach_seg5_dl_05005C48[] = {
 const Gfx peach_seg5_dl_05005CB0[] = {
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_SHADEFADEA),
+    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_PASS2),
     gsSPDisplayList(peach_seg5_dl_050058E0),
     gsDPPipeSync(),
     gsSPEndDisplayList(),
@@ -667,7 +667,7 @@ const Gfx peach_seg5_dl_05006058[] = {
 // 0x050060E0 - 0x05006138
 const Gfx peach_seg5_dl_050060E0[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_MODULATERGBFADE),
+    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_PASS2),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
     gsDPTileSync(),
@@ -879,7 +879,7 @@ const Gfx peach_seg5_dl_05006798[] = {
 // 0x05006A18 - 0x05006A90
 const Gfx peach_seg5_dl_05006A18[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_MODULATERGBFADE),
+    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_PASS2),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
     gsDPTileSync(),
@@ -1051,7 +1051,7 @@ const Gfx peach_seg5_dl_05006FA8[] = {
 // 0x05007230 - 0x05007288
 const Gfx peach_seg5_dl_05007230[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_MODULATERGBFADE),
+    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_PASS2),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
     gsDPTileSync(),
@@ -1067,7 +1067,7 @@ const Gfx peach_seg5_dl_05007230[] = {
 // 0x05007288 - 0x050072E8
 const Gfx peach_seg5_us_dl_05007288[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_MODULATERGBFADE),
+    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_PASS2),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsDPSetRenderMode(G_RM_CUSTOM_AA_ZB_XLU_SURF, G_RM_NOOP2),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -1249,7 +1249,7 @@ const Gfx peach_seg5_dl_05007810[] = {
 // 0x05007AB8 - 0x05007AE0
 const Gfx peach_seg5_dl_05007AB8[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_SHADEFADEA),
+    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_PASS2),
     gsSPDisplayList(peach_seg5_dl_05007810),
     gsDPPipeSync(),
     gsSPEndDisplayList(),
@@ -1330,7 +1330,7 @@ const Gfx peach_seg5_dl_05007CE8[] = {
 // 0x05007E58 - 0x05007EB0
 const Gfx peach_seg5_dl_05007E58[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_MODULATERGBFADE),
+    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_PASS2),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
     gsDPTileSync(),
@@ -1418,7 +1418,7 @@ const Gfx peach_seg5_dl_050080B8[] = {
 // 0x05008228 - 0x05008280
 const Gfx peach_seg5_dl_05008228[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_MODULATERGBFADE),
+    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_PASS2),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
     gsDPTileSync(),
@@ -1500,7 +1500,7 @@ const Gfx peach_seg5_dl_050084C0[] = {
 // 0x05008560 - 0x050085D0
 const Gfx peach_seg5_dl_05008560[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_MODULATERGBFADE),
+    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_PASS2),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
     gsDPTileSync(),
@@ -1509,7 +1509,7 @@ const Gfx peach_seg5_dl_05008560[] = {
     gsSPDisplayList(peach_seg5_dl_05008428),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_SHADEFADEA),
+    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_PASS2),
     gsSPDisplayList(peach_seg5_dl_050084C0),
     gsDPPipeSync(),
     gsSPEndDisplayList(),
@@ -1559,7 +1559,7 @@ const Gfx peach_seg5_dl_050086C8[] = {
 // 0x050087A8 - 0x050087D0
 const Gfx peach_seg5_dl_050087A8[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_SHADEFADEA),
+    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_PASS2),
     gsSPDisplayList(peach_seg5_dl_050086C8),
     gsDPPipeSync(),
     gsSPEndDisplayList(),
@@ -1635,7 +1635,7 @@ const Gfx peach_seg5_dl_05008A10[] = {
 // 0x05008AB0 - 0x05008B20
 const Gfx peach_seg5_dl_05008AB0[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_MODULATERGBFADE),
+    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_PASS2),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
     gsDPTileSync(),
@@ -1644,7 +1644,7 @@ const Gfx peach_seg5_dl_05008AB0[] = {
     gsSPDisplayList(peach_seg5_dl_05008978),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_SHADEFADEA),
+    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_PASS2),
     gsSPDisplayList(peach_seg5_dl_05008A10),
     gsDPPipeSync(),
     gsSPEndDisplayList(),
@@ -1693,7 +1693,7 @@ const Gfx peach_seg5_dl_05008C18[] = {
 // 0x05008CF8 - 0x05008D20
 const Gfx peach_seg5_dl_05008CF8[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_SHADEFADEA),
+    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_PASS2),
     gsSPDisplayList(peach_seg5_dl_05008C18),
     gsDPPipeSync(),
     gsSPEndDisplayList(),
@@ -1745,7 +1745,7 @@ const Gfx peach_seg5_dl_05008E38[] = {
 // 0x05008F20 - 0x05008F48
 const Gfx peach_seg5_dl_05008F20[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_SHADEFADEA),
+    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_PASS2),
     gsSPDisplayList(peach_seg5_dl_05008E38),
     gsDPPipeSync(),
     gsSPEndDisplayList(),
@@ -1797,7 +1797,7 @@ const Gfx peach_seg5_dl_05009060[] = {
 // 0x05009148 - 0x05009170
 const Gfx peach_seg5_dl_05009148[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_SHADEFADEA),
+    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_PASS2),
     gsSPDisplayList(peach_seg5_dl_05009060),
     gsDPPipeSync(),
     gsSPEndDisplayList(),
@@ -1879,7 +1879,7 @@ const Gfx peach_seg5_dl_05009388[] = {
 // 0x05009500 - 0x05009528
 const Gfx peach_seg5_dl_05009500[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_SHADEFADEA),
+    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_PASS2),
     gsSPDisplayList(peach_seg5_dl_05009388),
     gsDPPipeSync(),
     gsSPEndDisplayList(),
@@ -1974,7 +1974,7 @@ const Gfx peach_seg5_dl_050097C0[] = {
 // 0x05009940 - 0x05009968
 const Gfx peach_seg5_dl_05009940[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_SHADEFADEA),
+    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_PASS2),
     gsSPDisplayList(peach_seg5_dl_050097C0),
     gsDPPipeSync(),
     gsSPEndDisplayList(),
@@ -2130,7 +2130,7 @@ const Gfx peach_seg5_dl_05009E20[] = {
 // 0x0500A0A8 - 0x0500A128
 const Gfx peach_seg5_dl_0500A0A8[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_MODULATERGBFADE),
+    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_PASS2),
     gsSPClearGeometryMode(G_CULL_BACK),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -2140,7 +2140,7 @@ const Gfx peach_seg5_dl_0500A0A8[] = {
     gsSPDisplayList(peach_seg5_dl_05009E20),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_CULL_BACK),
     gsDPSetEnvColor(255, 255, 255, 255),
     gsDPSetAlphaCompare(G_AC_NONE),
@@ -2151,7 +2151,7 @@ const Gfx peach_seg5_dl_0500A0A8[] = {
 // 0x0500A188 - 0x0500A210
 const Gfx peach_seg5_us_dl_0500A188[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_MODULATERGBFADE),
+    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_PASS2),
     gsSPClearGeometryMode(G_CULL_BACK),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -2161,7 +2161,7 @@ const Gfx peach_seg5_us_dl_0500A188[] = {
     gsSPDisplayList(peach_seg5_dl_05009E20),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_CULL_BACK),
     gsDPSetEnvColor(255, 255, 255, 255),
     gsDPSetRenderMode(G_RM_AA_ZB_XLU_SURF, G_RM_NOOP2),

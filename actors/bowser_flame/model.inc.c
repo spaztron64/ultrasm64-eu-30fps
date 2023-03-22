@@ -87,7 +87,7 @@ static const Vtx flame_seg6_vertex_0601C000[] = {
 // 0x0601C080 - 0x0601C0B0
 const Gfx flame_seg6_dl_0601C080[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGBA, G_CC_MODULATERGBA),
+    gsDPSetCombineMode(G_CC_MODULATERGBA, G_CC_PASS2),
     gsSPGeometryMode(G_LIGHTING, G_SHADING_SMOOTH),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
     gsSPEndDisplayList(),
@@ -109,7 +109,7 @@ const Gfx flame_seg6_dl_0601C0C8[] = {
 const Gfx flame_seg6_dl_0601C0E0[] = {
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_LIGHTING),
     gsSPEndDisplayList(),
 };

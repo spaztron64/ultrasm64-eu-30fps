@@ -83,42 +83,23 @@ struct RenderModeContainer {
     u32 modes[8];
 };
 
-/* Rendermode settings for cycle 1 for all 8 layers. */
-struct RenderModeContainer renderModeTable_1Cycle[2] = { { {
-    G_RM_OPA_SURF,
-    G_RM_OPA_SURF,
-    G_RM_OPA_SURF,
-    G_RM_AA_TEX_EDGE,
-    G_RM_XLU_SURF,
-    G_RM_XLU_SURF,
-    } },
-    { {
-    /* z-buffered */
-    G_RM_ZB_OPA_SURF,
-    G_RM_ZB_OPA_SURF,
-    G_RM_ZB_OPA_DECAL,
-    G_RM_AA_ZB_TEX_EDGE,
-    G_RM_ZB_XLU_SURF,
-    G_RM_ZB_XLU_DECAL,
-    } } };
-
 /* Rendermode settings for cycle 2 for all 8 layers. */
 struct RenderModeContainer renderModeTable_2Cycle[2] = { { {
     G_RM_OPA_SURF2,
-    G_RM_OPA_SURF2,
-    G_RM_OPA_SURF2,
+    G_RM_AA_OPA_SURF2,
+    G_RM_AA_OPA_SURF2,
     G_RM_AA_TEX_EDGE2,
-    G_RM_XLU_SURF2,
-    G_RM_XLU_SURF2,
+    G_RM_AA_XLU_SURF2,
+    G_RM_AA_XLU_SURF2,
     } },
     { {
     /* z-buffered */
-    G_RM_ZB_OPA_SURF2,
-    G_RM_ZB_OPA_SURF2,
-    G_RM_ZB_OPA_DECAL2,
+    G_RM_OPA_SURF2,
+    G_RM_AA_ZB_OPA_SURF2,
+    G_RM_AA_ZB_OPA_DECAL2,
     G_RM_AA_ZB_TEX_EDGE2,
-    G_RM_ZB_XLU_SURF2,
-    G_RM_ZB_XLU_DECAL2,
+    G_RM_AA_ZB_XLU_SURF2,
+    G_RM_AA_ZB_XLU_DECAL2,
     } } };
 
 struct GraphNodeRoot *gCurGraphNodeRoot = NULL;
@@ -130,6 +111,69 @@ struct GraphNodeHeldObject *gCurGraphNodeHeldObject = NULL;
 u16 gAreaUpdateCounter = 0;
 LookAt lookAt;
 
+struct LevelFog {
+    s16 near;
+    s16 far;
+    u8 c[4];
+    u8 areaFlags;
+};
+
+struct LevelFog gLevelFog[] = {
+    {0, 0, {0, 0, 0, 0}, 0},
+    {0, 0, {0, 0, 0, 0}, 0},
+    {0, 0, {0, 0, 0, 0}, 0},
+    {0, 0, {0, 0, 0, 0}, 0},
+    {0, 0, {0, 0, 0, 0}, 0}, // BBH
+    {0, 0, {0, 0, 0, 0}, 0}, // CCM
+    {0, 0, {0, 0, 0, 0}, 0}, // CASTLE
+    {960, 1000, {0, 0, 0, 255}, 1 | 2}, // HMC
+    {980, 1000, {0, 0, 0, 255}, 2}, // SSL
+    {980, 1000, {160, 160, 160, 255}, 1}, // BOB
+    {0, 0, {0, 0, 0, 0}, 0}, // SL
+    {0, 0, {0, 0, 0, 0}, 0}, // WDW
+    {900, 1000, {5, 80, 75, 255}, 1 | 2}, // JRB
+    {0, 0, {0, 0, 0, 0}, 0}, // THI
+    {900, 1000, {255, 255, 255, 255}, 1}, // TTC
+    {0, 0, {0, 0, 0, 0}, 0}, // RR
+    {0, 0, {0, 0, 0, 0}, 0}, // CASTLE_GROUNDS
+    {0, 0, {0, 0, 0, 0}, 0}, // BITDW
+    {0, 0, {0, 0, 0, 0}, 0}, // VCUTM
+    {0, 0, {0, 0, 0, 0}, 0}, // BITFS
+    {0, 0, {0, 0, 0, 0}, 0}, // SA
+    {0, 0, {0, 0, 0, 0}, 0}, // BITS
+    {980, 1000, {0, 0, 0, 255}, 2}, // LLL
+    {0, 0, {0, 0, 0, 0}, 0}, // DDD
+    {0, 0, {0, 0, 0, 0}, 0}, // WF
+    {0, 0, {0, 0, 0, 0}, 0}, // ENDING
+    {0, 0, {0, 0, 0, 0}, 0}, // CASTLE_COURTYARD
+    {980, 1000, {0, 0, 0, 255}, 1}, // PSS
+    {980, 1000, {0, 0, 0, 255}, 1}, // COTMC
+    {0, 0, {0, 0, 0, 0}, 0}, // TOTWC
+    {960, 1000, {10, 30, 20, 255}, 1}, // BOWSER_1
+    {0, 0, {0, 0, 0, 0}, 0}, // WMOTR
+    {0, 0, {0, 0, 0, 0}, 0}, // UNKNOWN_32
+    {960, 1000, {200, 50, 0, 255}, 1}, // BOWSER_2
+    {0, 0, {0, 0, 0, 0}, 1}, // BOWSER_3
+    {0, 0, {0, 0, 0, 0}, 0}, // UNKNOWN_35
+    {960, 1000, {0, 0, 0, 255}, 2 | 4}, // TTM
+    {0, 0, {0, 0, 0, 0}, 0}, 
+    {0, 0, {0, 0, 0, 0}, 0},
+};
+
+u32 gFirstCycleRM = G_RM_PASS;
+
+void update_level_fog(Gfx **gfx) {
+    if (gLevelFog[gCurrLevelNum].areaFlags & (1 << (gCurrAreaIndex - 1))) {
+        gDPSetFogColor((*gfx)++, gLevelFog[gCurrLevelNum].c[0], gLevelFog[gCurrLevelNum].c[1], gLevelFog[gCurrLevelNum].c[2], gLevelFog[gCurrLevelNum].c[3]);
+        gSPFogPosition((*gfx)++, gLevelFog[gCurrLevelNum].near, gLevelFog[gCurrLevelNum].far);
+        gSPSetGeometryMode((*gfx)++, G_FOG);
+        gFirstCycleRM = G_RM_FOG_SHADE_A;
+    } else {
+        gSPClearGeometryMode((*gfx)++, G_FOG);
+        gFirstCycleRM = G_RM_PASS;
+    }
+}
+
 /**
  * Process a master list node.
  */
@@ -137,7 +181,6 @@ void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
     struct DisplayListNode *currList;
     s32 i;
     s32 enableZBuffer = (node->node.flags & GRAPH_RENDER_Z_BUFFER) != 0;
-    struct RenderModeContainer *modeList = &renderModeTable_1Cycle[enableZBuffer];
     struct RenderModeContainer *mode2List = &renderModeTable_2Cycle[enableZBuffer];
     Gfx *gfx = gDisplayListHead;
 
@@ -150,25 +193,30 @@ void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
 #endif
 
     if (enableZBuffer != 0) {
-        gDPPipeSync(gfx++);
         gSPSetGeometryMode(gfx++, G_ZBUFFER);
     }
 
+    gDPPipeSync(gfx++);
+    gDPSetCycleType(gfx++, G_CYC_2CYCLE);
+    update_level_fog(&gfx);
+
     for (i = 0; i < GFX_NUM_MASTER_LISTS; i++) {
         if ((currList = node->listHeads[i]) != NULL) {
-            gDPSetRenderMode(gfx++, modeList->modes[i], mode2List->modes[i]);
+            gDPPipeSync(gfx++);
+            gDPSetRenderMode(gfx++, gFirstCycleRM, mode2List->modes[i]);
             while (currList != NULL) {
-                gSPMatrix(gfx++, VIRTUAL_TO_PHYSICAL(currList->transform),
-                          G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+                gSPMatrix(gfx++, VIRTUAL_TO_PHYSICAL(currList->transform), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
                 gSPDisplayList(gfx++, currList->displayList);
                 currList = currList->next;
             }
         }
     }
     if (enableZBuffer != 0) {
-        gDPPipeSync(gfx++);
         gSPClearGeometryMode(gfx++, G_ZBUFFER);
     }
+    gSPClearGeometryMode(gfx++, G_FOG);
+    gDPPipeSync(gfx++);
+    gDPSetCycleType(gfx++, G_CYC_1CYCLE);
     gDisplayListHead = gfx;
 }
 

@@ -1,6 +1,6 @@
 // 0x0D0000D8
 const GeoLayout bowser_geo_0000D8[] = {
-   GEO_SHADOW(SHADOW_CIRCLE_9_VERTS, 0x9B, 400),
+   GEO_SHADOW(SHADOW_CIRCLE_4_VERTS, 0x9B, 400),
    GEO_OPEN_NODE(),
       GEO_ANIMATED_PART(LAYER_OPAQUE, 0, 0, 0, bowser_seg6_dl_06040210),
       GEO_OPEN_NODE(),
@@ -108,7 +108,7 @@ const GeoLayout bowser_geo_0000D8[] = {
 
 // 0x0D000424
 const GeoLayout bowser_geo_000424[] = {
-   GEO_SHADOW(SHADOW_CIRCLE_9_VERTS, 0x9B, 400),
+   GEO_SHADOW(SHADOW_CIRCLE_4_VERTS, 0x9B, 400),
    GEO_OPEN_NODE(),
 #if BUGFIX_BOWSER_FADING_OUT
       GEO_ANIMATED_PART(LAYER_TRANSPARENT, 0, 0, 0, bowser_seg6_dl_06040358),
@@ -341,7 +341,7 @@ const GeoLayout bowser_geo_000770[] = {
 #ifndef VERSION_JP
 // 0x0D000AB8
 const GeoLayout bowser_shadow_geo[] = {
-   GEO_SHADOW(SHADOW_CIRCLE_9_VERTS, 0x9B, 400),
+   GEO_SHADOW(SHADOW_CIRCLE_4_VERTS, 0x9B, 400),
    GEO_RETURN(),
 };
 #endif

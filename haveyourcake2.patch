@@ -464,7 +464,7 @@ index 0ea6be6..bba0a94 100644
  // 0x07026400 - 0x07027350
  const Gfx dl_cake_end_screen[] = {
 @@ -640,198 +314,27 @@ const Gfx dl_cake_end_screen[] = {
-     gsDPSetCombineMode(G_CC_DECALRGB, G_CC_DECALRGB),
+     gsDPSetCombineMode(G_CC_DECALRGB, G_CC_PASS2),
      gsDPSetRenderMode(G_RM_AA_OPA_SURF, G_RM_AA_OPA_SURF2),
      gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
 -

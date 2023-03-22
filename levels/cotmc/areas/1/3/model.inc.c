@@ -61,11 +61,11 @@ static const Gfx cotmc_seg7_dl_0700A3D0[] = {
 const Gfx cotmc_seg7_dl_0700A4B8[] = {
     gsDPPipeSync(),
     gsDPSetEnvColor(255, 255, 255, 180),
-    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_SHADEFADEA),
+    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_PASS2),
     gsSPClearGeometryMode(G_LIGHTING),
     gsSPDisplayList(cotmc_seg7_dl_0700A3D0),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_LIGHTING),
     gsDPSetEnvColor(255, 255, 255, 255),
     gsSPEndDisplayList(),

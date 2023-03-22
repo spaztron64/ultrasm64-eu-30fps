@@ -329,7 +329,7 @@ const Gfx boo_seg5_dl_0500BFA0[] = {
 // 0x0500C1B0 - 0x0500C250
 const Gfx boo_seg5_dl_0500C1B0[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_BLENDRGBFADEA, G_CC_BLENDRGBFADEA),
+    gsDPSetCombineMode(G_CC_BLENDRGBFADEA, G_CC_PASS2),
     gsSPNumLights(NUMLIGHTS_1),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
     gsDPTileSync(),
@@ -342,10 +342,10 @@ const Gfx boo_seg5_dl_0500C1B0[] = {
     gsSPDisplayList(boo_seg5_dl_0500BF48),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_SHADEFADEA),
+    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_PASS2),
     gsSPDisplayList(boo_seg5_dl_0500BFA0),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsDPSetEnvColor(255, 255, 255, 255),
     gsSPEndDisplayList(),
 };

@@ -48,7 +48,7 @@ ALIGNED8 static const Texture coin_seg3_texture_03006F80[] = {
 const Gfx coin_seg3_dl_03007780[] = {
     gsDPPipeSync(),
     gsSPClearGeometryMode(G_LIGHTING),
-    gsDPSetCombineMode(G_CC_MODULATEIA, G_CC_MODULATEIA),
+    gsDPSetCombineMode(G_CC_MODULATEIA_PRIM, G_CC_PASS2),
     gsSPTexture(0x8000, 0x8000, 0, G_TX_RENDERTILE, G_ON),
     gsDPSetTile(G_IM_FMT_IA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_CLAMP, 5, G_TX_NOLOD, G_TX_CLAMP, 5, G_TX_NOLOD),
     gsDPLoadSync(),
@@ -64,13 +64,14 @@ const Gfx coin_seg3_dl_030077D0[] = {
     gsSPTexture(0x0001, 0x0001, 0, G_TX_RENDERTILE, G_OFF),
     gsSPSetGeometryMode(G_LIGHTING),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPEndDisplayList(),
 };
 
 // 0x03007800 - 0x03007828
 const Gfx coin_seg3_dl_03007800[] = {
     gsDPPipeSync(),
+    gsDPSetPrimColor(0, 0, 255, 255, 0, 255),
     gsDPSetTextureImage(G_IM_FMT_IA, G_IM_SIZ_16b, 1, coin_seg3_texture_03005780),
     gsSPDisplayList(coin_seg3_dl_03007780),
     gsSPVertex(coin_seg3_vertex_030056C0, 4, 0),
@@ -80,6 +81,7 @@ const Gfx coin_seg3_dl_03007800[] = {
 // 0x03007828 - 0x03007850
 const Gfx coin_seg3_dl_03007828[] = {
     gsDPPipeSync(),
+    gsDPSetPrimColor(0, 0, 255, 255, 0, 255),
     gsDPSetTextureImage(G_IM_FMT_IA, G_IM_SIZ_16b, 1, coin_seg3_texture_03005F80),
     gsSPDisplayList(coin_seg3_dl_03007780),
     gsSPVertex(coin_seg3_vertex_030056C0, 4, 0),
@@ -89,6 +91,7 @@ const Gfx coin_seg3_dl_03007828[] = {
 // 0x03007850 - 0x03007878
 const Gfx coin_seg3_dl_03007850[] = {
     gsDPPipeSync(),
+    gsDPSetPrimColor(0, 0, 255, 255, 0, 255),
     gsDPSetTextureImage(G_IM_FMT_IA, G_IM_SIZ_16b, 1, coin_seg3_texture_03006780),
     gsSPDisplayList(coin_seg3_dl_03007780),
     gsSPVertex(coin_seg3_vertex_030056C0, 4, 0),
@@ -98,6 +101,7 @@ const Gfx coin_seg3_dl_03007850[] = {
 // 0x03007878 - 0x030078A0
 const Gfx coin_seg3_dl_03007878[] = {
     gsDPPipeSync(),
+    gsDPSetPrimColor(0, 0, 255, 255, 0, 255),
     gsDPSetTextureImage(G_IM_FMT_IA, G_IM_SIZ_16b, 1, coin_seg3_texture_03006F80),
     gsSPDisplayList(coin_seg3_dl_03007780),
     gsSPVertex(coin_seg3_vertex_030056C0, 4, 0),
@@ -107,6 +111,7 @@ const Gfx coin_seg3_dl_03007878[] = {
 // 0x030078A0 - 0x030078C8
 const Gfx coin_seg3_dl_030078A0[] = {
     gsDPPipeSync(),
+    gsDPSetPrimColor(0, 0, 0x78, 0x78, 255, 255),
     gsDPSetTextureImage(G_IM_FMT_IA, G_IM_SIZ_16b, 1, coin_seg3_texture_03005780),
     gsSPDisplayList(coin_seg3_dl_03007780),
     gsSPVertex(coin_seg3_vertex_03005700, 4, 0),
@@ -116,6 +121,7 @@ const Gfx coin_seg3_dl_030078A0[] = {
 // 0x030078C8 - 0x030078F0
 const Gfx coin_seg3_dl_030078C8[] = {
     gsDPPipeSync(),
+    gsDPSetPrimColor(0, 0, 0x78, 0x78, 255, 255),
     gsDPSetTextureImage(G_IM_FMT_IA, G_IM_SIZ_16b, 1, coin_seg3_texture_03005F80),
     gsSPDisplayList(coin_seg3_dl_03007780),
     gsSPVertex(coin_seg3_vertex_03005700, 4, 0),
@@ -125,6 +131,7 @@ const Gfx coin_seg3_dl_030078C8[] = {
 // 0x030078F0 - 0x03007918
 const Gfx coin_seg3_dl_030078F0[] = {
     gsDPPipeSync(),
+    gsDPSetPrimColor(0, 0, 0x78, 0x78, 255, 255),
     gsDPSetTextureImage(G_IM_FMT_IA, G_IM_SIZ_16b, 1, coin_seg3_texture_03006780),
     gsSPDisplayList(coin_seg3_dl_03007780),
     gsSPVertex(coin_seg3_vertex_03005700, 4, 0),
@@ -134,6 +141,7 @@ const Gfx coin_seg3_dl_030078F0[] = {
 // 0x03007918 - 0x03007940
 const Gfx coin_seg3_dl_03007918[] = {
     gsDPPipeSync(),
+    gsDPSetPrimColor(0, 0, 0x78, 0x78, 255, 255),
     gsDPSetTextureImage(G_IM_FMT_IA, G_IM_SIZ_16b, 1, coin_seg3_texture_03006F80),
     gsSPDisplayList(coin_seg3_dl_03007780),
     gsSPVertex(coin_seg3_vertex_03005700, 4, 0),
@@ -143,6 +151,7 @@ const Gfx coin_seg3_dl_03007918[] = {
 // 0x03007940 - 0x03007968
 const Gfx coin_seg3_dl_03007940[] = {
     gsDPPipeSync(),
+    gsDPSetPrimColor(0, 0, 255, 0, 0, 255),
     gsDPSetTextureImage(G_IM_FMT_IA, G_IM_SIZ_16b, 1, coin_seg3_texture_03005780),
     gsSPDisplayList(coin_seg3_dl_03007780),
     gsSPVertex(coin_seg3_vertex_03005740, 4, 0),
@@ -152,6 +161,7 @@ const Gfx coin_seg3_dl_03007940[] = {
 // 0x03007968 - 0x03007990
 const Gfx coin_seg3_dl_03007968[] = {
     gsDPPipeSync(),
+    gsDPSetPrimColor(0, 0, 255, 0, 0, 255),
     gsDPSetTextureImage(G_IM_FMT_IA, G_IM_SIZ_16b, 1, coin_seg3_texture_03005F80),
     gsSPDisplayList(coin_seg3_dl_03007780),
     gsSPVertex(coin_seg3_vertex_03005740, 4, 0),
@@ -161,6 +171,7 @@ const Gfx coin_seg3_dl_03007968[] = {
 // 0x03007990 - 0x030079B8
 const Gfx coin_seg3_dl_03007990[] = {
     gsDPPipeSync(),
+    gsDPSetPrimColor(0, 0, 255, 0, 0, 255),
     gsDPSetTextureImage(G_IM_FMT_IA, G_IM_SIZ_16b, 1, coin_seg3_texture_03006780),
     gsSPDisplayList(coin_seg3_dl_03007780),
     gsSPVertex(coin_seg3_vertex_03005740, 4, 0),
@@ -170,6 +181,7 @@ const Gfx coin_seg3_dl_03007990[] = {
 // 0x030079B8 - 0x030079E0
 const Gfx coin_seg3_dl_030079B8[] = {
     gsDPPipeSync(),
+    gsDPSetPrimColor(0, 0, 255, 0, 0, 255),
     gsDPSetTextureImage(G_IM_FMT_IA, G_IM_SIZ_16b, 1, coin_seg3_texture_03006F80),
     gsSPDisplayList(coin_seg3_dl_03007780),
     gsSPVertex(coin_seg3_vertex_03005740, 4, 0),

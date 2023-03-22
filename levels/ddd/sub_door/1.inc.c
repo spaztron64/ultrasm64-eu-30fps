@@ -17,11 +17,11 @@ static const Gfx ddd_seg7_dl_07009010[] = {
 const Gfx ddd_seg7_dl_07009030[] = {
     gsDPPipeSync(),
     gsDPSetEnvColor(255, 255, 255, 80),
-    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_SHADEFADEA),
+    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_PASS2),
     gsSPClearGeometryMode(G_LIGHTING | G_CULL_BACK),
     gsSPDisplayList(ddd_seg7_dl_07009010),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_LIGHTING | G_CULL_BACK),
     gsDPSetEnvColor(255, 255, 255, 255),
     gsSPEndDisplayList(),

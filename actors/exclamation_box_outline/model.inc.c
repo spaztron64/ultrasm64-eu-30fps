@@ -61,7 +61,7 @@ const Gfx exclamation_box_outline_seg8_dl_08024F30[] = {
     gsDPPipeSync(),
     gsDPSetEnvColor(255, 255, 255, 80),
     gsSPClearGeometryMode(G_SHADING_SMOOTH),
-    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_SHADEFADEA),
+    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_PASS2),
     gsSPEndDisplayList(),
 };
 
@@ -69,7 +69,7 @@ const Gfx exclamation_box_outline_seg8_dl_08024F30[] = {
 const Gfx exclamation_box_outline_seg8_dl_08024F58[] = {
     gsSPDisplayList(exclamation_box_outline_seg8_dl_08024EB8),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_SHADING_SMOOTH),
     gsDPSetEnvColor(255, 255, 255, 255),
     gsSPEndDisplayList(),
@@ -161,7 +161,7 @@ const Gfx exclamation_box_outline_seg8_dl_08025968[] = {
 // 0x080259F8 - 0x08025A68
 const Gfx exclamation_box_outline_seg8_dl_080259F8[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_DECALRGBA),
+    gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_PASS2),
     gsSPClearGeometryMode(G_LIGHTING | G_CULL_BACK),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -171,7 +171,7 @@ const Gfx exclamation_box_outline_seg8_dl_080259F8[] = {
     gsSPDisplayList(exclamation_box_outline_seg8_dl_08025968),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_LIGHTING | G_CULL_BACK),
     gsSPEndDisplayList(),
 };
@@ -206,7 +206,7 @@ const Gfx exclamation_box_outline_seg8_dl_08025EC0[] = {
 // 0x08025F08 - 0x08025F78
 const Gfx exclamation_box_outline_seg8_dl_08025F08[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGBA, G_CC_MODULATERGBA),
+    gsDPSetCombineMode(G_CC_MODULATERGBA, G_CC_PASS2),
     gsSPClearGeometryMode(G_CULL_BACK | G_SHADING_SMOOTH),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -216,7 +216,7 @@ const Gfx exclamation_box_outline_seg8_dl_08025F08[] = {
     gsSPDisplayList(exclamation_box_outline_seg8_dl_08025EC0),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_CULL_BACK | G_SHADING_SMOOTH),
     gsSPEndDisplayList(),
 };

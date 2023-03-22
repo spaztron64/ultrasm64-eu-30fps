@@ -1,12 +1,7 @@
 // 0x0700BE10 - 0x0700BE88
 const Gfx cotmc_dl_water_begin[] = {
     gsDPPipeSync(),
-    gsDPSetCycleType(G_CYC_2CYCLE),
-    gsDPSetRenderMode(G_RM_FOG_SHADE_A, G_RM_AA_ZB_XLU_INTER2),
     gsDPSetDepthSource(G_ZS_PIXEL),
-    gsDPSetFogColor(0, 0, 0, 255),
-    gsSPFogPosition(980, 1000),
-    gsSPSetGeometryMode(G_FOG),
     gsDPSetEnvColor(255, 255, 255, 140),
     gsDPSetCombineMode(G_CC_DECALFADE, G_CC_PASS2),
     gsSPClearGeometryMode(G_LIGHTING | G_CULL_BACK),
@@ -21,11 +16,9 @@ const Gfx cotmc_dl_water_begin[] = {
 const Gfx cotmc_dl_water_end[] = {
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCycleType(G_CYC_1CYCLE),
-    gsSPGeometryModeSetFirst(G_FOG, G_LIGHTING | G_CULL_BACK),
+    gsSPGeometryModeSetFirst(0, G_LIGHTING | G_CULL_BACK),
     gsDPSetEnvColor(255, 255, 255, 255),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
-    gsDPSetRenderMode(G_RM_AA_ZB_XLU_INTER, G_RM_NOOP2),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPEndDisplayList(),
 };
 

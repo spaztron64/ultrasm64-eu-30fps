@@ -464,7 +464,8 @@ void make_shadow_vertex(Vtx *vertices, s8 index, struct Shadow s, s8 shadowVerte
 /**
  * Add a shadow to the given display list.
  */
-void add_shadow_to_display_list(Gfx *displayListHead, Vtx *verts, s8 shadowVertexType, s8 shadowShape) {
+void add_shadow_to_display_list(Gfx *displayListHead, Vtx *verts, s8 shadowVertexType, s8 shadowShape, s32 opacity) {
+    gDPSetPrimColor(displayListHead++, 0, 0, 0, 0, 0, opacity);
     switch (shadowShape) {
         case SHADOW_SHAPE_CIRCLE:
             gSPDisplayList(displayListHead++, dl_shadow_circle);
@@ -627,7 +628,7 @@ Gfx *create_shadow_player(f32 xPos, f32 yPos, f32 zPos, s16 shadowScale, u8 soli
     }
 
     verts = alloc_display_list(9 * sizeof(Vtx));
-    displayList = alloc_display_list(5 * sizeof(Gfx));
+    displayList = alloc_display_list(7 * sizeof(Gfx));
     if (verts == NULL || displayList == NULL) {
         return NULL;
     }
@@ -637,7 +638,7 @@ Gfx *create_shadow_player(f32 xPos, f32 yPos, f32 zPos, s16 shadowScale, u8 soli
     for (i = 0; i < 9; i++) {
         make_shadow_vertex(verts, i, shadow, SHADOW_WITH_9_VERTS);
     }
-    add_shadow_to_display_list(displayList, verts, SHADOW_WITH_9_VERTS, SHADOW_SHAPE_CIRCLE);
+    add_shadow_to_display_list(displayList, verts, SHADOW_WITH_9_VERTS, SHADOW_SHAPE_CIRCLE, solidity);
     return displayList;
 }
 
@@ -655,7 +656,7 @@ Gfx *create_shadow_circle_9_verts(f32 xPos, f32 yPos, f32 zPos, s16 shadowScale,
     }
 
     verts = alloc_display_list(9 * sizeof(Vtx));
-    displayList = alloc_display_list(5 * sizeof(Gfx));
+    displayList = alloc_display_list(7 * sizeof(Gfx));
 
     if (verts == NULL || displayList == NULL) {
         return 0;
@@ -663,7 +664,7 @@ Gfx *create_shadow_circle_9_verts(f32 xPos, f32 yPos, f32 zPos, s16 shadowScale,
     for (i = 0; i < 9; i++) {
         make_shadow_vertex(verts, i, shadow, SHADOW_WITH_9_VERTS);
     }
-    add_shadow_to_display_list(displayList, verts, SHADOW_WITH_9_VERTS, SHADOW_SHAPE_CIRCLE);
+    add_shadow_to_display_list(displayList, verts, SHADOW_WITH_9_VERTS, SHADOW_SHAPE_CIRCLE, solidity);
     return displayList;
 }
 
@@ -681,7 +682,7 @@ Gfx *create_shadow_circle_4_verts(f32 xPos, f32 yPos, f32 zPos, s16 shadowScale,
     }
 
     verts = alloc_display_list(4 * sizeof(Vtx));
-    displayList = alloc_display_list(5 * sizeof(Gfx));
+    displayList = alloc_display_list(7 * sizeof(Gfx));
 
     if (verts == NULL || displayList == NULL) {
         return 0;
@@ -690,7 +691,7 @@ Gfx *create_shadow_circle_4_verts(f32 xPos, f32 yPos, f32 zPos, s16 shadowScale,
     for (i = 0; i < 4; i++) {
         make_shadow_vertex(verts, i, shadow, SHADOW_WITH_4_VERTS);
     }
-    add_shadow_to_display_list(displayList, verts, SHADOW_WITH_4_VERTS, SHADOW_SHAPE_CIRCLE);
+    add_shadow_to_display_list(displayList, verts, SHADOW_WITH_4_VERTS, SHADOW_SHAPE_CIRCLE, solidity);
     return displayList;
 }
 
@@ -714,7 +715,7 @@ Gfx *create_shadow_circle_assuming_flat_ground(f32 xPos, f32 yPos, f32 zPos, s16
     }
 
     verts = alloc_display_list(4 * sizeof(Vtx));
-    displayList = alloc_display_list(5 * sizeof(Gfx));
+    displayList = alloc_display_list(7 * sizeof(Gfx));
 
     if (verts == NULL || displayList == NULL) {
         return 0;
@@ -725,7 +726,7 @@ Gfx *create_shadow_circle_assuming_flat_ground(f32 xPos, f32 yPos, f32 zPos, s16
     make_shadow_vertex_at_xyz(verts, 2, -radius, distBelowFloor, radius, solidity, 1);
     make_shadow_vertex_at_xyz(verts, 3, radius, distBelowFloor, radius, solidity, 1);
 
-    add_shadow_to_display_list(displayList, verts, SHADOW_WITH_4_VERTS, SHADOW_SHAPE_CIRCLE);
+    add_shadow_to_display_list(displayList, verts, SHADOW_WITH_4_VERTS, SHADOW_SHAPE_CIRCLE, solidity);
     return displayList;
 }
 
@@ -735,7 +736,7 @@ Gfx *create_shadow_circle_assuming_flat_ground(f32 xPos, f32 yPos, f32 zPos, s16
  */
 Gfx *create_shadow_rectangle(f32 halfWidth, f32 halfLength, f32 relY, u8 solidity) {
     Vtx *verts = alloc_display_list(4 * sizeof(Vtx));
-    Gfx *displayList = alloc_display_list(5 * sizeof(Gfx));
+    Gfx *displayList = alloc_display_list(7 * sizeof(Gfx));
     f32 frontLeftX, frontLeftZ, frontRightX, frontRightZ, backLeftX, backLeftZ, backRightX, backRightZ;
 
     if (verts == NULL || displayList == NULL) {
@@ -753,7 +754,7 @@ Gfx *create_shadow_rectangle(f32 halfWidth, f32 halfLength, f32 relY, u8 solidit
     make_shadow_vertex_at_xyz(verts, 2, backLeftX, relY, backLeftZ, solidity, 1);
     make_shadow_vertex_at_xyz(verts, 3, backRightX, relY, backRightZ, solidity, 1);
 
-    add_shadow_to_display_list(displayList, verts, SHADOW_WITH_4_VERTS, SHADOW_SHAPE_SQUARE);
+    add_shadow_to_display_list(displayList, verts, SHADOW_WITH_4_VERTS, SHADOW_SHAPE_SQUARE, solidity);
     return displayList;
 }
 

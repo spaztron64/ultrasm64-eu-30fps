@@ -81,7 +81,7 @@ const Gfx inside_castle_seg7_dl_07023DB0[] = {
     gsSPTexture(0xFFFF, 0xFFFF, 1, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
     gsDPSetCycleType(G_CYC_1CYCLE),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsDPSetRenderMode(G_RM_AA_ZB_OPA_SURF, G_RM_NOOP2),
     gsDPSetTextureLOD(G_TL_TILE),
     gsSPSetGeometryMode(G_LIGHTING | G_SHADING_SMOOTH),

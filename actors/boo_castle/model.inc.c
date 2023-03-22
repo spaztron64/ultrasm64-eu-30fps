@@ -329,7 +329,7 @@ const Gfx boo_castle_seg6_dl_06017AD0[] = {
 // 0x06017CE0 - 0x06017D80
 const Gfx boo_castle_seg6_dl_06017CE0[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_BLENDRGBFADEA, G_CC_BLENDRGBFADEA),
+    gsDPSetCombineMode(G_CC_BLENDRGBFADEA, G_CC_PASS2),
     gsSPNumLights(NUMLIGHTS_1),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
     gsDPTileSync(),
@@ -342,10 +342,10 @@ const Gfx boo_castle_seg6_dl_06017CE0[] = {
     gsSPDisplayList(boo_castle_seg6_dl_06017A78),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_SHADEFADEA),
+    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_PASS2),
     gsSPDisplayList(boo_castle_seg6_dl_06017AD0),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsDPSetEnvColor(255, 255, 255, 255),
     gsSPEndDisplayList(),
 };

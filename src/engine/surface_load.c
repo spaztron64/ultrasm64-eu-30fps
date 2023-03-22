@@ -343,7 +343,7 @@ static struct Surface *read_surface_data(s16 *vertexData, s16 **vertexIndices) {
     nx = (y2 - y1) * (z3 - z2) - (z2 - z1) * (y3 - y2);
     ny = (z2 - z1) * (x3 - x2) - (x2 - x1) * (z3 - z2);
     nz = (x2 - x1) * (y3 - y2) - (y2 - y1) * (x3 - x2);
-    mag = sqrtf(nx * nx + ny * ny + nz * nz);
+    mag = (nx * nx + ny * ny + nz * nz);
 
     // Could have used min_3 and max_3 for this...
     minY = y1;
@@ -363,10 +363,11 @@ static struct Surface *read_surface_data(s16 *vertexData, s16 **vertexIndices) {
     }
 
     // Checking to make sure no DIV/0
-    if (mag < 0.0001) {
+    if (mag < 0.0001f * 0.0001f) {
         return NULL;
     }
-    mag = (f32)(1.0 / mag);
+    mag = sqrtf(mag);
+    mag = (f32)(1.0f / mag);
     nx *= mag;
     ny *= mag;
     nz *= mag;
@@ -774,12 +775,13 @@ void load_object_surfaces(s16 **data, s16 *vertexData) {
     }
 }
 
+
+s16 sDynamicVertices[600];
+
 /**
  * Transform an object's vertices, reload them, and render the object.
  */
-void load_object_collision_model(void) {
-    UNUSED u8 filler[4];
-    s16 vertexData[600];
+void load_object_collision_model(void) {;
 
     s16 *collisionData = gCurrentObject->collisionData;
     f32 marioDist = gCurrentObject->oDistanceToMario;
@@ -801,11 +803,11 @@ void load_object_collision_model(void) {
     if (!(gTimeStopState & TIME_STOP_ACTIVE) && marioDist < tangibleDist
         && !(gCurrentObject->activeFlags & ACTIVE_FLAG_IN_DIFFERENT_ROOM)) {
         collisionData++;
-        transform_object_vertices(&collisionData, vertexData);
+        transform_object_vertices(&collisionData, sDynamicVertices);
 
         // TERRAIN_LOAD_CONTINUE acts as an "end" to the terrain data.
         while (*collisionData != TERRAIN_LOAD_CONTINUE) {
-            load_object_surfaces(&collisionData, vertexData);
+            load_object_surfaces(&collisionData, sDynamicVertices);
         }
     }
 

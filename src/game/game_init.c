@@ -510,8 +510,7 @@ void adjust_analog_stick(struct Controller *controller) {
     }
 
     // Calculate f32 magnitude from the center by vector length.
-    controller->stickMag =
-        sqrtf(controller->stickX * controller->stickX + controller->stickY * controller->stickY);
+    controller->stickMag = sqrtf(controller->stickX * controller->stickX + controller->stickY * controller->stickY);
 
     // Magnitude cannot exceed 64.0f: if it does, modify the values
     // appropriately to flatten the values down to the allowed maximum value.
@@ -641,7 +640,7 @@ void init_controllers(void) {
     gControllers[0].statusData = &gControllerStatuses[0];
     gControllers[0].controllerData = &gControllerPads[0];
     osContInit(&gSIEventMesgQueue, &gControllerBits, &gControllerStatuses[0]);
-    //osContSetCh(1);
+    osContSetCh(2);
 
 #ifdef EEP
     // strangely enough, the EEPROM probe for save data is done in this function.

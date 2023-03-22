@@ -80,20 +80,32 @@ u32 gCurrAnimPos;
 struct AllocOnlyPool *gDisplayListHeap;
 
 struct RenderModeContainer {
-    u32 modes[8];
+    u32 modes[6];
 };
 
+u8 gAntiAliasing = 0;
+
 /* Rendermode settings for cycle 2 for all 8 layers. */
-struct RenderModeContainer renderModeTable_2Cycle[2] = { { {
+static struct RenderModeContainer renderModeTable_2Cycle[3] = { { {
+    // AA off.
     G_RM_OPA_SURF2,
-    G_RM_AA_OPA_SURF2,
-    G_RM_AA_OPA_SURF2,
-    G_RM_AA_TEX_EDGE2,
-    G_RM_AA_XLU_SURF2,
-    G_RM_AA_XLU_SURF2,
+    G_RM_ZB_OPA_SURF2,
+    G_RM_ZB_OPA_DECAL2,
+    G_RM_RA_ZB_TEX_EDGE2,
+    G_RM_ZB_XLU_SURF2,
+    G_RM_ZB_XLU_DECAL2,
     } },
     { {
-    /* z-buffered */
+    // AA fast.
+    G_RM_OPA_SURF2,
+    G_RM_RA_ZB_OPA_SURF2,
+    G_RM_RA_ZB_OPA_DECAL2,
+    G_RM_RA_ZB_TEX_EDGE2,
+    G_RM_AA_ZB_XLU_SURF2,
+    G_RM_AA_ZB_XLU_DECAL2,
+    } },
+    { {
+    // AA fancy. Applied to objects
     G_RM_OPA_SURF2,
     G_RM_AA_ZB_OPA_SURF2,
     G_RM_AA_ZB_OPA_DECAL2,
@@ -179,42 +191,33 @@ void update_level_fog(Gfx **gfx) {
  */
 void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
     struct DisplayListNode *currList;
-    s32 i;
     s32 enableZBuffer = (node->node.flags & GRAPH_RENDER_Z_BUFFER) != 0;
-    struct RenderModeContainer *mode2List = &renderModeTable_2Cycle[enableZBuffer];
+    struct RenderModeContainer *mode2List;
     Gfx *gfx = gDisplayListHead;
+    s32 switchAA = FALSE;
+    s32 lastAA = 0;
 
-    // @bug This is where the LookAt values should be calculated but aren't.
-    // As a result, environment mapping is broken on Fast3DEX2 without the
-    // changes below.
-#ifdef F3DEX_GBI_2
     Mtx lMtx;
     guLookAtReflect(&lMtx, &lookAt, 0, 0, 0, /* eye */ 0, 0, 1, /* at */ 1, 0, 0 /* up */);
-#endif
-
-    if (enableZBuffer != 0) {
-        gSPSetGeometryMode(gfx++, G_ZBUFFER);
-    }
-
-    gDPPipeSync(gfx++);
+    gSPSetGeometryMode(gfx++, G_ZBUFFER);
     gDPSetCycleType(gfx++, G_CYC_2CYCLE);
     update_level_fog(&gfx);
 
-    for (i = 0; i < GFX_NUM_MASTER_LISTS; i++) {
+    for (u32 i = 0; i < GFX_NUM_MASTER_LISTS; i++, switchAA = TRUE) {
         if ((currList = node->listHeads[i]) != NULL) {
-            gDPPipeSync(gfx++);
-            gDPSetRenderMode(gfx++, gFirstCycleRM, mode2List->modes[i]);
             while (currList != NULL) {
-                gSPMatrix(gfx++, VIRTUAL_TO_PHYSICAL(currList->transform), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+                if (switchAA == TRUE || currList->fancyAA != lastAA) {
+                    mode2List = &renderModeTable_2Cycle[gAntiAliasing + currList->fancyAA];
+                    gDPSetRenderMode(gfx++, gFirstCycleRM, mode2List->modes[i]);
+                    switchAA = FALSE;
+                }
+                gSPMatrix(gfx++, OS_K0_TO_PHYSICAL(currList->transform), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
                 gSPDisplayList(gfx++, currList->displayList);
                 currList = currList->next;
             }
         }
     }
-    if (enableZBuffer != 0) {
-        gSPClearGeometryMode(gfx++, G_ZBUFFER);
-    }
-    gSPClearGeometryMode(gfx++, G_FOG);
+    gSPClearGeometryMode(gfx++, G_ZBUFFER | G_FOG);
     gDPPipeSync(gfx++);
     gDPSetCycleType(gfx++, G_CYC_1CYCLE);
     gDisplayListHead = gfx;
@@ -252,6 +255,11 @@ void geo_append_display_list(void *displayList, s16 layer) {
         listNode->transform = gMatStackFixed[gMatStackIndex];
         listNode->displayList = displayList;
         listNode->next = 0;
+        if (gCurGraphNodeObject != NULL && gAntiAliasing == 1) {
+            listNode->fancyAA = TRUE;
+        } else {
+            listNode->fancyAA = FALSE;
+        }
         if (gCurGraphNodeMasterList->listHeads[layer] == 0) {
             gCurGraphNodeMasterList->listHeads[layer] = listNode;
         } else {

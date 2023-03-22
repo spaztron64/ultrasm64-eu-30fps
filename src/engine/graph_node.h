@@ -23,12 +23,12 @@
 // The discriminant for different types of geo nodes
 #define GRAPH_NODE_TYPE_ROOT                  0x001
 #define GRAPH_NODE_TYPE_ORTHO_PROJECTION      0x002
-#define GRAPH_NODE_TYPE_PERSPECTIVE          (0x003 | GRAPH_NODE_TYPE_FUNCTIONAL)
+#define GRAPH_NODE_TYPE_PERSPECTIVE          (0x003)
 #define GRAPH_NODE_TYPE_MASTER_LIST           0x004
 #define GRAPH_NODE_TYPE_START                 0x00A
 #define GRAPH_NODE_TYPE_LEVEL_OF_DETAIL       0x00B
-#define GRAPH_NODE_TYPE_SWITCH_CASE          (0x00C | GRAPH_NODE_TYPE_FUNCTIONAL)
-#define GRAPH_NODE_TYPE_CAMERA               (0x014 | GRAPH_NODE_TYPE_FUNCTIONAL)
+#define GRAPH_NODE_TYPE_SWITCH_CASE          (0x00C)
+#define GRAPH_NODE_TYPE_CAMERA               (0x014)
 #define GRAPH_NODE_TYPE_TRANSLATION_ROTATION  0x015
 #define GRAPH_NODE_TYPE_TRANSLATION           0x016
 #define GRAPH_NODE_TYPE_ROTATION              0x017
@@ -39,14 +39,14 @@
 #define GRAPH_NODE_TYPE_SCALE                 0x01C
 #define GRAPH_NODE_TYPE_SHADOW                0x028
 #define GRAPH_NODE_TYPE_OBJECT_PARENT         0x029
-#define GRAPH_NODE_TYPE_GENERATED_LIST       (0x02A | GRAPH_NODE_TYPE_FUNCTIONAL)
-#define GRAPH_NODE_TYPE_BACKGROUND           (0x02C | GRAPH_NODE_TYPE_FUNCTIONAL)
-#define GRAPH_NODE_TYPE_HELD_OBJ             (0x02E | GRAPH_NODE_TYPE_FUNCTIONAL)
+#define GRAPH_NODE_TYPE_GENERATED_LIST       (0x02A)
+#define GRAPH_NODE_TYPE_BACKGROUND           (0x02C)
+#define GRAPH_NODE_TYPE_HELD_OBJ             (0x02E)
 #define GRAPH_NODE_TYPE_CULLING_RADIUS        0x02F
 
 // The number of master lists. A master list determines the order and render
 // mode with which display lists are drawn.
-#define GFX_NUM_MASTER_LISTS 8
+#define GFX_NUM_MASTER_LISTS 6
 
 // Passed as first argument to a GraphNodeFunc to give information about in
 // which context it was called and what it is expected to do.
@@ -115,7 +115,7 @@ struct DisplayListNode {
     void *displayList;
     void *material;
     struct DisplayListNode *next;
-    u8 aaSetting;
+    u8 fancyAA;
 };
 
 /** GraphNode that manages the 8 top-level display lists that will be drawn

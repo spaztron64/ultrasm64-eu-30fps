@@ -76,6 +76,10 @@ Mat4 gCameraTransform;
 f32 gHalfFovVert;
 f32 gHalfFovHor;
 u32 gCurrAnimPos;
+u8 gMarioAnimHeap[0x4000];
+struct AnimInfo gMarioGfxAnim;
+struct DmaHandlerList gMarioGfxAnimBuf;
+struct DmaHandlerList *gMarioGfxAnimList = &gMarioGfxAnimBuf;
 
 struct AllocOnlyPool *gDisplayListHeap;
 
@@ -191,7 +195,6 @@ void update_level_fog(Gfx **gfx) {
  */
 void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
     struct DisplayListNode *currList;
-    s32 enableZBuffer = (node->node.flags & GRAPH_RENDER_Z_BUFFER) != 0;
     struct RenderModeContainer *mode2List;
     Gfx *gfx = gDisplayListHead;
     s32 switchAA = FALSE;
@@ -690,14 +693,50 @@ void geo_process_animated_part(struct GraphNodeAnimatedPart *node) {
     gMatStackIndex--;
 }
 
+void load_mario_anim_gfx(void) {
+    s32 targetAnimID = gMarioState->marioObj->header.gfx.animInfo.animID;
+    struct Animation *targetAnim = gMarioGfxAnimList->bufTarget;
+
+    if (load_patchable_table(gMarioGfxAnimList, targetAnimID)) {
+        targetAnim->values = (void *) VIRTUAL_TO_PHYSICAL((u8 *) targetAnim + (uintptr_t) targetAnim->values);
+        targetAnim->index = (void *) VIRTUAL_TO_PHYSICAL((u8 *) targetAnim + (uintptr_t) targetAnim->index);
+    }
+
+    if (gMarioGfxAnim.animID != targetAnimID) {
+        gMarioGfxAnim.animID = targetAnimID;
+        gMarioGfxAnim.curAnim = targetAnim;
+        gMarioGfxAnim.animAccel = 0;
+        gMarioGfxAnim.animYTrans = gMarioState->unkB0;
+    }
+        
+        if (gMarioState->marioObj->header.gfx.animInfo.animAccel == 0) {
+            gMarioGfxAnim.animFrame = gMarioState->marioObj->header.gfx.animInfo.animFrame;
+        } else {
+            gMarioGfxAnim.animFrameAccelAssist = gMarioState->marioObj->header.gfx.animInfo.animFrameAccelAssist;
+            gMarioGfxAnim.animFrame = gMarioState->marioObj->header.gfx.animInfo.animFrame;
+        }
+    if (gMarioState->marioObj->header.gfx.animInfo.animAccel != 0) {
+        gMarioGfxAnim.animAccel = gMarioState->marioObj->header.gfx.animInfo.animAccel;
+    }
+}
+
 /**
  * Initialize the animation-related global variables for the currently drawn
  * object's animation.
  */
 void geo_set_animation_globals(struct AnimInfo *node) {
-    struct Animation *anim = node->curAnim;
+    struct AnimInfo *tempNode;
+    struct Animation *anim;
 
-    node->animTimer = gAreaUpdateCounter;
+    if (gCurGraphNodeObjectNode == gMarioState->marioObj) {
+        load_mario_anim_gfx();
+        tempNode = &gMarioGfxAnim;
+    } else {
+        tempNode = node;
+    }
+    anim = tempNode->curAnim;
+
+    tempNode->animTimer = gAreaUpdateCounter;
     if (anim->flags & ANIM_FLAG_HOR_TRANS) {
         gCurrAnimType = ANIM_TYPE_VERTICAL_TRANSLATION;
     } else if (anim->flags & ANIM_FLAG_VERT_TRANS) {
@@ -708,7 +747,7 @@ void geo_set_animation_globals(struct AnimInfo *node) {
         gCurrAnimType = ANIM_TYPE_TRANSLATION;
     }
 
-    gCurrAnimFrame = node->animFrame;
+    gCurrAnimFrame = tempNode->animFrame;
     gCurrAnimEnabled = (anim->flags & ANIM_FLAG_5) == 0;
     gCurrAnimAttribute = segmented_to_virtual((void *) anim->index);
     gCurrAnimData = segmented_to_virtual((void *) anim->values);
@@ -717,7 +756,7 @@ void geo_set_animation_globals(struct AnimInfo *node) {
     if (anim->animYTransDivisor == 0) {
         gCurrAnimTranslationMultiplier = 1.0f;
     } else {
-        gCurrAnimTranslationMultiplier = (f32) node->animYTrans / (f32) anim->animYTransDivisor;
+        gCurrAnimTranslationMultiplier = (f32) tempNode->animYTrans / (f32) anim->animYTransDivisor;
     }
 }
 
@@ -929,6 +968,7 @@ void geo_process_object(struct Object *node) {
         node->header.gfx.cameraToObject[1] = gMatStack[gMatStackIndex][3][1];
         node->header.gfx.cameraToObject[2] = gMatStack[gMatStackIndex][3][2];
 
+        gCurGraphNodeObject = (struct GraphNodeObject *) node;
         // FIXME: correct types
         if (node->header.gfx.animInfo.curAnim != NULL) {
             geo_set_animation_globals(&node->header.gfx.animInfo);
@@ -939,16 +979,15 @@ void geo_process_object(struct Object *node) {
             mtxf_to_mtx(mtx, gMatStack[gMatStackIndex]);
             gMatStackFixed[gMatStackIndex] = mtx;
             if (node->header.gfx.sharedChild != NULL) {
-                gCurGraphNodeObject = (struct GraphNodeObject *) node;
                 node->header.gfx.sharedChild->parent = &node->header.gfx.node;
                 geo_process_node_and_siblings(node->header.gfx.sharedChild);
                 node->header.gfx.sharedChild->parent = NULL;
-                gCurGraphNodeObject = NULL;
             }
             if (node->header.gfx.node.children != NULL) {
                 geo_process_node_and_siblings(node->header.gfx.node.children);
             }
         }
+        gCurGraphNodeObject = NULL;
 
         gMatStackIndex--;
         gCurrAnimType = ANIM_TYPE_NONE;

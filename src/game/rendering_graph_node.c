@@ -87,7 +87,7 @@ struct RenderModeContainer {
     u32 modes[6];
 };
 
-u8 gAntiAliasing = 1;
+u8 gAntiAliasing = 0;
 
 /* Rendermode settings for cycle 2 for all 8 layers. */
 static struct RenderModeContainer renderModeTable_2Cycle[3] = { { {

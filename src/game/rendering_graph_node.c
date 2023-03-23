@@ -422,17 +422,16 @@ void linear_mtxf_transpose_mul_vec3f_render(Mat4 m, Vec3f dst, Vec3f v) {
     }
 }
 
-void setup_global_light() {
+void setup_global_light(void) {
     Lights1* curLight = (Lights1*)alloc_display_list(sizeof(Lights1));
     bcopy(&defaultLight, curLight, sizeof(Lights1));
 
     Vec3f transformedLightDirection;
-
     linear_mtxf_transpose_mul_vec3f_render(gCameraTransform, transformedLightDirection, globalLightDirection);
-
     curLight->l->l.dir[0] = (s8)(transformedLightDirection[0]);
     curLight->l->l.dir[1] = (s8)(transformedLightDirection[1]);
     curLight->l->l.dir[2] = (s8)(transformedLightDirection[2]);
+
     gSPSetLights1(gDisplayListHead++, (*curLight));
 }
 
@@ -495,21 +494,21 @@ void geo_process_camera(struct GraphNodeCamera *node) {
     gCurLookAt->l[0].l.dir[0] = (s8)(127.0f * (*cameraMatrix)[0][0]);
     gCurLookAt->l[0].l.dir[1] = (s8)(127.0f * (*cameraMatrix)[1][0]);
     gCurLookAt->l[0].l.dir[2] = (s8)(127.0f * (*cameraMatrix)[2][0]);
-    gCurLookAt->l[1].l.dir[0] = (s8)(127.0f * -(*cameraMatrix)[0][1]);
-    gCurLookAt->l[1].l.dir[1] = (s8)(127.0f * -(*cameraMatrix)[1][1]);
-    gCurLookAt->l[1].l.dir[2] = (s8)(127.0f * -(*cameraMatrix)[2][1]);
+    gCurLookAt->l[1].l.dir[0] = (s8)(127.0f * (*cameraMatrix)[0][1]);
+    gCurLookAt->l[1].l.dir[1] = (s8)(127.0f * (*cameraMatrix)[1][1]);
+    gCurLookAt->l[1].l.dir[2] = (s8)(127.0f * (*cameraMatrix)[2][1]);
     // Convert the scaled matrix to fixed-point and integrate it into the projection matrix stack
     guMtxF2L(gCameraTransform, viewMtx);
     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(viewMtx), G_MTX_PROJECTION | G_MTX_MUL | G_MTX_NOPUSH);
     setup_global_light();
-    if (node[0].fnNode.node.children != 0) {
-        gCurGraphNodeCamera = &node[0];
+    if (node->fnNode.node.children != NULL) {
+        gCurGraphNodeCamera = node;
         billboardMatrix[0][0] = coss(0);
         billboardMatrix[0][1] = sins(0);
         billboardMatrix[1][0] = -billboardMatrix[0][1];
         billboardMatrix[1][1] = billboardMatrix[0][0];
         node->matrixPtr = &gCameraTransform;
-        geo_process_node_and_siblings(node[0].fnNode.node.children);
+        geo_process_node_and_siblings(node->fnNode.node.children);
         gCurGraphNodeCamera = NULL;
     }
     gMatStackIndex--;

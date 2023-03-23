@@ -16,8 +16,7 @@
  * Iterate through the list of walls until all walls are checked and
  * have given their wall push.
  */
-static s32 find_wall_collisions_from_list(struct SurfaceNode *surfaceNode,
-                                          struct WallCollisionData *data) {
+static s32 find_wall_collisions_from_list(struct SurfaceNode *surfaceNode, struct WallCollisionData *data) {
     register struct Surface *surf;
     register f32 offset;
     register f32 radius = data->radius;
@@ -235,6 +234,10 @@ static struct Surface *find_ceil_from_list(struct SurfaceNode *surfaceNode, s32 
         surf = surfaceNode->surface;
         surfaceNode = surfaceNode->next;
 
+        if (y > surf->upperY) {
+            continue;
+        }
+
         x1 = surf->vertex1[0];
         z1 = surf->vertex1[2];
         z2 = surf->vertex2[2];
@@ -410,6 +413,10 @@ static struct Surface *find_floor_from_list(struct SurfaceNode *surfaceNode, s32
     while (surfaceNode != NULL) {
         surf = surfaceNode->surface;
         surfaceNode = surfaceNode->next;
+
+        if (y < surf->lowerY) {
+            continue;
+        }
 
         x1 = surf->vertex1[0];
         z1 = surf->vertex1[2];

@@ -43,6 +43,14 @@
 #define SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 240
 
+#define THREAD1_STACK 0x100
+#define THREAD2_STACK 0x100
+#define THREAD3_STACK 0x200
+#define THREAD4_STACK 0x800
+#define THREAD5_STACK 0x1000
+#define THREAD6_STACK 0x400
+#define THREAD9_STACK 0x800
+
 // Border Height Define for NTSC Versions
 #ifdef TARGET_N64
 #ifndef VERSION_EU

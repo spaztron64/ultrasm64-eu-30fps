@@ -116,7 +116,4 @@ void bhv_sl_walking_penguin_loop(void) {
     adjustedZPos += perpendicularOffset * coss(0x1BB0);
     o->oSLWalkingPenguinWindCollisionXPos = adjustedXPos;
     o->oSLWalkingPenguinWindCollisionZPos = adjustedZPos;
-
-    print_debug_bottom_up("x %d", o->oPosX);
-    print_debug_bottom_up("z %d", o->oPosZ);
 }

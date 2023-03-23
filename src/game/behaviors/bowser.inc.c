@@ -277,38 +277,6 @@ void bowser_act_intro_walk(void) {
 }
 
 /**
- * List of actions to debug Bowser
- */
-s8 sBowserDebugActions[] = {
-    BOWSER_ACT_CHARGE_MARIO,
-    BOWSER_ACT_SPIT_FIRE_INTO_SKY,
-    BOWSER_ACT_SPIT_FIRE_ONTO_FLOOR,
-    BOWSER_ACT_HIT_MINE,
-    BOWSER_ACT_BIG_JUMP,
-    BOWSER_ACT_WALK_TO_MARIO,
-    BOWSER_ACT_BREATH_FIRE,
-    BOWSER_ACT_DEAD,
-    BOWSER_ACT_DANCE,
-    BOWSER_ACT_TELEPORT,
-    BOWSER_ACT_QUICK_JUMP,
-    BOWSER_ACT_TILT_LAVA_PLATFORM,
-    BOWSER_ACT_DANCE,
-    BOWSER_ACT_DANCE,
-    BOWSER_ACT_DANCE,
-    BOWSER_ACT_DANCE,
-};
-
-/**
- * Debug function that allows to change Bowser's actions (most of them)
- */
-UNUSED static void bowser_debug_actions(void) {
-    if (gDebugInfo[DEBUG_PAGE_ENEMYINFO][1] != 0) {
-        o->oAction = sBowserDebugActions[gDebugInfo[DEBUG_PAGE_ENEMYINFO][2] & 0x0F];
-        gDebugInfo[DEBUG_PAGE_ENEMYINFO][1] = 0;
-    }
-}
-
-/**
  * Set actions (and attacks) for Bowser in "Bowser in the Dark World"
  */
 void bowser_bitdw_actions(void) {
@@ -1133,8 +1101,6 @@ void bowser_act_jump_onto_stage(void) {
             }
             break;
     }
-
-    print_debug_bottom_up("sp %d", o->oForwardVel);
 }
 
 /**

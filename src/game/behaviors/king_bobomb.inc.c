@@ -112,8 +112,6 @@ void king_bobomb_act_3(void) {
         cur_obj_init_animation_with_sound(1);
         o->oKingBobombUnkFC += player_performed_grab_escape_action();
 
-        print_debug_bottom_up("%d", o->oKingBobombUnkFC);
-
         if (o->oKingBobombUnkFC > 10) {
             o->oKingBobombUnk88 = 3;
             o->oAction = 2;

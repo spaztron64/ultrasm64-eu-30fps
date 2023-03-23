@@ -636,7 +636,4 @@ void bhv_ukiki_loop(void) {
     }
 
     o->oInteractStatus = 0;
-
-    print_debug_bottom_up("mode   %d\n", o->oAction);
-    print_debug_bottom_up("action %d\n", o->oHeldState);
 }

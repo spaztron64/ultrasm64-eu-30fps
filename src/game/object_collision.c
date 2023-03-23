@@ -1,7 +1,6 @@
 #include <PR/ultratypes.h>
 
 #include "sm64.h"
-#include "debug.h"
 #include "interaction.h"
 #include "mario.h"
 #include "object_list_processor.h"
@@ -13,7 +12,6 @@ struct Object *debug_print_obj_collision(struct Object *a) {
     s32 i;
 
     for (i = 0; i < a->numCollidedObjs; i++) {
-        print_debug_top_down_objectinfo("ON", 0);
         sp24 = a->collidedObjs[i];
         if (sp24 != gMarioObject) {
             return sp24;

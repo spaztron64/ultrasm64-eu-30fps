@@ -499,13 +499,7 @@ static void big_boo_act_0(void) {
 
     o->oBooParentBigBoo = NULL;
 
-    if (boo_should_be_active()
-#ifndef VERSION_JP
-        && o->oBigBooNumMinionBoosKilled >= gDebugInfo[DEBUG_PAGE_ENEMYINFO][0] + 5
-#else
-        && o->oBigBooNumMinionBoosKilled >= 5
-#endif
-    ) {
+    if (boo_should_be_active() && o->oBigBooNumMinionBoosKilled >= 5) {
         o->oAction = 1;
 
         cur_obj_set_pos_to_home();

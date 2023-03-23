@@ -76,7 +76,6 @@ void bhv_lll_moving_octagonal_mesh_platform_loop(void) {
             lll_octagonal_mesh_move(D_8032F8C8[o->oBehParams2ndByte], o->oHorizontalMovementUnkF8);
     }
 
-    print_debug_top_down_objectinfo("number %d\n", o->oHorizontalMovementUnkF8);
     cur_obj_move_using_fvel_and_gravity();
 
     if (lll_octagonal_mesh_find_y_offset(&o->oHorizontalMovementUnk104,

@@ -170,9 +170,6 @@ void chuckya_act_0(void) {
     if (o->oForwardVel > 1.0f) {
         cur_obj_play_sound_1(SOUND_AIR_CHUCKYA_MOVE);
     }
-
-    print_debug_bottom_up("fg %d", sp3C);
-    print_debug_bottom_up("sp %d", o->oForwardVel);
 }
 
 void chuckya_act_1(void) {
@@ -186,7 +183,6 @@ void chuckya_act_1(void) {
     } else {
         if (o->oSubAction == 1) {
             o->oChuckyaUnk100 += player_performed_grab_escape_action();
-            print_debug_bottom_up("%d", o->oChuckyaUnk100);
             if (o->oChuckyaUnk100 > 10) {
                 o->oChuckyaUnk88 = 3;
                 o->oAction = 3;
@@ -267,6 +263,4 @@ void bhv_chuckya_loop(void) {
     }
 
     o->oInteractStatus = 0;
-
-    print_debug_bottom_up("md %d", o->oAction);
 }

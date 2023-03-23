@@ -1,7 +1,6 @@
 #include <PR/ultratypes.h>
 
 #include "sm64.h"
-#include "game/debug.h"
 #include "game/level_update.h"
 #include "game/mario.h"
 #include "game/object_list_processor.h"
@@ -361,20 +360,9 @@ f32 find_ceil(f32 posX, f32 posY, f32 posZ, struct Surface **pceil) {
  **************************************************/
 
 /**
- * Find the height of the highest floor below an object.
- */
-f32 unused_obj_find_floor_height(struct Object *obj) {
-    struct Surface *floor;
-    f32 floorHeight = find_floor(obj->oPosX, obj->oPosY, obj->oPosZ, &floor);
-    return floorHeight;
-}
-
-/**
  * Basically a local variable that passes through floor geo info.
  */
 struct FloorGeometry sFloorGeo;
-
-UNUSED static u8 unused8038BE50[0x40];
 
 /**
  * Return the floor height underneath (xPos, yPos, zPos) and populate `floorGeo`
@@ -484,32 +472,6 @@ f32 find_floor_height(f32 x, f32 y, f32 z) {
     struct Surface *floor;
 
     f32 floorHeight = find_floor(x, y, z, &floor);
-
-    return floorHeight;
-}
-
-/**
- * Find the highest dynamic floor under a given position. Perhaps originally static
- * and dynamic floors were checked separately.
- */
-f32 unused_find_dynamic_floor(f32 xPos, f32 yPos, f32 zPos, struct Surface **pfloor) {
-    struct SurfaceNode *surfaceList;
-    struct Surface *floor;
-    f32 floorHeight = FLOOR_LOWER_LIMIT;
-
-    // Would normally cause PUs, but dynamic floors unload at that range.
-    s16 x = (s16) xPos;
-    s16 y = (s16) yPos;
-    s16 z = (s16) zPos;
-
-    // Each level is split into cells to limit load, find the appropriate cell.
-    s16 cellX = ((x + LEVEL_BOUNDARY_MAX) / CELL_SIZE) & NUM_CELLS_INDEX;
-    s16 cellZ = ((z + LEVEL_BOUNDARY_MAX) / CELL_SIZE) & NUM_CELLS_INDEX;
-
-    surfaceList = gDynamicSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_FLOORS].next;
-    floor = find_floor_from_list(surfaceList, x, y, z, &floorHeight);
-
-    *pfloor = floor;
 
     return floorHeight;
 }
@@ -633,7 +595,6 @@ f32 find_water_level(f32 x, f32 z) {
 f32 find_poison_gas_level(f32 x, f32 z) {
     s32 i;
     s32 numRegions;
-    UNUSED u8 filler[4];
     s16 val;
     f32 loX, hiX, loZ, hiZ;
     f32 gasLevel = FLOOR_LOWER_LIMIT;
@@ -665,122 +626,4 @@ f32 find_poison_gas_level(f32 x, f32 z) {
     }
 
     return gasLevel;
-}
-
-/**************************************************
- *                      DEBUG                     *
- **************************************************/
-
-/**
- * Finds the length of a surface list for debug purposes.
- */
-static s32 surface_list_length(struct SurfaceNode *list) {
-    s32 count = 0;
-
-    while (list != NULL) {
-        list = list->next;
-        count++;
-    }
-
-    return count;
-}
-
-/**
- * Print the area,number of walls, how many times they were called,
- * and some allocation information.
- */
-void debug_surface_list_info(f32 xPos, f32 zPos) {
-    struct SurfaceNode *list;
-    s32 numFloors = 0;
-    s32 numWalls = 0;
-    s32 numCeils = 0;
-
-    s32 cellX = (xPos + LEVEL_BOUNDARY_MAX) / CELL_SIZE;
-    s32 cellZ = (zPos + LEVEL_BOUNDARY_MAX) / CELL_SIZE;
-
-    list = gStaticSurfacePartition[cellZ & NUM_CELLS_INDEX][cellX & NUM_CELLS_INDEX][SPATIAL_PARTITION_FLOORS].next;
-    numFloors += surface_list_length(list);
-
-    list = gDynamicSurfacePartition[cellZ & NUM_CELLS_INDEX][cellX & NUM_CELLS_INDEX][SPATIAL_PARTITION_FLOORS].next;
-    numFloors += surface_list_length(list);
-
-    list = gStaticSurfacePartition[cellZ & NUM_CELLS_INDEX][cellX & NUM_CELLS_INDEX][SPATIAL_PARTITION_WALLS].next;
-    numWalls += surface_list_length(list);
-
-    list = gDynamicSurfacePartition[cellZ & NUM_CELLS_INDEX][cellX & NUM_CELLS_INDEX][SPATIAL_PARTITION_WALLS].next;
-    numWalls += surface_list_length(list);
-
-    list = gStaticSurfacePartition[cellZ & NUM_CELLS_INDEX][cellX & NUM_CELLS_INDEX][SPATIAL_PARTITION_CEILS].next;
-    numCeils += surface_list_length(list);
-
-    list = gDynamicSurfacePartition[cellZ & NUM_CELLS_INDEX][cellX & NUM_CELLS_INDEX][SPATIAL_PARTITION_CEILS].next;
-    numCeils += surface_list_length(list);
-
-    print_debug_top_down_mapinfo("area   %x", cellZ * NUM_CELLS + cellX);
-
-    // Names represent ground, walls, and roofs as found in SMS.
-    print_debug_top_down_mapinfo("dg %d", numFloors);
-    print_debug_top_down_mapinfo("dw %d", numWalls);
-    print_debug_top_down_mapinfo("dr %d", numCeils);
-
-    set_text_array_x_y(80, -3);
-
-    print_debug_top_down_mapinfo("%d", gNumCalls.floor);
-    print_debug_top_down_mapinfo("%d", gNumCalls.wall);
-    print_debug_top_down_mapinfo("%d", gNumCalls.ceil);
-
-    set_text_array_x_y(-80, 0);
-
-    // listal- List Allocated?, statbg- Static Background?, movebg- Moving Background?
-    print_debug_top_down_mapinfo("listal %d", gSurfaceNodesAllocated);
-    print_debug_top_down_mapinfo("statbg %d", gNumStaticSurfaces);
-    print_debug_top_down_mapinfo("movebg %d", gSurfacesAllocated - gNumStaticSurfaces);
-
-    gNumCalls.floor = 0;
-    gNumCalls.ceil = 0;
-    gNumCalls.wall = 0;
-}
-
-/**
- * An unused function that finds and interacts with any type of surface.
- * Perhaps an original implementation of surfaces before they were more specialized.
- */
-s32 unused_resolve_floor_or_ceil_collisions(s32 checkCeil, f32 *px, f32 *py, f32 *pz, f32 radius,
-                                            struct Surface **psurface, f32 *surfaceHeight) {
-    f32 nx, ny, nz, oo;
-    f32 x = *px;
-    f32 y = *py;
-    f32 z = *pz;
-    f32 offset, distance;
-
-    *psurface = NULL;
-
-    if (checkCeil) {
-        *surfaceHeight = find_ceil(x, y, z, psurface);
-    } else {
-        *surfaceHeight = find_floor(x, y, z, psurface);
-    }
-
-    if (*psurface == NULL) {
-        return -1;
-    }
-
-    nx = (*psurface)->normal.x;
-    ny = (*psurface)->normal.y;
-    nz = (*psurface)->normal.z;
-    oo = (*psurface)->originOffset;
-
-    offset = nx * x + ny * y + nz * z + oo;
-    distance = offset >= 0 ? offset : -offset;
-
-    // Interesting surface interaction that should be surf type independent.
-    if (distance < radius) {
-        *px += nx * (radius - offset);
-        *py += ny * (radius - offset);
-        *pz += nz * (radius - offset);
-
-        return 1;
-    }
-
-    return 0;
 }

@@ -5,7 +5,6 @@ A basic debug library that makes use of the USB library for N64
 flashcarts. 
 https://github.com/buu342/N64-UNFLoader
 ***************************************************************/
-#include "debug.h"
 #ifndef LIBDRAGON
     #include <ultra64.h> 
     #include <PR/os_internal.h> // Needed for Crash's Linux toolchain

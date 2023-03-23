@@ -48,7 +48,7 @@ void falling_bowser_plat_act_check(void) {
     if (o->oSubAction == 0) {
         o->oBitsPlatformTimer = 0;
     } else {
-        if ((gDebugInfo[DEBUG_PAGE_EFFECTINFO][6] + 20)
+        if (20
             * (o->oBehParams2ndByte - 1) < o->oBitsPlatformTimer) {
             o->oAction = BOWSER_BITS_PLAT_ACT_FALL;
         }
@@ -75,8 +75,7 @@ void falling_bowser_plat_act_fall(void) {
     }
 
     if (!(o->oTimer & 1) && o->oTimer < 14) {
-        angle = sBowserFallingPlatform[o->oBehParams2ndByte].angle
-                    + (gDebugInfo[DEBUG_PAGE_EFFECTINFO][1] << 8);
+        angle = sBowserFallingPlatform[o->oBehParams2ndByte].angle;
         val = -(o->oTimer / 2) * 290 + 1740;
         vec3f_copy_2(pos, &o->oPosX);
         o->oPosX = sBowserFallingPlatform[o->oBehParams2ndByte].posX + sins(angle + 0x14B0) * val;

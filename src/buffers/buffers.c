@@ -16,14 +16,14 @@ ALIGNED16 u8 gAudioHeap[DOUBLE_SIZE_ON_64_BIT(0x31200) - 0x4800];
 ALIGNED16 u8 gAudioHeap[DOUBLE_SIZE_ON_64_BIT(0x31200)];
 #endif
 
-ALIGNED8 u8 gIdleThreadStack[0x800];
-ALIGNED8 u8 gThread3Stack[0x2000];
-ALIGNED8 u8 gThread4Stack[0x2000];
-ALIGNED8 u8 gThread5Stack[0x2000];
-ALIGNED8 u8 gThread9Stack[0x2000];
+ALIGNED8 u8 gIdleThreadStack[THREAD1_STACK];
+ALIGNED8 u8 gThread3Stack[THREAD3_STACK];
+ALIGNED8 u8 gThread4Stack[THREAD4_STACK];
+ALIGNED8 u8 gThread5Stack[THREAD5_STACK];
 #if ENABLE_RUMBLE
-ALIGNED8 u8 gThread6Stack[0x2000];
+ALIGNED8 u8 gThread6Stack[THREAD6_STACK];
 #endif
+ALIGNED8 u8 gThread9Stack[THREAD9_STACK];
 // 0x400 bytes
 ALIGNED8 u8 gGfxSPTaskStack[SP_DRAM_STACK_SIZE8];
 // 0xc00 bytes for f3dex, 0x900 otherwise

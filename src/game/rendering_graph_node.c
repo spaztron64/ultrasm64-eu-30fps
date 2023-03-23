@@ -87,7 +87,7 @@ struct RenderModeContainer {
     u32 modes[6];
 };
 
-u8 gAntiAliasing = 0;
+u8 gAntiAliasing = 1;
 
 /* Rendermode settings for cycle 2 for all 8 layers. */
 static struct RenderModeContainer renderModeTable_2Cycle[3] = { { {
@@ -228,12 +228,9 @@ void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
 
 static void *alloc_only_pool_allocGRAPH(struct AllocOnlyPool *pool, s32 size) { // refreshes once per frame
     void *addr;
-
-    //   if (size > 0 && pool->usedSpace + size <= pool->totalSpace) {
     addr = pool->freePtr;
     pool->freePtr += size;
     pool->usedSpace += size;
-    //   }
     return addr;
 }
 
@@ -250,8 +247,7 @@ static void *alloc_display_listGRAPH(u32 size) {
 void geo_append_display_list(void *displayList, s16 layer) {
 
     if (gCurGraphNodeMasterList != 0) {
-        struct DisplayListNode *listNode =
-            alloc_only_pool_allocGRAPH(gDisplayListHeap, sizeof(struct DisplayListNode));
+        struct DisplayListNode *listNode = alloc_only_pool_allocGRAPH(gDisplayListHeap, sizeof(struct DisplayListNode));
 
         listNode->transform = gMatStackFixed[gMatStackIndex];
         listNode->displayList = displayList;
@@ -400,8 +396,6 @@ void interpolate_node(struct Object *node) {
         node->header.gfx.angleLerp[i] = approach_angle_lerp(node->header.gfx.angleLerp[i], node->header.gfx.angle[i]);
     }
 }
-void geo_process_object(struct Object *node);
-u8 sSkipObject = 0;
 
 f32 billboardMatrix[3][4] = {
     { 0, 0, 0, 0 },
@@ -1058,7 +1052,7 @@ void linear_mtxf_mul_vec3f_and_translate(Mat4 m, Vec3f dst, Vec3f v) {
  * Process an object node.
  */
 void geo_process_object(struct Object *node) {
-    if (node != gMarioState->marioObj || gAreaUpdateCounter <= 8) {
+    if ((gMarioState->marioObj == NULL) || (node != gMarioState->marioObj && node != gMarioState->marioObj->platform && node != gMarioState->riddenObj) || gAreaUpdateCounter <= 8) {
         if (gMoveSpeed && node->header.gfx.bothMats >= 2)
             interpolate_node(node);
         else

@@ -233,9 +233,9 @@ static struct Surface *find_ceil_from_list(struct SurfaceNode *surfaceNode, s32 
         surf = surfaceNode->surface;
         surfaceNode = surfaceNode->next;
 
-        if (y > surf->upperY) {
+        /*if (y > surf->upperY) {
             continue;
-        }
+        }*/
 
         x1 = surf->vertex1[0];
         z1 = surf->vertex1[2];
@@ -402,9 +402,9 @@ static struct Surface *find_floor_from_list(struct SurfaceNode *surfaceNode, s32
         surf = surfaceNode->surface;
         surfaceNode = surfaceNode->next;
 
-        if (y < surf->lowerY) {
+        /*if (y < surf->lowerY) {
             continue;
-        }
+        }*/
 
         x1 = surf->vertex1[0];
         z1 = surf->vertex1[2];

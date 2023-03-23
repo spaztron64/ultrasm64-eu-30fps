@@ -400,6 +400,10 @@ u8 gShowProfilerNew = TRUE;
 u32 gVideoTime = 0;
 u32 gSoundTime = 0;
 u32 gGameTime = 0;
+u32 totalCPUReads[32];
+u32 totalRSPReads[32];
+u32 totalRDPReads[32];
+u8 perfIteration = 0;
 
 // Call once per frame
 void calculate_and_update_fps(void) {
@@ -415,24 +419,39 @@ void calculate_and_update_fps(void) {
 }
 
 void render_profiler(void) {
-    struct ProfilerFrameData *profiler;
     struct ProfilerFrameData *profilerGfx;
+    profilerGfx = &gProfilerFrameData[gCurrentFrameIndex3 ^ 1];
+    totalRSPReads[30] -= totalRSPReads[perfIteration];
+    totalRSPReads[perfIteration] = OS_CYCLES_TO_USEC(profilerGfx->gfxTimes[1] - profilerGfx->gfxTimes[0]);
+    totalRSPReads[30] += OS_CYCLES_TO_USEC(profilerGfx->gfxTimes[1] - profilerGfx->gfxTimes[0]);
+    totalRDPReads[30] -= totalRDPReads[perfIteration];
+    totalRDPReads[perfIteration] = OS_CYCLES_TO_USEC(profilerGfx->gfxTimes[2] - profilerGfx->gfxTimes[0]);
+    totalRDPReads[30] += OS_CYCLES_TO_USEC(profilerGfx->gfxTimes[2] - profilerGfx->gfxTimes[0]);
+    totalRSPReads[31] = totalRSPReads[30] / 30;
+    totalRDPReads[31] = totalRDPReads[30] / 30;
+    calculate_and_update_fps();
+    print_text_fmt_int(32, 240 - 32, "FPS %d", gFPS);
+    print_text_fmt_int(32, 240 - 48, "CPU %d", (u32) totalCPUReads[31]);
+    print_text_fmt_int(32, 240 - 64, "RSP %d", (u32) totalRSPReads[31]);
+    print_text_fmt_int(32, 240 - 80, "RDP %d", (u32) totalRDPReads[31]);
+}
+
+void profiler_logic(void) {
+    struct ProfilerFrameData *profiler;
     u32 clockStart;
     u32 levelScriptDuration;
     u32 renderDuration;
     u32 soundDuration;
     u32 taskStart;
-    u32 videoDuration;
-    u32 i;
+    u32 rdpTime;
+    u32 cpuTime;
     taskStart = 0;
     profiler = &gProfilerFrameData[gCurrentFrameIndex1 ^ 1];
-    profilerGfx = &gProfilerFrameData[gCurrentFrameIndex3 ^ 1];
     clockStart = profiler->gameTimes[0] <= profiler->soundTimes[0] ? profiler->gameTimes[0] : profiler->soundTimes[0];
     levelScriptDuration = profiler->gameTimes[1] - clockStart;
     renderDuration = profiler->gameTimes[2] - profiler->gameTimes[1];
-    videoDuration = profilerGfx->videoTimes[1] - profilerGfx->videoTimes[0];
     profiler->numSoundTimes &= 0xFFFE;
-    for (i = 0; i < profiler->numSoundTimes; i += 2) {
+    for (s32 i = 0; i < profiler->numSoundTimes; i += 2) {
         // calculate sound duration of max - min
         soundDuration = profiler->soundTimes[i + 1] - profiler->soundTimes[i];
         taskStart += soundDuration;
@@ -445,12 +464,31 @@ void render_profiler(void) {
             renderDuration -= soundDuration;
         }
     }
-    calculate_and_update_fps();
     profiler->numSoundTimes &= 0xFFFE;
-    print_text_fmt_int(32, 240 - 32, "FPS %d", gFPS);
-    print_text_fmt_int(32, 240 - 48, "CPU %d", (u32) OS_CYCLES_TO_USEC(gVideoTime + (gSoundTime * 2) + gGameTime));
-    print_text_fmt_int(32, 240 - 64, "RSP %d", (u32) OS_CYCLES_TO_USEC(profilerGfx->gfxTimes[1] - profilerGfx->gfxTimes[0]));
-    print_text_fmt_int(32, 240 - 80, "RDP %d", (u32) OS_CYCLES_TO_USEC(profilerGfx->gfxTimes[2] - profilerGfx->gfxTimes[0]));
+
+    totalCPUReads[30] -= totalCPUReads[perfIteration];
+    cpuTime = MIN(OS_CYCLES_TO_USEC(gVideoTime + (gSoundTime * 2) + gGameTime), 66666);
+    totalCPUReads[perfIteration] = cpuTime;
+    totalCPUReads[30] += cpuTime;
+
+    /*rdpTime = IO_READ(DPC_TMEM_REG);
+    rdpTime = MAX(IO_READ(DPC_BUFBUSY_REG), rdpTime);
+    rdpTime = MAX(IO_READ(DPC_PIPEBUSY_REG), rdpTime);
+
+    rdpTime = (rdpTime * 10) / 625;
+
+    IO_WRITE(DPC_STATUS_REG, (DPC_CLR_CLOCK_CTR | DPC_CLR_CMD_CTR | DPC_CLR_PIPE_CTR | DPC_CLR_TMEM_CTR));
+
+    totalRDPReads[30] -= totalRDPReads[perfIteration];
+    totalRDPReads[perfIteration] = rdpTime;
+    totalRDPReads[30] += rdpTime;*/
+
+    totalCPUReads[31] = totalCPUReads[30] / 30;
+
+    perfIteration++;
+    if (perfIteration == 30) {
+        perfIteration = 0;
+    }
 }
 
 void ui_logic(void) {
@@ -459,6 +497,8 @@ void ui_logic(void) {
     if (gPlayer1Controller->buttonDown & U_JPAD && gPlayer1Controller->buttonPressed & L_TRIG) {
         gShowProfilerNew ^= 1;
     }
+
+    profiler_logic();
 
     if (hudDisplayFlags & HUD_DISPLAY_FLAG_CAMERA_AND_POWER) {
         s16 shownHealthWedges = gHudDisplay.wedges;

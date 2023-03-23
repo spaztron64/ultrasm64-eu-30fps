@@ -4,6 +4,7 @@
 #include "engine/graph_node.h"
 #include "math_util.h"
 #include "surface_collision.h"
+#include "game/rendering_graph_node.h"
 
 #include "trig_tables.inc.c"
 
@@ -329,29 +330,43 @@ void mtxf_rotate_xyz_and_translate(Mat4 dest, Vec3f b, Vec3s c) {
  * 'position' is the position of the object in the world
  * 'angle' rotates the object while still facing the camera.
  */
-void mtxf_billboard(Mat4 dest, Mat4 mtx, Vec3f position, s16 angle) {
-    dest[0][0] = coss(angle);
-    dest[0][1] = sins(angle);
-    dest[0][2] = 0;
-    dest[0][3] = 0;
+void mtxf_billboard(Mat4 dest, Mat4 mtx, Vec3f position, Vec3f scale, s32 angle) {
+    f32 sx = scale[0];
+    f32 sy = scale[1];
+    f32 sz = scale[2];
+    Mat4* cameraMat = &gCameraTransform;
+    for (u8 i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            dest[i][j] = (*cameraMat)[j][i];
+        }
+        dest[i][3] = 0.0f;
+    }
+    if (angle != 0x0) {
+        float m00 = dest[0][0];
+        float m01 = dest[0][1];
+        float m02 = dest[0][2];
+        float m10 = dest[1][0];
+        float m11 = dest[1][1];
+        float m12 = dest[1][2];
+        float cosa = coss(angle);
+        float sina = sins(angle);
+        dest[0][0] = cosa * m00 + sina * m10;
+        dest[0][1] = cosa * m01 + sina * m11;
+        dest[0][2] = cosa * m02 + sina * m12;
+        dest[1][0] = -sina * m00 + cosa * m10;
+        dest[1][1] = -sina * m01 + cosa * m11;
+        dest[1][2] = -sina * m02 + cosa * m12;
+    }
+    for (u8 i = 0; i < 3; i++) {
+        dest[0][i] *= sx;
+        dest[1][i] *= sy;
+        dest[2][i] *= sz;
+    }
 
-    dest[1][0] = -dest[0][1];
-    dest[1][1] = dest[0][0];
-    dest[1][2] = 0;
-    dest[1][3] = 0;
-
-    dest[2][0] = 0;
-    dest[2][1] = 0;
-    dest[2][2] = 1;
-    dest[2][3] = 0;
-
-    dest[3][0] =
-        mtx[0][0] * position[0] + mtx[1][0] * position[1] + mtx[2][0] * position[2] + mtx[3][0];
-    dest[3][1] =
-        mtx[0][1] * position[0] + mtx[1][1] * position[1] + mtx[2][1] * position[2] + mtx[3][1];
-    dest[3][2] =
-        mtx[0][2] * position[0] + mtx[1][2] * position[1] + mtx[2][2] * position[2] + mtx[3][2];
-    dest[3][3] = 1;
+    // Translation = input translation + position
+    vec3f_copy(dest[3], position);
+    vec3f_add(dest[3], mtx[3]);
+    dest[3][3] = 1.0f;
 }
 
 /**

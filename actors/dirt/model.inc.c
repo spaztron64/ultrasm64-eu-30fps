@@ -1,12 +1,28 @@
 // Dirt
 
 // 0x0302BD68
+static const Lights1 dirt_seg3_lights_0302BD68 = gdSPDefLights1(
+    0x3f, 0x19, 0x19,
+    0xff, 0x64, 0x64, 0x28, 0x28, 0x28
+);
 
 // 0x0302BD80
+static const Lights1 dirt_seg3_lights_0302BD80 = gdSPDefLights1(
+    0x19, 0x3f, 0x19,
+    0x64, 0xff, 0x64, 0x28, 0x28, 0x28
+);
 
 // 0x0302BD98
+static const Lights1 dirt_seg3_lights_0302BD98 = gdSPDefLights1(
+    0x19, 0x19, 0x3f,
+    0x64, 0x64, 0xff, 0x28, 0x28, 0x28
+);
 
 // 0x0302BDB0
+static const Lights1 dirt_seg3_lights_0302BDB0 = gdSPDefLights1(
+    0x3f, 0x3f, 0x19,
+    0xff, 0xff, 0x64, 0x28, 0x28, 0x28
+);
 
 // 0x0302BDC8
 static const Vtx dirt_seg3_vertex_0302BDC8[] = {
@@ -104,32 +120,32 @@ const Gfx dirt_seg3_dl_0302C238[] = {
 
 // 0x0302C298 - 0x0302C2B8
 const Gfx dirt_seg3_dl_0302C298[] = {
-    gsSPLightColor(LIGHT_1, 0xff6464ff),
-    gsSPLightColor(LIGHT_2, 0x3f1919ff),
+    gsSPLight(&dirt_seg3_lights_0302BD68.l, 1),
+    gsSPLight(&dirt_seg3_lights_0302BD68.a, 2),
     gsSPDisplayList(dirt_seg3_dl_0302C238),
     gsSPEndDisplayList(),
 };
 
 // 0x0302C2B8 - 0x0302C2D8
 const Gfx dirt_seg3_dl_0302C2B8[] = {
-    gsSPLightColor(LIGHT_1, 0x64ff64ff),
-    gsSPLightColor(LIGHT_2, 0x193f19ff),
+    gsSPLight(&dirt_seg3_lights_0302BD80.l, 1),
+    gsSPLight(&dirt_seg3_lights_0302BD80.a, 2),
     gsSPDisplayList(dirt_seg3_dl_0302C238),
     gsSPEndDisplayList(),
 };
 
 // 0x0302C2D8 - 0x0302C2F8
 const Gfx dirt_seg3_dl_0302C2D8[] = {
-    gsSPLightColor(LIGHT_1, 0x6464ffff),
-    gsSPLightColor(LIGHT_2, 0x19193fff),
+    gsSPLight(&dirt_seg3_lights_0302BD98.l, 1),
+    gsSPLight(&dirt_seg3_lights_0302BD98.a, 2),
     gsSPDisplayList(dirt_seg3_dl_0302C238),
     gsSPEndDisplayList(),
 };
 
 // 0x0302C2F8 - 0x0302C318
 const Gfx dirt_seg3_dl_0302C2F8[] = {
-    gsSPLightColor(LIGHT_1, 0xffff64ff),
-    gsSPLightColor(LIGHT_2, 0x3f3f19ff),
+    gsSPLight(&dirt_seg3_lights_0302BDB0.l, 1),
+    gsSPLight(&dirt_seg3_lights_0302BDB0.a, 2),
     gsSPDisplayList(dirt_seg3_dl_0302C238),
     gsSPEndDisplayList(),
 };
@@ -148,8 +164,8 @@ const Gfx dirt_seg3_dl_0302C318[] = {
 
 // 0x0302C378 - 0x0302C3B0
 const Gfx dirt_seg3_dl_0302C378[] = {
-    gsSPLightColor(LIGHT_1, 0xff6464ff),
-    gsSPLightColor(LIGHT_2, 0x3f1919ff),
+    gsSPLight(&dirt_seg3_lights_0302BD68.l, 1),
+    gsSPLight(&dirt_seg3_lights_0302BD68.a, 2),
     gsSPClearGeometryMode(G_CULL_BACK),
     gsSPVertex(dirt_seg3_vertex_0302C098, 3, 0),
     gsSP1Triangle( 0,  1,  2, 0x0),
@@ -159,8 +175,8 @@ const Gfx dirt_seg3_dl_0302C378[] = {
 
 // 0x0302C3B0 - 0x0302C3E8
 const Gfx dirt_seg3_dl_0302C3B0[] = {
-    gsSPLightColor(LIGHT_1, 0x64ff64ff),
-    gsSPLightColor(LIGHT_2, 0x193f19ff),
+    gsSPLight(&dirt_seg3_lights_0302BD80.l, 1),
+    gsSPLight(&dirt_seg3_lights_0302BD80.a, 2),
     gsSPClearGeometryMode(G_CULL_BACK),
     gsSPVertex(dirt_seg3_vertex_0302C098, 3, 0),
     gsSP1Triangle( 0,  1,  2, 0x0),
@@ -170,8 +186,8 @@ const Gfx dirt_seg3_dl_0302C3B0[] = {
 
 // 0x0302C3E8 - 0x0302C420
 const Gfx dirt_seg3_dl_0302C3E8[] = {
-    gsSPLightColor(LIGHT_1, 0x6464ffff),
-    gsSPLightColor(LIGHT_2, 0x19193fff),
+    gsSPLight(&dirt_seg3_lights_0302BD98.l, 1),
+    gsSPLight(&dirt_seg3_lights_0302BD98.a, 2),
     gsSPClearGeometryMode(G_CULL_BACK),
     gsSPVertex(dirt_seg3_vertex_0302C098, 3, 0),
     gsSP1Triangle( 0,  1,  2, 0x0),
@@ -181,8 +197,8 @@ const Gfx dirt_seg3_dl_0302C3E8[] = {
 
 // 0x0302C420 - 0x0302C458
 const Gfx dirt_seg3_dl_0302C420[] = {
-    gsSPLightColor(LIGHT_1, 0xffff64ff),
-    gsSPLightColor(LIGHT_2, 0x3f3f19ff),
+    gsSPLight(&dirt_seg3_lights_0302BDB0.l, 1),
+    gsSPLight(&dirt_seg3_lights_0302BDB0.a, 2),
     gsSPClearGeometryMode(G_CULL_BACK),
     gsSPVertex(dirt_seg3_vertex_0302C098, 3, 0),
     gsSP1Triangle( 0,  1,  2, 0x0),

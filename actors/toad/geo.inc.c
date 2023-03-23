@@ -122,7 +122,7 @@ const GeoLayout toad_geo_00027C[] = {
 const GeoLayout toad_geo[] = {
    GEO_CULLING_RADIUS(1000),
    GEO_OPEN_NODE(),
-      GEO_SHADOW(SHADOW_CIRCLE_4_VERTS, 0x96, 100),
+      GEO_SHADOW(SHADOW_CIRCLE_9_VERTS, 0x96, 100),
       GEO_OPEN_NODE(),
          GEO_SCALE(0x00, 16384),
          GEO_OPEN_NODE(),

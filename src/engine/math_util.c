@@ -16,6 +16,8 @@ int gSplineState;
 // Disable the compiler warning.
 #pragma GCC diagnostic push
 
+__attribute__((aligned(8))) u8 indices[5] = { 0, 1, 2, 0, 1 };
+
 #ifdef __GNUC__
 #if defined(__clang__)
   #pragma GCC diagnostic ignored "-Wreturn-stack-address"
@@ -29,7 +31,6 @@ void *vec3f_copy(Vec3f dest, Vec3f src) {
     dest[0] = src[0];
     dest[1] = src[1];
     dest[2] = src[2];
-    return &dest; //! warning: function returns address of local variable
 }
 
 /// Set vector 'dest' to (x, y, z)
@@ -37,31 +38,44 @@ void *vec3f_set(Vec3f dest, f32 x, f32 y, f32 z) {
     dest[0] = x;
     dest[1] = y;
     dest[2] = z;
-    return &dest; //! warning: function returns address of local variable
 }
 
 /// Add vector 'a' to 'dest'
 void *vec3f_add(Vec3f dest, Vec3f a) {
-    dest[0] += a[0];
-    dest[1] += a[1];
-    dest[2] += a[2];
-    return &dest; //! warning: function returns address of local variable
+    register f32 *temp = dest;
+    register f32 sum, sum2;
+    while (temp < dest + 3) {
+        sum = *a;
+        a++;
+        sum2 = *temp;
+        temp++;
+        temp[-1] = sum + sum2;
+    }
 }
 
 /// Make 'dest' the sum of vectors a and b.
 void *vec3f_sum(Vec3f dest, Vec3f a, Vec3f b) {
-    dest[0] = a[0] + b[0];
-    dest[1] = a[1] + b[1];
-    dest[2] = a[2] + b[2];
-    return &dest; //! warning: function returns address of local variable
+    register f32 *temp = dest;
+    register f32 x, y;
+    while (temp < dest + 3) {
+        x = *a;
+        a++;
+        y = *b;
+        b++;
+        *temp = x + y;
+        temp++;
+    }
 }
 
 /// Copy vector src to dest
 void *vec3s_copy(Vec3s dest, Vec3s src) {
-    dest[0] = src[0];
-    dest[1] = src[1];
-    dest[2] = src[2];
-    return &dest; //! warning: function returns address of local variable
+    register s16 x = src[0];
+    register s16 y = src[1];
+    register s16 z = src[2];
+
+    dest[0] = x;
+    dest[1] = y;
+    dest[2] = z;
 }
 
 /// Set vector 'dest' to (x, y, z)
@@ -69,7 +83,6 @@ void *vec3s_set(Vec3s dest, s16 x, s16 y, s16 z) {
     dest[0] = x;
     dest[1] = y;
     dest[2] = z;
-    return &dest; //! warning: function returns address of local variable
 }
 
 /// Add vector a to 'dest'
@@ -77,7 +90,6 @@ void *vec3s_add(Vec3s dest, Vec3s a) {
     dest[0] += a[0];
     dest[1] += a[1];
     dest[2] += a[2];
-    return &dest; //! warning: function returns address of local variable
 }
 
 /// Make 'dest' the sum of vectors a and b.
@@ -85,7 +97,6 @@ void *vec3s_sum(Vec3s dest, Vec3s a, Vec3s b) {
     dest[0] = a[0] + b[0];
     dest[1] = a[1] + b[1];
     dest[2] = a[2] + b[2];
-    return &dest; //! warning: function returns address of local variable
 }
 
 /// Subtract vector a from 'dest'
@@ -93,7 +104,6 @@ void *vec3s_sub(Vec3s dest, Vec3s a) {
     dest[0] -= a[0];
     dest[1] -= a[1];
     dest[2] -= a[2];
-    return &dest; //! warning: function returns address of local variable
 }
 
 /// Convert short vector a to float vector 'dest'
@@ -101,7 +111,6 @@ void *vec3s_to_vec3f(Vec3f dest, Vec3s a) {
     dest[0] = a[0];
     dest[1] = a[1];
     dest[2] = a[2];
-    return &dest; //! warning: function returns address of local variable
 }
 
 /**
@@ -113,7 +122,6 @@ void *vec3f_to_vec3s(Vec3s dest, Vec3f a) {
     dest[0] = a[0] + ((a[0] > 0) ? 0.5f : -0.5f);
     dest[1] = a[1] + ((a[1] > 0) ? 0.5f : -0.5f);
     dest[2] = a[2] + ((a[2] > 0) ? 0.5f : -0.5f);
-    return &dest; //! warning: function returns address of local variable
 }
 
 /**
@@ -125,7 +133,6 @@ void *find_vector_perpendicular_to_plane(Vec3f dest, Vec3f a, Vec3f b, Vec3f c) 
     dest[0] = (b[1] - a[1]) * (c[2] - b[2]) - (c[1] - b[1]) * (b[2] - a[2]);
     dest[1] = (b[2] - a[2]) * (c[0] - b[0]) - (c[2] - b[2]) * (b[0] - a[0]);
     dest[2] = (b[0] - a[0]) * (c[1] - b[1]) - (c[0] - b[0]) * (b[1] - a[1]);
-    return &dest; //! warning: function returns address of local variable
 }
 
 /// Make vector 'dest' the cross product of vectors a and b.
@@ -133,56 +140,65 @@ void *vec3f_cross(Vec3f dest, Vec3f a, Vec3f b) {
     dest[0] = a[1] * b[2] - b[1] * a[2];
     dest[1] = a[2] * b[0] - b[2] * a[0];
     dest[2] = a[0] * b[1] - b[0] * a[1];
-    return &dest; //! warning: function returns address of local variable
 }
 
 /// Scale vector 'dest' so it has length 1
 void *vec3f_normalize(Vec3f dest) {
-    //! Possible division by zero
-    f32 invsqrt = 1.0f / sqrtf(dest[0] * dest[0] + dest[1] * dest[1] + dest[2] * dest[2]);
+    f32 size = sqrtf(dest[0] * dest[0] + dest[1] * dest[1] + dest[2] * dest[2]);
+    register f32 invsqrt;
+    if (size > 0.01f) {
 
-    dest[0] *= invsqrt;
-    dest[1] *= invsqrt;
-    dest[2] *= invsqrt;
-    return &dest; //! warning: function returns address of local variable
+        invsqrt = 1.0f / size;
+
+        dest[0] *= invsqrt;
+        dest[1] *= invsqrt;
+        dest[2] *= invsqrt;
+    } else {
+        dest[0] = 0;
+        dest[1] = 1;
+        dest[2] = 0;
+    }
 }
 
 #pragma GCC diagnostic pop
 
+struct CopyMe {
+    f32 a[0x10];
+};
+
 /// Copy matrix 'src' to 'dest'
 void mtxf_copy(Mat4 dest, Mat4 src) {
-    register s32 i;
-    register u32 *d = (u32 *) dest;
-    register u32 *s = (u32 *) src;
-
-    for (i = 0; i < 16; i++) {
-        *d++ = *s++;
-    }
+    *((struct CopyMe *) dest) = *((struct CopyMe *) src);
 }
 
 /**
  * Set mtx to the identity matrix
  */
 void mtxf_identity(Mat4 mtx) {
-    register s32 i;
-    register f32 *dest;
-    // These loops must be one line to match on -O2
-
-    // initialize everything except the first and last cells to 0
-    for (dest = (f32 *) mtx + 1, i = 0; i < 14; dest++, i++) *dest = 0;
-
-    // initialize the diagonal cells to 1
-    for (dest = (f32 *) mtx, i = 0; i < 4; dest += 5, i++) *dest = 1;
+    s32 i;
+    f32 *dest;
+    for (dest = (f32 *) mtx + 1, i = 0; i < 14; dest++, i++) {
+        *dest = 0;
+    }
+    for (dest = (f32 *) mtx, i = 0; i < 4; dest += 5, i++) {
+        *((u32 *) dest) = 0x3F800000;
+    }
 }
 
 /**
  * Set dest to a translation matrix of vector b
  */
 void mtxf_translate(Mat4 dest, Vec3f b) {
-    mtxf_identity(dest);
-    dest[3][0] = b[0];
-    dest[3][1] = b[1];
-    dest[3][2] = b[2];
+    register s32 i;
+    register f32 *pen;
+    for (pen = (f32 *) dest + 1, i = 0; i < 11; pen++, i++) {
+        *pen = 0;
+    }
+    for (pen = (f32 *) dest, i = 0; i < /*4*/ 3; pen += 5, i++) {
+        *pen = 1.0f;
+    }
+
+    vec3f_copy(&dest[3][0], &b[0]);
 }
 
 /**
@@ -191,79 +207,56 @@ void mtxf_translate(Mat4 dest, Vec3f b) {
  * at the position 'to'. The up-vector is assumed to be (0, 1, 0), but the 'roll'
  * angle allows a bank rotation of the camera.
  */
+f32 lookAtCalc(f32 sqrtsqrt) {
+    if (sqrtsqrt == 0)
+        sqrtsqrt = 0.00000000001f;
+    return -1.0f / sqrtsqrt;
+}
+void *matRow_mult(f32 *dest, f32 a) {
+    register f32 *temp = dest;
+    while (temp < dest + 12) {
+        *temp *= a;
+        temp += 4;
+    }
+}
+f32 matRow_length(f32 *a) {
+    return sqrtf(a[0] * a[0] + a[4] * a[4] + a[8] * a[8]);
+}
 void mtxf_lookat(Mat4 mtx, Vec3f from, Vec3f to, s16 roll) {
     register f32 invLength;
     f32 dx;
     f32 dz;
-    f32 xColY;
-    f32 yColY;
-    f32 zColY;
-    f32 xColZ;
-    f32 yColZ;
-    f32 zColZ;
-    f32 xColX;
-    f32 yColX;
-    f32 zColX;
-    f32 divVal;
+    s32 i, j;
 
     dx = to[0] - from[0];
     dz = to[2] - from[2];
 
-    invLength = -1.0 / MAX(sqrtf(dx * dx + dz * dz), 0.0001f);
+    invLength = lookAtCalc(sqrtf(dx * dx + dz * dz));
     dx *= invLength;
     dz *= invLength;
 
-    yColY = coss(roll);
-    xColY = sins(roll) * dz;
-    zColY = -sins(roll) * dx;
+    mtx[1][1] = coss(roll);
+    mtx[0][1] = sins(roll) * dz;
+    mtx[2][1] = -sins(roll) * dx;
 
-    xColZ = to[0] - from[0];
-    yColZ = to[1] - from[1];
-    zColZ = to[2] - from[2];
+    for (i = 0; i < 3; i++) {
+        mtx[i][2] = to[i] - from[i];
+    }
+    matRow_mult(&mtx[0][2], lookAtCalc(matRow_length(&mtx[0][2])));
 
-    invLength = -1.0 / MAX(sqrtf(xColZ * xColZ + yColZ * yColZ + zColZ * zColZ), 0.0001f);
-    xColZ *= invLength;
-    yColZ *= invLength;
-    zColZ *= invLength;
+    for (j = 0; j < 2; j++) {
+        for (i = 0; i < 3; i++) {
+            mtx[i][j] = mtx[indices[1 + i]][indices[j + 1]] * mtx[indices[2 + i]][indices[j + 2]]
+                        - mtx[indices[2 + i]][indices[j + 1]] * mtx[indices[1 + i]][indices[j + 2]];
+        }
+        matRow_mult(&mtx[0][j], -lookAtCalc(matRow_length(&mtx[0][j])));
+    }
 
-    xColX = yColY * zColZ - zColY * yColZ;
-    yColX = zColY * xColZ - xColY * zColZ;
-    zColX = xColY * yColZ - yColY * xColZ;
-
-    invLength = 1.0 / MAX(sqrtf(xColX * xColX + yColX * yColX + zColX * zColX), 0.0001f);
-
-    xColX *= invLength;
-    yColX *= invLength;
-    zColX *= invLength;
-
-    xColY = yColZ * zColX - zColZ * yColX;
-    yColY = zColZ * xColX - xColZ * zColX;
-    zColY = xColZ * yColX - yColZ * xColX;
-
-    invLength = 1.0 / MAX(sqrtf(xColY * xColY + yColY * yColY + zColY * zColY), 0.0001f);
-    xColY *= invLength;
-    yColY *= invLength;
-    zColY *= invLength;
-
-    mtx[0][0] = xColX;
-    mtx[1][0] = yColX;
-    mtx[2][0] = zColX;
-    mtx[3][0] = -(from[0] * xColX + from[1] * yColX + from[2] * zColX);
-
-    mtx[0][1] = xColY;
-    mtx[1][1] = yColY;
-    mtx[2][1] = zColY;
-    mtx[3][1] = -(from[0] * xColY + from[1] * yColY + from[2] * zColY);
-
-    mtx[0][2] = xColZ;
-    mtx[1][2] = yColZ;
-    mtx[2][2] = zColZ;
-    mtx[3][2] = -(from[0] * xColZ + from[1] * yColZ + from[2] * zColZ);
-
-    mtx[0][3] = 0;
-    mtx[1][3] = 0;
-    mtx[2][3] = 0;
-    mtx[3][3] = 1;
+    for (i = 0; i < 3; i++) {
+        mtx[3][i] = -(from[0] * mtx[0][i] + from[1] * mtx[1][i] + from[2] * mtx[2][i]);
+        mtx[i][3] = 0;
+    }
+    mtx[3][3] = 1.0f;
 }
 
 /**
@@ -271,32 +264,28 @@ void mtxf_lookat(Mat4 mtx, Vec3f from, Vec3f to, s16 roll) {
  * axis, and then translates.
  */
 void mtxf_rotate_zxy_and_translate(Mat4 dest, Vec3f translate, Vec3s rotate) {
-    register f32 sx = sins(rotate[0]);
-    register f32 cx = coss(rotate[0]);
-
-    register f32 sy = sins(rotate[1]);
-    register f32 cy = coss(rotate[1]);
-
-    register f32 sz = sins(rotate[2]);
-    register f32 cz = coss(rotate[2]);
-
-    dest[0][0] = cy * cz + sx * sy * sz;
-    dest[1][0] = -cy * sz + sx * sy * cz;
-    dest[2][0] = cx * sy;
-    dest[3][0] = translate[0];
-
-    dest[0][1] = cx * sz;
-    dest[1][1] = cx * cz;
+    f32 sx   = sins(rotate[0]);
+    f32 cx   = coss(rotate[0]);
+    f32 sy   = sins(rotate[1]);
+    f32 cy   = coss(rotate[1]);
+    f32 sz   = sins(rotate[2]);
+    f32 cz   = coss(rotate[2]);
+    f32 cycz = (cy * cz);
+    f32 cysz = (cy * sz);
+    f32 sycz = (sy * cz);
+    f32 sysz = (sy * sz);
+    dest[0][0] = ((sx * sysz) + cycz);
+    dest[1][0] = ((sx * sycz) - cysz);
+    dest[2][0] = (cx * sy);
+    dest[0][1] = (cx * sz);
+    dest[1][1] = (cx * cz);
     dest[2][1] = -sx;
-    dest[3][1] = translate[1];
-
-    dest[0][2] = -sy * cz + sx * cy * sz;
-    dest[1][2] = sy * sz + sx * cy * cz;
-    dest[2][2] = cx * cy;
-    dest[3][2] = translate[2];
-
-    dest[0][3] = dest[1][3] = dest[2][3] = 0.0f;
-    dest[3][3] = 1.0f;
+    dest[0][2] = ((sx * cysz) - sycz);
+    dest[1][2] = ((sx * cycz) + sysz);
+    dest[2][2] = (cx * cy);
+    vec3f_copy(dest[3], translate);
+    (dest)[0][3] = (dest)[1][3] = (dest)[2][3] = 0;
+    ((u32 *)(dest))[15] = 0x3F800000;
 }
 
 /**
@@ -376,35 +365,18 @@ void mtxf_align_terrain_normal(Mat4 dest, Vec3f upDir, Vec3f pos, s16 yaw) {
     Vec3f lateralDir;
     Vec3f leftDir;
     Vec3f forwardDir;
-
     vec3f_set(lateralDir, sins(yaw), 0, coss(yaw));
     vec3f_normalize(upDir);
-
     vec3f_cross(leftDir, upDir, lateralDir);
     vec3f_normalize(leftDir);
-
     vec3f_cross(forwardDir, leftDir, upDir);
     vec3f_normalize(forwardDir);
-
-    dest[0][0] = leftDir[0];
-    dest[0][1] = leftDir[1];
-    dest[0][2] = leftDir[2];
-    dest[3][0] = pos[0];
-
-    dest[1][0] = upDir[0];
-    dest[1][1] = upDir[1];
-    dest[1][2] = upDir[2];
-    dest[3][1] = pos[1];
-
-    dest[2][0] = forwardDir[0];
-    dest[2][1] = forwardDir[1];
-    dest[2][2] = forwardDir[2];
-    dest[3][2] = pos[2];
-
-    dest[0][3] = 0.0f;
-    dest[1][3] = 0.0f;
-    dest[2][3] = 0.0f;
-    dest[3][3] = 1.0f;
+    vec3f_copy(dest[0], leftDir);
+    vec3f_copy(dest[1], upDir);
+    vec3f_copy(dest[2], forwardDir);
+    vec3f_copy(dest[3], pos);
+    (dest)[0][3] = (dest)[1][3] = (dest)[2][3] = 0;
+    ((u32 *)(dest))[15] = 0x3F800000;
 }
 
 /**
@@ -415,7 +387,7 @@ void mtxf_align_terrain_normal(Mat4 dest, Vec3f upDir, Vec3f pos, s16 yaw) {
  * 'pos' is the object's position in the world
  * 'radius' is the distance from each triangle vertex to the center
  */
-void mtxf_align_terrain_triangle(Mat4 mtx, Vec3f pos, s16 yaw, f32 radius) {
+void mtxf_align_terrain_triangle(Mat4 mtx, Vec3f pos, s16 yaw, f32 radius) { // optimizeable
     struct Surface *sp74;
     Vec3f point0;
     Vec3f point1;
@@ -450,7 +422,7 @@ void mtxf_align_terrain_triangle(Mat4 mtx, Vec3f pos, s16 yaw, f32 radius) {
         point2[1] = pos[1];
     }
 
-    avgY = (point0[1] + point1[1] + point2[1]) / 3;
+    avgY = (point0[1] + point1[1] + point2[1]) * .3333333333333333333333333333333333333333333333f;
 
     vec3f_set(forward, sins(yaw), 0, coss(yaw));
     find_vector_perpendicular_to_plane(yColumn, point0, point1, point2);
@@ -478,7 +450,7 @@ void mtxf_align_terrain_triangle(Mat4 mtx, Vec3f pos, s16 yaw, f32 radius) {
     mtx[0][3] = 0;
     mtx[1][3] = 0;
     mtx[2][3] = 0;
-    mtx[3][3] = 1;
+    ((u32 *) mtx)[15] = 0x3F800000;
 }
 
 /**
@@ -490,105 +462,121 @@ void mtxf_align_terrain_triangle(Mat4 mtx, Vec3f pos, s16 yaw, f32 radius) {
  * then a.
  */
 void mtxf_mul(Mat4 dest, Mat4 a, Mat4 b) {
-    Mat4 temp;
-    register f32 entry0;
-    register f32 entry1;
-    register f32 entry2;
-
-    // column 0
-    entry0 = a[0][0];
-    entry1 = a[0][1];
-    entry2 = a[0][2];
-    temp[0][0] = entry0 * b[0][0] + entry1 * b[1][0] + entry2 * b[2][0];
-    temp[0][1] = entry0 * b[0][1] + entry1 * b[1][1] + entry2 * b[2][1];
-    temp[0][2] = entry0 * b[0][2] + entry1 * b[1][2] + entry2 * b[2][2];
-
-    // column 1
-    entry0 = a[1][0];
-    entry1 = a[1][1];
-    entry2 = a[1][2];
-    temp[1][0] = entry0 * b[0][0] + entry1 * b[1][0] + entry2 * b[2][0];
-    temp[1][1] = entry0 * b[0][1] + entry1 * b[1][1] + entry2 * b[2][1];
-    temp[1][2] = entry0 * b[0][2] + entry1 * b[1][2] + entry2 * b[2][2];
-
-    // column 2
-    entry0 = a[2][0];
-    entry1 = a[2][1];
-    entry2 = a[2][2];
-    temp[2][0] = entry0 * b[0][0] + entry1 * b[1][0] + entry2 * b[2][0];
-    temp[2][1] = entry0 * b[0][1] + entry1 * b[1][1] + entry2 * b[2][1];
-    temp[2][2] = entry0 * b[0][2] + entry1 * b[1][2] + entry2 * b[2][2];
-
-    // column 3
-    entry0 = a[3][0];
-    entry1 = a[3][1];
-    entry2 = a[3][2];
-    temp[3][0] = entry0 * b[0][0] + entry1 * b[1][0] + entry2 * b[2][0] + b[3][0];
-    temp[3][1] = entry0 * b[0][1] + entry1 * b[1][1] + entry2 * b[2][1] + b[3][1];
-    temp[3][2] = entry0 * b[0][2] + entry1 * b[1][2] + entry2 * b[2][2] + b[3][2];
-
-    temp[0][3] = temp[1][3] = temp[2][3] = 0;
-    temp[3][3] = 1;
-
-    mtxf_copy(dest, temp);
-}
-
-/**
- * Multiply a vector with a transformation matrix, which applies the transformation
- * to the point. Note that the bottom row is assumed to be [0, 0, 0, 1], which is
- * true for transformation matrices if the translation has a w component of 1.
- */
-void mtxf_mul_vec3s(Mat4 mtx, Vec3s b) {
-    register f32 x = b[0];
-    register f32 y = b[1];
-    register f32 z = b[2];
-
-    b[0] = x * mtx[0][0] + y * mtx[1][0] + z * mtx[2][0] + mtx[3][0];
-    b[1] = x * mtx[0][1] + y * mtx[1][1] + z * mtx[2][1] + mtx[3][1];
-    b[2] = x * mtx[0][2] + y * mtx[1][2] + z * mtx[2][2] + mtx[3][2];
-}
-
-/**
- * Convert float matrix 'src' to fixed point matrix 'dest'.
- * The float matrix may not contain entries larger than 65536 or the console
- * crashes. The fixed point matrix has entries with a 16-bit integer part, so
- * the floating point numbers are multiplied by 2^16 before being cast to a s32
- * integer. If this doesn't fit, the N64 and iQue consoles will throw an
- * exception. On Wii and Wii U Virtual Console the value will simply be clamped
- * and no crashes occur.
- */
-void mtxf_to_mtx(Mtx *dest, Mat4 src) {
-#ifdef AVOID_UB
-    // Avoid type-casting which is technically UB by calling the equivalent
-    // guMtxF2L function. This helps little-endian systems, as well.
-    guMtxF2L(src, dest);
-#else
-    s32 asFixedPoint;
-    register s32 i;
-    register s16 *a3 = (s16 *) dest;      // all integer parts stored in first 16 bytes
-    register s16 *t0 = (s16 *) dest + 16; // all fraction parts stored in last 16 bytes
-    register f32 *t1 = (f32 *) src;
-
-    for (i = 0; i < 16; i++) {
-        asFixedPoint = *t1++ * (1 << 16); //! float-to-integer conversion responsible for PU crashes
-        *a3++ = GET_HIGH_S16_OF_32(asFixedPoint); // integer part
-        *t0++ = GET_LOW_S16_OF_32(asFixedPoint);  // fraction part
+    f32 entry0, entry1, entry2;
+    f32 *temp = (f32 *)a;
+    f32 *temp2 = (f32 *)dest;
+    f32 *temp3;
+    for (u8 i = 0; i < 16; i++) {
+        entry0 = temp[0];
+        entry1 = temp[1];
+        entry2 = temp[2];
+        temp3 = (f32 *)b;
+        for (; (i & 3) !=3; i++) {
+            *temp2 = (entry0 * temp3[0]) + (entry1 * temp3[4]) + (entry2 * temp3[8]);
+            temp2++;
+            temp3++;
+        }
+        *temp2 = 0;
+        temp += 4;
+        temp2++;
     }
-#endif
+    vec3f_add(&dest[3][0], &b[3][0]);
+    ((u32 *) dest)[15] = 0x3F800000;
+}
+
+static float construct_float(const float f) {
+    u32 r;
+    float f_out;
+    u32 i = *(u32*)(&f);
+
+    if (!__builtin_constant_p(i))
+    {
+        return *(float*)(&i);
+    }
+
+    u32 upper = (i >> 16);
+    u32 lower = (i >>  0) & 0xFFFF;
+
+    if ((i & 0xFFFF) == 0) {
+        __asm__ ("lui %0, %1"
+                                : "=r"(r)
+                                : "K"(upper));
+    } else if ((i & 0xFFFF0000) == 0) {
+        __asm__ ("addiu %0, $0, %1"
+                                : "+r"(r)
+                                : "K"(lower));
+    } else {
+        __asm__ ("lui %0, %1"
+                                : "=r"(r)
+                                : "K"(upper));
+        __asm__ ("addiu %0, %0, %1"
+                                : "+r"(r)
+                                : "K"(lower));
+    }
+
+    __asm__ ("mtc1 %1, %0"
+                         : "=f"(f_out)
+                         : "r"(r));
+    return f_out;
+}
+
+// Converts a floating point matrix to a fixed point matrix
+// Makes some assumptions about certain fields in the matrix, which will always be true for valid matrices.
+__attribute__((optimize("Os")))
+void mtxf_to_mtx(s16* dst, f32 *src) {
+    f32 scale = construct_float(65536.0f / 1.0f);
+    // Iterate over pairs of values in the input matrix
+    for (u32 i = 0; i < 8; i++) {
+        // Read the first input in the current pair
+        f32 a = src[2 * i];
+
+        // Convert the first input to fixed
+        s32 a_int = (s32)(a * scale);
+        dst[2 * i +  0] = (s16)(a_int >> 16);
+        dst[2 * i + 16] = (s16)(a_int >>  0);
+
+        // If this is the left half of the matrix, convert the second input to fixed
+        if ((i & 1) == 0) {
+            // Read the second input in the current pair
+            f32 b = src[2 * i + 1];
+            s32 b_int = (s32)(b * scale);
+            dst[2 * i +  1] = (s16)(b_int >> 16);
+            dst[2 * i + 17] = (s16)(b_int >>  0);
+        }
+        // Otherwise, skip the second input because column 4 will always be zero
+        // Row 4 column 4 is handled after the loop.
+        else {
+            dst[2 * i +  1] = 0;
+            dst[2 * i + 17] = 0;
+        }
+
+    }
+    // Write 1.0 to the bottom right entry in the output matrix
+    // The low half was already set to zero in the loop, so we only need
+    //  to set the top half.
+    dst[15] = 1;
 }
 
 /**
  * Set 'mtx' to a transformation matrix that rotates around the z axis.
  */
+#define MATENTRY(a, b)                          \
+    ((s16 *) mtx)[a     ] = (((s32) b) >> 16);  \
+    ((s16 *) mtx)[a + 16] = (((s32) b) & 0xFFFF);
 void mtxf_rotate_xy(Mtx *mtx, s16 angle) {
-    Mat4 temp;
-
-    mtxf_identity(temp);
-    temp[0][0] = coss(angle);
-    temp[0][1] = sins(angle);
-    temp[1][0] = -temp[0][1];
-    temp[1][1] = temp[0][0];
-    mtxf_to_mtx(mtx, temp);
+    s32 i = (coss(angle) * 65536);
+    s32 j = (sins(angle) * 65536);
+    f32 *temp = (f32 *)mtx;
+    for (u8 k = 0; k < 16; k++) {
+        *temp = 0;
+        temp++;
+    }
+    MATENTRY(0,  i)
+    MATENTRY(1,  j)
+    MATENTRY(4, -j)
+    MATENTRY(5,  i)
+    ((s16 *) mtx)[10] = 1;
+    ((s16 *) mtx)[15] = 1;
 }
 
 /**
@@ -618,11 +606,11 @@ void get_pos_from_transform_mtx(Vec3f dest, Mat4 objMtx, Mat4 camMtx) {
  * Basically it converts the direction to spherical coordinates.
  */
 void vec3f_get_dist_and_angle(Vec3f from, Vec3f to, f32 *dist, s16 *pitch, s16 *yaw) {
-    register f32 x = to[0] - from[0];
-    register f32 y = to[1] - from[1];
-    register f32 z = to[2] - from[2];
+    f32 x = to[0] - from[0];
+    f32 y = to[1] - from[1];
+    f32 z = to[2] - from[2];
 
-    *dist = sqrtf(x * x + y * y + z * z);
+    *dist = sqrtf(x * x + z * z + y * y);
     *pitch = atan2s(sqrtf(x * x + z * z), y);
     *yaw = atan2s(z, x);
 }

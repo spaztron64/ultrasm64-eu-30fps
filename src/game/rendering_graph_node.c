@@ -275,7 +275,7 @@ void geo_append_display_list(void *displayList, s16 layer) {
 void incrementMatStack() {
     Mtx *mtx = alloc_display_listGRAPH(sizeof(*mtx));
     gMatStackIndex++;
-    mtxf_to_mtx(mtx, gMatStack[gMatStackIndex]);
+    mtxf_to_mtx((s16 *) mtx, (f32 *) gMatStack[gMatStackIndex]);
     gMatStackFixed[gMatStackIndex] = mtx;
 }
 void appendDLandReturn(const struct GraphNodeDisplayList *node) {
@@ -441,22 +441,22 @@ void geo_process_camera(struct GraphNodeCamera *node) {
         node->focusLerp[2] = approach_pos_lerp(node->focusLerp[2], node->focus[2]);
     }
 
-    if (gMarioState->marioObj) {
+    /*if (gMarioState->marioObj) {
         sSkipObject = TRUE;
-        if (gMarioState->riddenObj) {
-            geo_process_object(gMarioState->riddenObj);
-        }
+        geo_process_object(gMarioState->marioObj);
         if (gMarioState->marioObj->platform) {
             geo_process_object(gMarioState->marioObj->platform);
         }
-        geo_process_object(gMarioState->marioObj);
+        if (gMarioState->riddenObj) {
+            geo_process_object(gMarioState->riddenObj);
+        }
         sSkipObject = FALSE;
-    }
+    }*/
 
     mtxf_lookat(cameraTransform, node->posLerp, node->focusLerp, node->roll);
     mtxf_mul(gMatStack[gMatStackIndex + 1], cameraTransform, gMatStack[gMatStackIndex]);
     gMatStackIndex++;
-    mtxf_to_mtx(mtx, gMatStack[gMatStackIndex]);
+    mtxf_to_mtx((s16 *) mtx, (f32 *) gMatStack[gMatStackIndex]);
     gMatStackFixed[gMatStackIndex] = mtx;
     if (node->fnNode.node.children != 0) {
         gCurGraphNodeCamera = node;
@@ -898,7 +898,7 @@ void geo_process_shadow(struct GraphNodeShadow *node) {
             gMatStackIndex++;
             mtxf_translate(mtxf, shadowPos);
             mtxf_mul(gMatStack[gMatStackIndex], mtxf, *gCurGraphNodeCamera->matrixPtr);
-            mtxf_to_mtx(mtx, gMatStack[gMatStackIndex]);
+            mtxf_to_mtx((s16 *) mtx, (f32 *) gMatStack[gMatStackIndex]);
             gMatStackFixed[gMatStackIndex] = mtx;
             if (gShadowAboveWaterOrLava == TRUE) {
                 geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(shadowList), LAYER_ALPHA);
@@ -1010,9 +1010,9 @@ s32 obj_is_in_view(struct GraphNodeObject *node, Mat4 matrix) {
 void geo_process_object(struct Object *node) {
     Mat4 mtxf;
 
-    if (sSkipObject) {
+    /*if (sSkipObject == FALSE && node == gMarioState->marioObj) {
         return;
-    }
+    }*/
 
     if (gMoveSpeed && node->header.gfx.bothMats >= 2) {
         interpolate_node(node);
@@ -1050,7 +1050,7 @@ void geo_process_object(struct Object *node) {
         if (obj_is_in_view(&node->header.gfx, gMatStack[gMatStackIndex])) {
             Mtx *mtx = alloc_display_listGRAPH(sizeof(*mtx));
 
-            mtxf_to_mtx(mtx, gMatStack[gMatStackIndex]);
+            mtxf_to_mtx((s16 *) mtx, (f32 *) gMatStack[gMatStackIndex]);
             gMatStackFixed[gMatStackIndex] = mtx;
             if (node->header.gfx.sharedChild != NULL) {
                 node->header.gfx.sharedChild->parent = &node->header.gfx.node;
@@ -1119,7 +1119,7 @@ void geo_process_held_object(struct GraphNodeHeldObject *node) {
                               (struct AllocOnlyPool *) gMatStack[gMatStackIndex + 1]);
         }
         gMatStackIndex++;
-        mtxf_to_mtx(mtx, gMatStack[gMatStackIndex]);
+        mtxf_to_mtx((s16 *) mtx, (f32 *) gMatStack[gMatStackIndex]);
         gMatStackFixed[gMatStackIndex] = mtx;
         gGeoTempState.type = gCurrAnimType;
         gGeoTempState.enabled = gCurrAnimEnabled;
@@ -1282,7 +1282,7 @@ void geo_process_root(struct GraphNodeRoot *node, Vp *b, Vp *c, s32 clearColor) 
         }
 
         mtxf_identity(gMatStack[gMatStackIndex]);
-        mtxf_to_mtx(initialMatrix, gMatStack[gMatStackIndex]);
+        mtxf_to_mtx((s16 *) initialMatrix, (f32 *) gMatStack[gMatStackIndex]);
         gMatStackFixed[gMatStackIndex] = initialMatrix;
         gSPViewport(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(viewport));
         gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(gMatStackFixed[gMatStackIndex]),

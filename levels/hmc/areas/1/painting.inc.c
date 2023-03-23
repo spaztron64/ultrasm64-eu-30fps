@@ -8,10 +8,10 @@ static const Lights1 hmc_seg7_lights_070241B8 = gdSPDefLights1(
 
 // 0x070241D0 - 0x070241E8
 // No gdSPDefLights1 macro defined because of odd different light value (0xff and 0xfa)
-static const Lights1 hmc_seg7_lights_070241D0 = {
-    {{  {0x40, 0x40, 0x80}, 0, {0x40, 0x40, 0x80}, 0} },
-    {{{ {0x64, 0x64, 0xff}, 0, {0x64, 0x64, 0xfa}, 0, {0x28, 0x28, 0x28},0} }} 
-};
+static const Lights1 hmc_seg7_lights_070241D0 = gdSPDefLights1(
+    0x40, 0x40, 0x80,
+    0x64, 0x64, 0xff, 0x32, 0x32, 0x32
+);
 
 // Appears to lock 4 of the sides when shimmering and in use. Unused.
 // 0x070241E8 - 0x07024228

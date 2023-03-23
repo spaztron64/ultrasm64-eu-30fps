@@ -933,16 +933,16 @@ s32 act_going_through_door(struct MarioState *m) {
     m->pos[0] = m->usedObj->oPosX;
     m->pos[2] = m->usedObj->oPosZ;
 
-    //update_mario_pos_for_anim(m);
-    //stop_and_set_height_to_floor(m);
-    mario_set_forward_vel(m, 0.0f);
-    m->vel[1] = 0.0f;
-    vec3f_copy(gMarioState->marioObj->header.gfx.pos, m->pos);
-    vec3s_set(gMarioState->marioObj->header.gfx.angle, 0, m->faceAngle[1], 0);
-    Vec3s translation;
-    find_mario_anim_flags_and_translation(m->marioObj, sDoorAngle, translation);
-    m->pos[0] += (f32) translation[0];
-    m->pos[2] += (f32) translation[2];
+    update_mario_pos_for_anim(m);
+    stop_and_set_height_to_floor(m);
+    //mario_set_forward_vel(m, 0.0f);
+    //m->vel[1] = 0.0f;
+    //vec3f_copy(gMarioState->marioObj->header.gfx.pos, m->pos);
+    //vec3s_set(gMarioState->marioObj->header.gfx.angle, 0, m->faceAngle[1], 0);
+    //Vec3s translation;
+    //find_mario_anim_flags_and_translation(m->marioObj, sDoorAngle, translation);
+    //m->pos[0] += (f32) translation[0];
+    //m->pos[2] += (f32) translation[2];
 
     if (m->actionArg & 4) {
         if (m->actionTimer == 16) {

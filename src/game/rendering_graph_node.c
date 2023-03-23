@@ -763,11 +763,11 @@ void geo_process_animated_part(const struct GraphNodeAnimatedPart *node) {
     vec3f_set(translation, node->translation[0], node->translation[1], node->translation[2]);
     if (gCurrAnimType) {
         if (gCurrAnimType != ANIM_TYPE_ROTATION) {
-            //if (gCurrAnimType == ANIM_TYPE_TRANSLATION) {
+            if (gCurrAnimType == ANIM_TYPE_TRANSLATION) {
                 translation[0] += gCurrAnimData[retrieve_animation_index(gCurrAnimFrame, &gCurrAnimAttribute)] * gCurrAnimTranslationMultiplier;
                 translation[1] += gCurrAnimData[retrieve_animation_index(gCurrAnimFrame, &gCurrAnimAttribute)] * gCurrAnimTranslationMultiplier;
                 translation[2] += gCurrAnimData[retrieve_animation_index(gCurrAnimFrame, &gCurrAnimAttribute)] * gCurrAnimTranslationMultiplier;
-            /*} else {
+            } else {
                 if (gCurrAnimType == ANIM_TYPE_LATERAL_TRANSLATION) {
                     translation[0] += gCurrAnimData[retrieve_animation_index(gCurrAnimFrame, &gCurrAnimAttribute)] * gCurrAnimTranslationMultiplier;
                     gCurrAnimAttribute += 2;
@@ -781,7 +781,7 @@ void geo_process_animated_part(const struct GraphNodeAnimatedPart *node) {
                         gCurrAnimAttribute += 6;
                     }
                 }
-            }*/
+            }
 
             if (gMoveSpeed == 0) {
                 gCurGraphNodeObjectNode->header.gfx.animInfo.animPosStack[gCurrAnimPos][0 + 0] = translation[0];

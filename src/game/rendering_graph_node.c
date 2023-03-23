@@ -441,7 +441,6 @@ void geo_process_camera(struct GraphNodeCamera *node) {
         node->fnNode.func(GEO_CONTEXT_RENDER, &node->fnNode.node, gMatStack[gMatStackIndex]);
     }
 
-
     gSPLookAt(gDisplayListHead++, &gCurLookAt);
     mtxf_rotate_xy(rollMtx, node->rollScreen);
 

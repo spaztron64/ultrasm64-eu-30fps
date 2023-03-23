@@ -1051,6 +1051,14 @@ void linear_mtxf_mul_vec3f_and_translate(Mat4 m, Vec3f dst, Vec3f v) {
  * Process an object node.
  */
 void geo_process_object(struct Object *node) {
+
+    if (node->header.gfx.sharedChild == NULL || !(node->header.gfx.node.flags & GRAPH_RENDER_ACTIVE) || node->header.gfx.node.flags & GRAPH_RENDER_INVISIBLE) {
+        // Still want to know where the object is in worldspace, for audio panning to correctly work.
+        mtxf_translate(gMatStack[gMatStackIndex + 1], node->header.gfx.pos);
+        linear_mtxf_mul_vec3f_and_translate(gCameraTransform, node->header.gfx.cameraToObject, gMatStack[gMatStackIndex + 1][3]);
+        return;
+    }
+
     if ((gMarioState->marioObj == NULL) || (node != gMarioState->marioObj && node != gMarioState->marioObj->platform && node != gMarioState->riddenObj) || gAreaUpdateCounter <= 8) {
         if (gMoveSpeed && node->header.gfx.bothMats >= 2)
             interpolate_node(node);

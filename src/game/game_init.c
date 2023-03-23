@@ -691,10 +691,18 @@ void setup_game_memory(void) {
     osCreateMesgQueue(&gGameVblankQueue, gGameMesgBuf, ARRAY_COUNT(gGameMesgBuf));
     osCreateMesgQueue(&gVideoVblankQueue, gVideoMesgBuf, ARRAY_COUNT(gVideoMesgBuf));
     // Setup z buffer and framebuffer
-    gPhysicalZBuffer = VIRTUAL_TO_PHYSICAL(gZBuffer);
-    gPhysicalFramebuffers[0] = VIRTUAL_TO_PHYSICAL(gFramebuffer0);
-    gPhysicalFramebuffers[1] = VIRTUAL_TO_PHYSICAL(gFramebuffer1);
-    gPhysicalFramebuffers[2] = VIRTUAL_TO_PHYSICAL(gFramebuffer2);
+    if (osGetMemSize() == 0x400000) {
+        gPhysicalZBuffer = VIRTUAL_TO_PHYSICAL(gZBuffer);
+        gPhysicalFramebuffers[0] = VIRTUAL_TO_PHYSICAL(gFramebuffer0);
+        gPhysicalFramebuffers[1] = VIRTUAL_TO_PHYSICAL(gFramebuffer1);
+        gPhysicalFramebuffers[2] = VIRTUAL_TO_PHYSICAL(gFramebuffer2);
+    } else {
+        // Expansion memory goes unused, so I just haphazardly pointed FB's here.
+        gPhysicalZBuffer =         (uintptr_t) 0x80400000;
+        gPhysicalFramebuffers[0] = (uintptr_t) 0x80500000;
+        gPhysicalFramebuffers[1] = (uintptr_t) 0x80600000;
+        gPhysicalFramebuffers[2] = (uintptr_t) 0x80700000;
+    }
     // Setup Mario Animations
     gMarioAnimsMemAlloc = main_pool_alloc(0x4000, MEMORY_POOL_LEFT);
     set_segment_base_addr(17, (void *) gMarioAnimsMemAlloc);

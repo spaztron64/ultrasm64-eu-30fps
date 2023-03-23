@@ -388,7 +388,7 @@ const Gfx chain_chomp_seg6_dl_06024AA8[] = {
 const Gfx chain_chomp_seg6_dl_06024B00[] = {
     gsDPPipeSync(),
     gsDPSetCombineMode(G_CC_MODULATERGBA, G_CC_PASS2),
-    gsSPClearGeometryMode(G_SHADING_SMOOTH),
+    gsSPClearGeometryMode(G_SHADING_SMOOTH | G_CULL_BACK),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
     gsDPTileSync(),
@@ -398,7 +398,7 @@ const Gfx chain_chomp_seg6_dl_06024B00[] = {
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
     gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
-    gsSPSetGeometryMode(G_SHADING_SMOOTH),
+    gsSPSetGeometryMode(G_SHADING_SMOOTH | G_CULL_BACK),
     gsSPEndDisplayList(),
 };
 

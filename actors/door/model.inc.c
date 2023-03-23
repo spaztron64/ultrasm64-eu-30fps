@@ -761,6 +761,7 @@ const Gfx door_seg3_dl_03014F30[] = {
     gsSP2Triangles( 0,  1,  2, 0x0,  0,  3,  1, 0x0),
     gsSP2Triangles( 4,  5,  6, 0x0,  4,  6,  7, 0x0),
     gsSPSetGeometryMode(G_SHADING_SMOOTH),
+    gsDPPipeSync(),
     gsSPEndDisplayList(),
 };
 

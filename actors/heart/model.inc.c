@@ -17,7 +17,8 @@ ALIGNED8 static const Texture heart_seg8_texture_0800D7E0[] = {
 const Gfx heart_seg8_dl_0800DFE0[] = {
     gsDPPipeSync(),
     gsSPClearGeometryMode(G_LIGHTING | G_CULL_BACK),
-    gsDPSetCombineMode(G_CC_MODULATERGBA, G_CC_PASS2),
+    gsDPSetCombineMode(G_CC_MODULATEIA_PRIM, G_CC_PASS2),
+    gsDPSetPrimColor(0, 0, 255, 255, 255, 0xB4),
     gsDPLoadTextureBlock(heart_seg8_texture_0800D7E0, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, 0, G_TX_CLAMP, G_TX_CLAMP, 5, 5, G_TX_NOLOD, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
     gsSPVertex(heart_seg8_vertex_0800D7A0, 4, 0),

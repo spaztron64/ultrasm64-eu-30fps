@@ -81,7 +81,6 @@ void *get_segment_base_addr(s32 segment) {
     return (void *) (sSegmentTable[segment] | 0x80000000);
 }
 
-#ifndef NO_SEGMENTED_MEMORY
 void *segmented_to_virtual(const void *addr) {
     size_t segment = (uintptr_t) addr >> 24;
     size_t offset = (uintptr_t) addr & 0x00FFFFFF;
@@ -102,18 +101,6 @@ void move_segment_table_to_dmem(void) {
         gSPSegment(gDisplayListHead++, i, sSegmentTable[i]);
     }
 }
-#else
-void *segmented_to_virtual(const void *addr) {
-    return (void *) addr;
-}
-
-void *virtual_to_segmented(u32 segment, const void *addr) {
-    return (void *) addr;
-}
-
-void move_segment_table_to_dmem(void) {
-}
-#endif
 
 /**
  * Initialize the main memory pool. This pool is conceptually a pair of stacks
@@ -283,7 +270,6 @@ static void *dynamic_dma_read(u8 *srcStart, u8 *srcEnd, u32 side) {
     return dest;
 }
 
-#ifndef NO_SEGMENTED_MEMORY
 /**
  * Load data from ROM into a newly allocated block, and set the segment base
  * address to this block.
@@ -429,7 +415,6 @@ void load_engine_code_segment(void) {
     osInvalICache(startAddr, totalSize);
     osInvalDCache(startAddr, totalSize);
 }
-#endif
 
 /**
  * Allocate an allocation-only pool from the main pool. This pool doesn't

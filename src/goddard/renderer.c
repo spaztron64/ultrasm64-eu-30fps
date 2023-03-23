@@ -22,15 +22,9 @@
 #define MAX_GD_DLS 1000
 #define OS_MESG_SI_COMPLETE 0x33333333
 
-#ifndef NO_SEGMENTED_MEMORY
 #define GD_VIRTUAL_TO_PHYSICAL(addr) ((uintptr_t)(addr) &0x0FFFFFFF)
 #define GD_LOWER_24(addr) ((uintptr_t)(addr) &0x00FFFFFF)
 #define GD_LOWER_29(addr) (((uintptr_t)(addr)) & 0x1FFFFFFF)
-#else
-#define GD_VIRTUAL_TO_PHYSICAL(addr) (addr)
-#define GD_LOWER_24(addr) ((uintptr_t)(addr))
-#define GD_LOWER_29(addr) (((uintptr_t)(addr)))
-#endif
 
 #define MTX_INTPART_PACK(w1, w2) (((w1) &0xFFFF0000) | (((w2) >> 16) & 0xFFFF))
 #define MTX_FRACPART_PACK(w1, w2) ((((w1) << 16) & 0xFFFF0000) | ((w2) &0xFFFF))
@@ -3418,7 +3412,6 @@ void make_timer_gadgets(void) {
     return;
 }
 
-#ifndef NO_SEGMENTED_MEMORY
 /**
  * Copies `size` bytes of data from ROM address `romAddr` to RAM address `vAddr`.
  */
@@ -3512,8 +3505,3 @@ struct GdObj *load_dynlist(struct DynList *dynlist) {
 
     return loadedList;
 }
-#else
-struct GdObj *load_dynlist(struct DynList *dynlist) {
-    return proc_dynlist(dynlist);
-}
-#endif

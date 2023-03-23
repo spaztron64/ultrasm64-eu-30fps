@@ -1,7 +1,6 @@
 #ifndef SEGMENT_SYMBOLS_H
 #define SEGMENT_SYMBOLS_H
 
-#ifndef NO_SEGMENTED_MEMORY
 #define DECLARE_SEGMENT(name) \
     extern u8 _##name##SegmentRomStart[]; \
     extern u8 _##name##SegmentRomEnd[];
@@ -133,8 +132,6 @@ DECLARE_SEGMENT(debug_level_select_mio0)
 DECLARE_SEGMENT(translation_de_mio0)
 DECLARE_SEGMENT(translation_en_mio0)
 DECLARE_SEGMENT(translation_fr_mio0)
-#endif
-
 #endif
 
 #endif // SEGMENT_SYMBOLS_H

@@ -113,7 +113,6 @@ static void clear_static_surfaces(void) {
 static void add_surface_to_cell(s16 dynamic, s16 cellX, s16 cellZ, struct Surface *surface) {
     struct SurfaceNode *newNode = alloc_surface_node();
     struct SurfaceNode *list;
-    s16 surfacePriority;
     s16 priority;
     s16 sortDir;
     s16 listIndex;
@@ -128,7 +127,7 @@ static void add_surface_to_cell(s16 dynamic, s16 cellX, s16 cellZ, struct Surfac
         listIndex = SPATIAL_PARTITION_WALLS;
         sortDir = 0; // insertion order
 
-        if (surface->normal.x < -0.707 || surface->normal.x > 0.707) {
+        if (surface->normal.x < -0.707f || surface->normal.x > 0.707f) {
             surface->flags |= SURFACE_FLAG_X_PROJECTION;
         }
     }
@@ -139,7 +138,6 @@ static void add_surface_to_cell(s16 dynamic, s16 cellX, s16 cellZ, struct Surfac
     //  many functions only use the first triangle in surface order that fits,
     //  missing higher surfaces.
     //  upperY would be a better sort method.
-    surfacePriority = surface->vertex1[1] * sortDir;
 
     newNode->surface = surface;
 
@@ -160,7 +158,8 @@ static void add_surface_to_cell(s16 dynamic, s16 cellX, s16 cellZ, struct Surfac
     }
 
     // Loop until we find the appropriate place for the surface in the list.
-    if (listIndex == SPATIAL_PARTITION_FLOORS) {
+    if (listIndex != SPATIAL_PARTITION_WALLS) {
+        s32 surfacePriority = surface->vertex1[1] * sortDir;
         while (list->next != NULL) {
             priority = list->next->surface->vertex1[1] * sortDir;
 
@@ -492,7 +491,6 @@ static void load_static_surfaces(s16 **data, s16 *vertexData, s16 surfaceType, s
  */
 static s16 *read_vertex_data(s16 **data) {
     s32 numVertices;
-    UNUSED u8 filler[16];
     s16 *vertexData;
 
     numVertices = *(*data);
@@ -513,9 +511,6 @@ static void load_environmental_regions(s16 **data) {
 
     gEnvironmentRegions = *data;
     numRegions = *(*data)++;
-
-    if (numRegions > 20) {
-    }
 
     for (i = 0; i < numRegions; i++) {
         UNUSED s16 val, loX, loZ, hiX, hiZ;
@@ -545,57 +540,6 @@ void alloc_surface_pools(void) {
     gCCMEnteredSlide = 0;
     reset_red_coins_collected();
 }
-
-#ifdef NO_SEGMENTED_MEMORY
-/**
- * Get the size of the terrain data, to get the correct size when copying later.
- */
-u32 get_area_terrain_size(s16 *data) {
-    s16 *startPos = data;
-    s32 end = FALSE;
-    s16 terrainLoadType;
-    s32 numVertices;
-    s32 numRegions;
-    s32 numSurfaces;
-    s16 hasForce;
-
-    while (!end) {
-        terrainLoadType = *data++;
-
-        switch (terrainLoadType) {
-            case TERRAIN_LOAD_VERTICES:
-                numVertices = *data++;
-                data += 3 * numVertices;
-                break;
-
-            case TERRAIN_LOAD_OBJECTS:
-                data += get_special_objects_size(data);
-                break;
-
-            case TERRAIN_LOAD_ENVIRONMENT:
-                numRegions = *data++;
-                data += 6 * numRegions;
-                break;
-
-            case TERRAIN_LOAD_CONTINUE:
-                continue;
-
-            case TERRAIN_LOAD_END:
-                end = TRUE;
-                break;
-
-            default:
-                numSurfaces = *data++;
-                hasForce = surface_has_force(terrainLoadType);
-                data += (3 + hasForce) * numSurfaces;
-                break;
-        }
-    }
-
-    return data - startPos;
-}
-#endif
-
 
 /**
  * Process the level file, loading in vertices, surfaces, some objects, and environmental

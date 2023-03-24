@@ -1529,30 +1529,11 @@ void update_mario_info_for_cam(struct MarioState *m) {
  */
 void mario_reset_bodystate(struct MarioState *m) {
     struct MarioBodyState *bodyState = m->marioBodyState;
-    s32 flags = update_and_return_cap_flags(m);
 
-    if (flags & MARIO_NORMAL_CAP) {
-        bodyState->capState = MARIO_HAS_DEFAULT_CAP_ON;
-    } else if (flags & MARIO_WING_CAP) {
-        bodyState->capState = MARIO_HAS_WING_CAP_ON;
-    } else {
-        bodyState->capState = MARIO_HAS_DEFAULT_CAP_OFF;
-    }
+    bodyState->capState = MARIO_HAS_DEFAULT_CAP_OFF;
     bodyState->eyeState = MARIO_EYES_BLINK;
     bodyState->handState = MARIO_HAND_FISTS;
     bodyState->modelState = 0;
-
-    if (flags & MARIO_VANISH_CAP) {
-        bodyState->modelState = MODEL_STATE_NOISE_ALPHA;
-    }
-
-    if (flags & MARIO_METAL_CAP) {
-        bodyState->modelState |= MODEL_STATE_METAL;
-    }
-
-    if (flags & MARIO_METAL_SHOCK) {
-        bodyState->modelState |= MODEL_STATE_METAL;
-    }
     bodyState->wingFlutter = FALSE;
 
     m->flags &= ~MARIO_METAL_SHOCK;
@@ -1721,6 +1702,7 @@ s32 execute_mario_action(UNUSED struct Object *o) {
     if (gMarioState->action) {
         gMarioState->marioObj->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
         mario_reset_bodystate(gMarioState);
+        mario_update_hitbox_and_cap_model(gMarioState);
         update_mario_inputs(gMarioState);
         mario_handle_special_floors(gMarioState);
         mario_process_interactions(gMarioState);
@@ -1770,7 +1752,6 @@ s32 execute_mario_action(UNUSED struct Object *o) {
         set_submerged_cam_preset_and_spawn_bubbles(gMarioState);
         update_mario_health(gMarioState);
         update_mario_info_for_cam(gMarioState);
-        mario_update_hitbox_and_cap_model(gMarioState);
 
         // Both of the wind handling portions play wind audio only in
         // non-Japanese releases.

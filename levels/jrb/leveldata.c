@@ -30,7 +30,6 @@
 #include "levels/jrb/sliding_box/collision.inc.c"
 #include "levels/jrb/wooden_ship/collision.inc.c"
 #include "levels/jrb/falling_pillar_base/collision.inc.c"
-#include "levels/jrb/unused_lid/collision.inc.c"
 #include "levels/jrb/areas/1/trajectory.inc.c"
 #include "levels/jrb/areas/1/movtext.inc.c"
 #include "levels/jrb/areas/2/1/model.inc.c"

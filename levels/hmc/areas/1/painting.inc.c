@@ -4,45 +4,6 @@
 
 // 0x070241D0 - 0x070241E8
 
-// Appears to lock 4 of the sides when shimmering and in use. Unused.
-// 0x070241E8 - 0x07024228
-static const Vtx hmc_seg7_vertex_070241E8[] = {
-    {{{     0,      0,      0}, 0, {   -32,    990}, {0x00, 0x00, 0x7f, 0xff}}},
-    {{{   614,      0,      0}, 0, {  6100,    990}, {0x00, 0x00, 0x7f, 0xff}}},
-    {{{   614,    614,      0}, 0, {  6100,  -5142}, {0x00, 0x00, 0x7f, 0xff}}},
-    {{{     0,    614,      0}, 0, {   -32,  -5142}, {0x00, 0x00, 0x7f, 0xff}}},
-};
-
-// 0x07024228 - 0x07024268
-static const Vtx hmc_seg7_vertex_07024228[] = {
-    {{{     0,      0,      0}, 0, {     0,      0}, {0x00, 0x00, 0x7f, 0xff}}},
-    {{{   614,      0,      0}, 0, {     0,      0}, {0x00, 0x00, 0x7f, 0xff}}},
-    {{{   614,    614,      0}, 0, {     0,      0}, {0x00, 0x00, 0x7f, 0xff}}},
-    {{{     0,    614,      0}, 0, {     0,      0}, {0x00, 0x00, 0x7f, 0xff}}},
-};
-
-// Unused
-// 0x07024268 - 0x070242A0
-const Gfx hmc_seg7_dl_07024268[] = {
-    gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_PASS2),
-    gsSPLightColor(LIGHT_1, 0xffffffff),
-    gsSPLightColor(LIGHT_2, 0x505050ff),
-    gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
-    gsSPVertex(hmc_seg7_vertex_070241E8, 4, 0),
-    gsSPEndDisplayList(),
-};
-
-// Unused
-// 0x070242A0 - 0x070242D0
-const Gfx hmc_seg7_dl_070242A0[] = {
-    gsSP2Triangles( 0,  1,  2, 0x0,  0,  2,  3, 0x0),
-    gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
-    gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
-    gsSPEndDisplayList(),
-};
-
 // 0x070242D0 - 0x070242F0
 static const Gfx hmc_seg7_painting_dl_070242D0[] = {
     gsDPTileSync(),
@@ -488,12 +449,17 @@ static const PaintingData *const hmc_seg7_painting_texture_maps_07024CD4[] = {
     hmc_seg7_pool_texture_map_070242F0,
 };
 
-UNUSED static const u64 hmc_unused_0 = 0;
-
 
 // 0x07024CE0 - 0x070254E0
 ALIGNED8 static const Texture hmc_seg7_texture_07024CE0[] = {
 #include "levels/hmc/7.rgba16.inc.c"
+};
+
+static const Vtx hmc_seg7_vertex_07024228[] = {
+    {{{     0,      0,      0}, 0, {     0,      0}, {0x00, 0x00, 0x7f, 0xff}}},
+    {{{   614,      0,      0}, 0, {     0,      0}, {0x00, 0x00, 0x7f, 0xff}}},
+    {{{   614,    614,      0}, 0, {     0,      0}, {0x00, 0x00, 0x7f, 0xff}}},
+    {{{     0,    614,      0}, 0, {     0,      0}, {0x00, 0x00, 0x7f, 0xff}}},
 };
 
 // 0x070254E0 - 0x07025518

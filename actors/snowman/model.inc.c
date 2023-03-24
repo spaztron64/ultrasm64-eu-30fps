@@ -1,7 +1,5 @@
 // Snowman
 
-// ???
-UNUSED static const u64 snowman_unused_1 = 1;
 
 // Unreferenced light group
 

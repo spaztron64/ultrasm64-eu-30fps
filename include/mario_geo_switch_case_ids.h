@@ -8,10 +8,6 @@ enum MarioEyesGSCId {
     /*0x01*/ MARIO_EYES_OPEN,
     /*0x02*/ MARIO_EYES_HALF_CLOSED,
     /*0x03*/ MARIO_EYES_CLOSED,
-    /*0x04*/ MARIO_EYES_LOOK_LEFT,  // unused
-    /*0x05*/ MARIO_EYES_LOOK_RIGHT, // unused
-    /*0x06*/ MARIO_EYES_LOOK_UP,    // unused
-    /*0x07*/ MARIO_EYES_LOOK_DOWN,  // unused
     /*0x08*/ MARIO_EYES_DEAD
 };
 
@@ -28,7 +24,6 @@ enum MarioCapGSCId {
     /*0x00*/ MARIO_HAS_DEFAULT_CAP_ON,
     /*0x01*/ MARIO_HAS_DEFAULT_CAP_OFF,
     /*0x02*/ MARIO_HAS_WING_CAP_ON,
-    /*0x03*/ MARIO_HAS_WING_CAP_OFF // unused
 };
 
 enum MarioGrabPosGSCId {

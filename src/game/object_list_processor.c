@@ -470,9 +470,7 @@ void spawn_objects_from_info(UNUSED s32 unused, struct SpawnInfo *spawnInfo) {
 
     while (spawnInfo != NULL) {
         struct Object *object;
-        UNUSED u8 filler[4];
         const BehaviorScript *script;
-        UNUSED s16 arg16 = (s16)(spawnInfo->behaviorArg & 0xFFFF);
 
         script = segmented_to_virtual(spawnInfo->behaviorScript);
 
@@ -595,26 +593,6 @@ void unload_deactivated_objects(void) {
     // TIME_STOP_UNKNOWN_0 was most likely intended to be used to track whether
     // any objects had been deactivated
     gTimeStopState &= ~TIME_STOP_UNKNOWN_0;
-}
-
-/**
- * Unused profiling function.
- */
-UNUSED static u16 unused_get_elapsed_time(u64 *cycleCounts, s32 index) {
-    u16 time;
-    f64 cycles;
-
-    cycles = cycleCounts[index] - cycleCounts[index - 1];
-    if (cycles < 0) {
-        cycles = 0;
-    }
-
-    time = (u16)(((u64) cycles * 1000000 / osClockRate) / 16667.0 * 1000.0);
-    if (time > 999) {
-        time = 999;
-    }
-
-    return time;
 }
 
 /**

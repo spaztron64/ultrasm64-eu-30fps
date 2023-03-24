@@ -37,12 +37,10 @@
 #include "levels/rr/cruiser_wing/model.inc.c"
 #include "levels/rr/octagonal_platform/model.inc.c"
 #include "levels/rr/sliding_platform/model.inc.c"
-#include "levels/rr/pyramid_platform/model.inc.c" // Unused
 #include "levels/rr/elevator_platform/model.inc.c"
 #include "levels/rr/seesaw_platform/model.inc.c"
 #include "levels/rr/donut_block/1.inc.c"
 #include "levels/rr/donut_block/2.inc.c"
-#include "levels/rr/l_platform/model.inc.c" // also unused
 #include "levels/rr/tricky_triangles_1/model.inc.c"
 #include "levels/rr/tricky_triangles_2/model.inc.c"
 #include "levels/rr/tricky_triangles_3/model.inc.c"

@@ -28,11 +28,6 @@ ALIGNED8 static const Texture penguin_seg5_texture_050045E0[] = {
 #include "actors/penguin/penguin_eye_angry.rgba16.inc.c"
 };
 
-// 0x05004DE0
-ALIGNED8 static const Texture penguin_seg5_texture_05004DE0[] = {
-#include "actors/penguin/penguin_eye_angry_unused.rgba16.inc.c"
-};
-
 // 0x050055E0
 ALIGNED8 static const Texture penguin_seg5_texture_050055E0[] = {
 #include "actors/penguin/penguin_beak.rgba16.inc.c"
@@ -238,16 +233,6 @@ const Gfx penguin_seg5_dl_05006488[] = {
 const Gfx penguin_seg5_dl_050064B8[] = {
     gsSPDisplayList(penguin_seg5_dl_05006380),
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, penguin_seg5_texture_050045E0),
-    gsDPLoadSync(),
-    gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 32 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
-    gsSPDisplayList(penguin_seg5_dl_050063C8),
-    gsSPEndDisplayList(),
-};
-
-// 0x050064E8 - 0x05006518
-const Gfx penguin_seg5_dl_050064E8[] = {
-    gsSPDisplayList(penguin_seg5_dl_05006380),
-    gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, penguin_seg5_texture_05004DE0),
     gsDPLoadSync(),
     gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 32 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
     gsSPDisplayList(penguin_seg5_dl_050063C8),

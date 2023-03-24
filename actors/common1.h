@@ -168,7 +168,6 @@ extern const Gfx mario_cap_seg3_dl_03022F20[];
 extern const Gfx mario_cap_seg3_dl_03022F48[];
 extern const Gfx mario_cap_seg3_dl_03022FF8[];
 extern const Gfx mario_cap_seg3_dl_030230B0[];
-extern const Gfx mario_cap_seg3_dl_03023108[];
 extern const Gfx mario_cap_seg3_dl_03023160[];
 extern const Gfx mario_cap_seg3_dl_03023298[];
 

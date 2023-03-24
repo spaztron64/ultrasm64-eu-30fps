@@ -6,39 +6,6 @@
 
 #include "make_const_nonconst.h"
 
-UNUSED static const u64 effect_unused_0 = 0;
-
-// Flower (Unused)
-// 0x0B000008
-ALIGNED8 static const Texture effect_0B000008[] = {
-#include "textures/effect/flower.00008.rgba16.inc.c"
-};
-
-// 0x0B000808
-ALIGNED8 static const Texture effect_0B000808[] = {
-#include "textures/effect/flower.00808.rgba16.inc.c"
-};
-
-// 0x0B001008
-ALIGNED8 static const Texture effect_0B001008[] = {
-#include "textures/effect/flower.01008.rgba16.inc.c"
-};
-
-// 0x0B001808
-ALIGNED8 static const Texture effect_0B001808[] = {
-#include "textures/effect/flower.01808.rgba16.inc.c"
-};
-
-// 0x0B002008
-const Texture *const flower_bubbles_textures_ptr_0B002008[] = {
-    effect_0B000008,
-    effect_0B000808,
-    effect_0B001008,
-    effect_0B001808,
-    effect_0B001008,
-    effect_0B000808,
-};
-
 // Lava Bubble
 // 0x0B002020
 ALIGNED8 static const Texture effect_0B002020[] = {

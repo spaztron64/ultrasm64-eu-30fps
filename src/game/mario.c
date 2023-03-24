@@ -1879,9 +1879,7 @@ void init_mario_from_save_file(void) {
     gMarioState->animList = &gMarioAnimsBuf;
 
     gMarioState->numCoins = 0;
-    gMarioState->numStars =
-        save_file_get_total_star_count(gCurrSaveFileNum - 1, COURSE_MIN - 1, COURSE_MAX - 1);
-    gMarioState->numKeys = 0;
+    gMarioState->numStars = save_file_get_total_star_count(gCurrSaveFileNum - 1, COURSE_MIN - 1, COURSE_MAX - 1);
 
     gMarioState->numLives = 4;
     gMarioState->health = 0x880;

@@ -29,7 +29,6 @@
 #include "levels/wdw/areas/2/macro.inc.c"
 #include "levels/wdw/square_floating_platform/collision.inc.c"
 #include "levels/wdw/arrow_lift/collision.inc.c"
-#include "levels/wdw/water_level_diamond/collision.inc.c" // Unused
 #include "levels/wdw/hidden_platform/collision.inc.c"
 #include "levels/wdw/express_elevator/collision.inc.c"
 #include "levels/wdw/rectangular_floating_platform/collision.inc.c"

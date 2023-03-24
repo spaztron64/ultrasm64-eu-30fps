@@ -601,7 +601,6 @@ const Texture *const menu_hud_lut[] = {
 };
 
 #if defined(VERSION_JP) || defined(VERSION_SH)
-UNUSED static const u64 menu_unused_0 = 0;
 
 // 0x0700AC48
 ALIGNED8 static const Texture texture_menu_font_char_jp_0[] = {
@@ -1709,8 +1708,6 @@ const Gfx dl_menu_ia8_text_end[] = {
     gsDPSetTextureFilter(G_TF_BILERP),
     gsSPEndDisplayList(),
 };
-
-UNUSED static const u64 menu_unused_1 = 0;
 
 #ifdef VERSION_EU
 

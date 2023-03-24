@@ -340,6 +340,5 @@ extern const Gfx water_wave_seg4_dl_04027438[];
 extern const Gfx white_particle_small_dl_begin[];
 extern const Gfx white_particle_small_dl_end[];
 extern const Gfx white_particle_small_dl[];
-extern const Gfx white_particle_small_unused_dl[];
 
 #endif

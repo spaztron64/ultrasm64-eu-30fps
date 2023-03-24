@@ -439,11 +439,6 @@ void envfx_set_bubble_texture(s32 mode, s16 index) {
     s16 frame = (gEnvFxBuffer + index)->animFrame;
 
     switch (mode) {
-        case ENVFX_FLOWERS:
-            imageArr = segmented_to_virtual(&flower_bubbles_textures_ptr_0B002008);
-            frame = (gEnvFxBuffer + index)->animFrame;
-            break;
-
         case ENVFX_LAVA_BUBBLES:
             imageArr = segmented_to_virtual(&lava_bubble_ptr_0B006020);
             frame = (gEnvFxBuffer + index)->animFrame;

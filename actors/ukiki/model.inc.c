@@ -6,9 +6,6 @@
 
 // 0x05007BA0
 
-// The hell?
-UNUSED static const u64 ukiki_unused_1 = 1;
-
 // 0x05007BC0
 ALIGNED8 static const Texture ukiki_seg5_texture_05007BC0[] = {
 #include "actors/ukiki/ukiki_face.rgba16.inc.c"

@@ -557,8 +557,6 @@ static const PaintingData *const inside_castle_seg7_painting_texture_maps_070225
     inside_castle_seg7_painting_texture_map_top_07021FFC,
 };
 
-UNUSED static const u64 castle_inside_unused_0 = 0x0;
-
 
 // 0x07022528 - 0x07022540
 
@@ -578,29 +576,6 @@ static const Vtx inside_castle_seg7_vertex_07022598[] = {
     {{{   614,      0,      0}, 0, {     0,      0}, {0x00, 0x00, 0x7f, 0xff}}},
     {{{   614,    614,      0}, 0, {     0,      0}, {0x00, 0x00, 0x7f, 0xff}}},
     {{{     0,    614,      0}, 0, {     0,      0}, {0x00, 0x00, 0x7f, 0xff}}},
-};
-
-// TODO: this is unused
-// 0x070225D8 - 0x07022610
-const Gfx inside_castle_seg7_dl_070225D8[] = {
-    gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_PASS2),
-    gsSPLightColor(LIGHT_1, 0xffffffff),
-    gsSPLightColor(LIGHT_2, 0x505050ff),
-    gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
-    gsSPVertex(inside_castle_seg7_vertex_07022558, 4, 0),
-    gsSPEndDisplayList(),
-};
-
-// TODO: this is unused
-// 0x07022610 - 0x07022640
-const Gfx inside_castle_seg7_dl_07022610[] = {
-    gsSP1Triangle( 0,  1,  2, 0x0),
-    gsSP1Triangle( 0,  2,  3, 0x0),
-    gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
-    gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
-    gsSPEndDisplayList(),
 };
 
 // 0x07022640 - 0x07022660
@@ -1049,8 +1024,6 @@ static const PaintingData inside_castle_seg7_painting_env_map_texture_map_070226
 static const PaintingData *const inside_castle_seg7_painting_env_map_texture_maps_07023044[] = {
     inside_castle_seg7_painting_env_map_texture_map_07022660,
 };
-
-UNUSED static const u64 castle_inside_unused_1 = 0x0;
 
 
 // 0x07023050 - 0x070230B0

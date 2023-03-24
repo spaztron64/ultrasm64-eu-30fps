@@ -1529,11 +1529,30 @@ void update_mario_info_for_cam(struct MarioState *m) {
  */
 void mario_reset_bodystate(struct MarioState *m) {
     struct MarioBodyState *bodyState = m->marioBodyState;
+    s32 flags = update_and_return_cap_flags(m);
 
-    bodyState->capState = MARIO_HAS_DEFAULT_CAP_OFF;
+    if (flags & MARIO_NORMAL_CAP) {
+        bodyState->capState = MARIO_HAS_DEFAULT_CAP_ON;
+    } else if (flags & MARIO_WING_CAP) {
+        bodyState->capState = MARIO_HAS_WING_CAP_ON;
+    } else {
+        bodyState->capState = MARIO_HAS_DEFAULT_CAP_OFF;
+    }
     bodyState->eyeState = MARIO_EYES_BLINK;
     bodyState->handState = MARIO_HAND_FISTS;
     bodyState->modelState = 0;
+
+    if (flags & MARIO_VANISH_CAP) {
+        bodyState->modelState = MODEL_STATE_NOISE_ALPHA;
+    }
+
+    if (flags & MARIO_METAL_CAP) {
+        bodyState->modelState |= MODEL_STATE_METAL;
+    }
+
+    if (flags & MARIO_METAL_SHOCK) {
+        bodyState->modelState |= MODEL_STATE_METAL;
+    }
     bodyState->wingFlutter = FALSE;
 
     m->flags &= ~MARIO_METAL_SHOCK;

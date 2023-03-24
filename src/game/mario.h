@@ -6,6 +6,7 @@
 #include "macros.h"
 #include "types.h"
 
+u32 update_and_return_cap_flags(struct MarioState *m);
 s32 is_anim_at_end(struct MarioState *m);
 s32 is_anim_past_end(struct MarioState *m);
 s16 set_mario_animation(struct MarioState *m, s32 targetAnimID);

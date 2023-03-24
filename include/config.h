@@ -51,7 +51,7 @@
 #define THREAD6_STACK 0x400
 #define THREAD9_STACK 0x800
 
-#define DYNAMIC_SURFACE_POOL_SIZE 0x8000
+#define DYNAMIC_SURFACE_POOL_SIZE 0x3000
 
 // Border Height Define for NTSC Versions
 #ifdef TARGET_N64

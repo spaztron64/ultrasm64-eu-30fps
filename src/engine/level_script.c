@@ -312,6 +312,8 @@ static void level_cmd_clear_level(void) {
     clear_area_graph_nodes();
     clear_areas();
     main_pool_pop_state();
+    // the game does a push on level load and a pop on level unload, we need to add another push to store state after the level has been loaded, so one more pop is needed
+    main_pool_pop_state();
 
     sCurrentCmd = CMD_NEXT;
 }
@@ -326,17 +328,17 @@ static void level_cmd_alloc_level_pool(void) {
 }
 
 static void level_cmd_free_level_pool(void) {
-    s32 i;
 
     alloc_only_pool_resize(sLevelPool, sLevelPool->usedSpace);
     sLevelPool = NULL;
 
-    for (i = 0; i < 8; i++) {
+    for (s32 i = 0; i < 4; i++) {
         if (gAreaData[i].terrainData != NULL) {
             alloc_surface_pools();
             break;
         }
     }
+    main_pool_push_state();
 
     sCurrentCmd = CMD_NEXT;
 }

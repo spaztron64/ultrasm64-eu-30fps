@@ -418,6 +418,8 @@ void calculate_and_update_fps(void) {
     gFPS = (FRAMETIME_COUNT * 1000000.0f) / (s32)OS_CYCLES_TO_USEC(newTime - oldTime);
 }
 
+extern u32 sPoolFreeSpace;
+
 void render_profiler(void) {
     struct ProfilerFrameData *profilerGfx;
     profilerGfx = &gProfilerFrameData[gCurrentFrameIndex3 ^ 1];
@@ -434,6 +436,7 @@ void render_profiler(void) {
     print_text_fmt_int(32, 240 - 48, "CPU %d", (u32) totalCPUReads[31]);
     print_text_fmt_int(32, 240 - 64, "RSP %d", (u32) totalRSPReads[31]);
     print_text_fmt_int(32, 240 - 80, "RDP %d", (u32) totalRDPReads[31]);
+    print_text_fmt_int(32, 240 - 216, "RAM %x", (u32) sPoolFreeSpace);
 }
 
 void profiler_logic(void) {

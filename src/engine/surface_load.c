@@ -277,15 +277,11 @@ static s16 upper_cell_index(s16 coord) {
  * @param dynamic Boolean determining whether the surface is static or dynamic
  */
 static void add_surface(struct Surface *surface, s32 dynamic) {
-    // minY/maxY maybe? s32 instead of s16, though.
-    UNUSED s32 unused1, unused2;
     s16 minX, minZ, maxX, maxZ;
 
     s16 minCellX, minCellZ, maxCellX, maxCellZ;
 
     s16 cellZ, cellX;
-    // cellY maybe? s32 instead of s16, though.
-    UNUSED s32 unused3 = 0;
 
     minX = min_3(surface->vertex1[0], surface->vertex2[0], surface->vertex3[0]);
     minZ = min_3(surface->vertex1[2], surface->vertex2[2], surface->vertex3[2]);
@@ -302,9 +298,6 @@ static void add_surface(struct Surface *surface, s32 dynamic) {
             add_surface_to_cell(dynamic, cellX, cellZ, surface);
         }
     }
-}
-
-UNUSED static void stub_surface_load_1(void) {
 }
 
 /**
@@ -405,7 +398,6 @@ static s32 surface_has_force(s16 surfaceType) {
     s32 hasForce = FALSE;
 
     switch (surfaceType) {
-        case SURFACE_0004: // Unused
         case SURFACE_FLOWING_WATER:
         case SURFACE_DEEP_MOVING_QUICKSAND:
         case SURFACE_SHALLOW_MOVING_QUICKSAND:
@@ -430,7 +422,6 @@ static s32 surf_has_no_cam_collision(s16 surfaceType) {
 
     switch (surfaceType) {
         case SURFACE_NO_CAM_COLLISION:
-        case SURFACE_NO_CAM_COLLISION_77: // Unused
         case SURFACE_NO_CAM_COL_VERY_SLIPPERY:
         case SURFACE_SWITCH:
             flags = SURFACE_FLAG_NO_CAM_COLLISION;
@@ -548,7 +539,6 @@ void alloc_surface_pools(void) {
 void load_area_terrain(s16 index, s16 *data, s8 *surfaceRooms, s16 *macroObjects) {
     s16 terrainLoadType;
     s16 *vertexData = NULL;
-    UNUSED u8 filler[4];
 
     // Initialize the data for this.
     gEnvironmentRegions = NULL;
@@ -618,9 +608,6 @@ void clear_dynamic_surfaces(void) {
         sNumCellsUsed = 0;
         sClearAllCells = FALSE;
     }
-}
-
-UNUSED static void unused_80383604(void) {
 }
 
 /**
@@ -760,4 +747,33 @@ void load_object_collision_model(void) {;
     } else {
         gCurrentObject->header.gfx.node.flags &= ~GRAPH_RENDER_ACTIVE;
     }
+}
+
+/**
+ * Transform an object's vertices and add them to the static surface pool.
+ */
+void load_object_static_model(void) {
+    /*s16 *collisionData = o->collisionData;
+    u32 surfacePoolData;
+
+    // Initialise a new surface pool for this block of surface data
+    gCurrStaticSurfacePool = main_pool_alloc(main_pool_available() - 0x10, MEMORY_POOL_LEFT);
+    gCurrStaticSurfacePoolEnd = gCurrStaticSurfacePool;
+    gSurfaceNodesAllocated = gNumStaticSurfaceNodes;
+    gSurfacesAllocated = gNumStaticSurfaces;
+
+    collisionData++;
+    transform_object_vertices(&collisionData, sDynamicVertices);
+
+    // TERRAIN_LOAD_CONTINUE acts as an "end" to the terrain data.
+    while (*collisionData != TERRAIN_LOAD_CONTINUE) {
+        load_object_surfaces(&collisionData, sDynamicVertices, FALSE);
+    }
+
+    surfacePoolData = (uintptr_t)gCurrStaticSurfacePoolEnd - (uintptr_t)gCurrStaticSurfacePool;
+    gTotalStaticSurfaceData += surfacePoolData;
+    main_pool_realloc(gCurrStaticSurfacePool, surfacePoolData);
+
+    gNumStaticSurfaceNodes = gSurfaceNodesAllocated;
+    gNumStaticSurfaces = gSurfacesAllocated;*/
 }

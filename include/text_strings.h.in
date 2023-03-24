@@ -23,6 +23,8 @@
 #define TEXT_SCREEN_MODE_16_9 _("Screen Mode: 16:9")
 #define TEXT_FRAMECAP_30 _("Frame Cap: 30")
 #define TEXT_FRAMECAP_60 _("Frame Cap: 60")
+#define TEXT_DEDITHER_OFF _("Dedither: Off")
+#define TEXT_DEDITHER_ON _("Dedither: On")
 #define TEXT_OPTION_TIP _("[Z]:[R]: Options")
 #define TEXT_OPTION_TIP2 _("[Z]:[R]: Return")
 

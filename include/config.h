@@ -7,6 +7,8 @@
  * (maybe eventually) in SM64
  */
 
+#define UNLOCK_ALL
+
 // Bug Fixes
 // --| Post-JP Version Nintendo Bug Fixes
 /// Fixes bug where obtaining over 999 coins sets the number of lives to 999 (or -25)

@@ -2340,8 +2340,13 @@ void render_pause_course_options(s16 x, s16 y, s8 *index, s16 yIndex) {
 }
 
 void render_pause_castle_menu_box(s16 x, s16 y) {
+    f32 scale = 0.8f;
+    if (gOptionsPage) {
+        y += 4;
+        scale = 0.9f;
+    }
     create_dl_translation_matrix(MENU_MTX_PUSH, x - 78, y - 32, 0);
-    create_dl_scale_matrix(MENU_MTX_NOPUSH, 1.2f, 0.8f, 1.0f);
+    create_dl_scale_matrix(MENU_MTX_NOPUSH, 1.2f, scale, 1.0f);
     gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 105);
     gSPDisplayList(gDisplayListHead++, dl_draw_text_bg_box);
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
@@ -3173,7 +3178,9 @@ u8 sOptionStrings[][32] = {
     {TEXT_SCREEN_MODE_16_10},
     {TEXT_SCREEN_MODE_16_9},
     {TEXT_FRAMECAP_60},
-    {TEXT_FRAMECAP_30}
+    {TEXT_FRAMECAP_30},
+    {TEXT_DEDITHER_OFF},
+    {TEXT_DEDITHER_ON}
 };
 
 u8 sTitleString[] = {TEXT_OPTIONS_TITLE};
@@ -3184,6 +3191,7 @@ s8 gOptionsSelection = 1;
 extern u8 gAntiAliasing;
 extern u8 gScreenMode;
 extern u8 gFrameCap;
+extern u8 gDedither;
 
 void render_options_page(void) {
     shade_screen();
@@ -3200,13 +3208,15 @@ void render_options_page(void) {
     print_generic_string(x, 240 - 120, sTitleString);
 
     x = get_str_x_pos_from_center(SCREEN_WIDTH / 2, sOptionStrings[0 + gAntiAliasing], 12.0f);
-    print_generic_string(x, 240 - 150, sOptionStrings[0 + gAntiAliasing]);
+    print_generic_string(x, 240 - 144, sOptionStrings[0 + gAntiAliasing]);
     x = get_str_x_pos_from_center(SCREEN_WIDTH / 2, sOptionStrings[3 + gScreenMode], 12.0f);
-    print_generic_string(x, 240 - 168, sOptionStrings[3 + gScreenMode]);
+    print_generic_string(x, 240 - 160, sOptionStrings[3 + gScreenMode]);
+    x = get_str_x_pos_from_center(SCREEN_WIDTH / 2, sOptionStrings[8 + gDedither], 12.0f);
+    print_generic_string(x, 240 - 176, sOptionStrings[8 + gDedither]);
     x = get_str_x_pos_from_center(SCREEN_WIDTH / 2, sOptionStrings[6 + gFrameCap], 12.0f);
-    print_generic_string(x, 240 - 186, sOptionStrings[6 + gFrameCap]);
+    print_generic_string(x, 240 - 192, sOptionStrings[6 + gFrameCap]);
     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
-    y = (240 - 132) - (gOptionsSelection * 18);
+    y = (240 - 126) - (gOptionsSelection * 16);
     create_dl_translation_matrix(MENU_MTX_PUSH, (SCREEN_WIDTH / 2) - 64, y, 0);
     gSPDisplayList(gDisplayListHead++, dl_draw_triangle);
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
@@ -3257,11 +3267,21 @@ s32 options_page_logic(void) {
             }
             break;
         case 3:
+            gDedither ^= 1;
+            if (gDedither == 0) {
+                osViSetSpecialFeatures(OS_VI_DITHER_FILTER_OFF);
+                osViSetSpecialFeatures(OS_VI_DIVOT_OFF);
+            } else {
+                osViSetSpecialFeatures(OS_VI_DITHER_FILTER_ON);
+                osViSetSpecialFeatures(OS_VI_DIVOT_ON);
+            }
+            break;
+        case 4:
             gFrameCap ^= 1;
             break;
         }
     }
-    handle_menu_scrolling(MENU_SCROLL_VERTICAL, &gOptionsSelection, 1, 3);
+    handle_menu_scrolling(MENU_SCROLL_VERTICAL, &gOptionsSelection, 1, 4);
 
     return 0;
 }

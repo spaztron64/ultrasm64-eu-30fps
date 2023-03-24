@@ -90,6 +90,7 @@ struct RenderModeContainer {
 u8 gAntiAliasing = 0;
 u8 gScreenMode = 0;
 u8 gFrameCap = 0;
+u8 gDedither = 0;
 
 /* Rendermode settings for cycle 2 for all 8 layers. */
 static struct RenderModeContainer renderModeTable_2Cycle[3] = { { {

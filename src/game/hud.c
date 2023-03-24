@@ -377,6 +377,7 @@ void render_hud_camera_status(void) {
 #define    OS_CPU_COUNTER        (OS_CLOCK_RATE*3/4)
 #define OS_CYCLES_TO_USEC(c)    (((u32)(c)*(1000000LL/15625LL))/(OS_CPU_COUNTER/15625LL))
 #define FRAMETIME_COUNT 30
+#define PROFILER_COUNT 60
 
 u8 gFPS = 30;
 OSTime frameTimes[FRAMETIME_COUNT];
@@ -388,9 +389,9 @@ u8 gShowProfilerNew = TRUE;
 u32 gVideoTime = 0;
 u32 gSoundTime = 0;
 u32 gGameTime = 0;
-u32 totalCPUReads[32];
-u32 totalRSPReads[32];
-u32 totalRDPReads[32];
+u32 totalCPUReads[PROFILER_COUNT + 2];
+u32 totalRSPReads[PROFILER_COUNT + 2];
+u32 totalRDPReads[PROFILER_COUNT + 2];
 u8 perfIteration = 0;
 
 // Call once per frame
@@ -411,19 +412,19 @@ extern u32 sPoolFreeSpace;
 void render_profiler(void) {
     struct ProfilerFrameData *profilerGfx;
     profilerGfx = &gProfilerFrameData[gCurrentFrameIndex3 ^ 1];
-    totalRSPReads[30] -= totalRSPReads[perfIteration];
+    totalRSPReads[PROFILER_COUNT] -= totalRSPReads[perfIteration];
     totalRSPReads[perfIteration] = OS_CYCLES_TO_USEC(profilerGfx->gfxTimes[1] - profilerGfx->gfxTimes[0]);
-    totalRSPReads[30] += OS_CYCLES_TO_USEC(profilerGfx->gfxTimes[1] - profilerGfx->gfxTimes[0]);
-    totalRDPReads[30] -= totalRDPReads[perfIteration];
+    totalRSPReads[PROFILER_COUNT] += OS_CYCLES_TO_USEC(profilerGfx->gfxTimes[1] - profilerGfx->gfxTimes[0]);
+    totalRDPReads[PROFILER_COUNT] -= totalRDPReads[perfIteration];
     totalRDPReads[perfIteration] = OS_CYCLES_TO_USEC(profilerGfx->gfxTimes[2] - profilerGfx->gfxTimes[0]);
-    totalRDPReads[30] += OS_CYCLES_TO_USEC(profilerGfx->gfxTimes[2] - profilerGfx->gfxTimes[0]);
-    totalRSPReads[31] = totalRSPReads[30] / 30;
-    totalRDPReads[31] = totalRDPReads[30] / 30;
+    totalRDPReads[PROFILER_COUNT] += OS_CYCLES_TO_USEC(profilerGfx->gfxTimes[2] - profilerGfx->gfxTimes[0]);
+    totalRSPReads[PROFILER_COUNT + 1] = totalRSPReads[PROFILER_COUNT] / PROFILER_COUNT;
+    totalRDPReads[PROFILER_COUNT + 1] = totalRDPReads[PROFILER_COUNT] / PROFILER_COUNT;
     calculate_and_update_fps();
     print_text_fmt_int(32, 240 - 32, "FPS %d", gFPS);
-    print_text_fmt_int(32, 240 - 48, "CPU %d", (u32) totalCPUReads[31]);
-    print_text_fmt_int(32, 240 - 64, "RSP %d", (u32) totalRSPReads[31]);
-    print_text_fmt_int(32, 240 - 80, "RDP %d", (u32) totalRDPReads[31]);
+    print_text_fmt_int(32, 240 - 48, "CPU %d", (u32) totalCPUReads[PROFILER_COUNT + 1]);
+    print_text_fmt_int(32, 240 - 64, "RSP %d", (u32) totalRSPReads[PROFILER_COUNT + 1]);
+    print_text_fmt_int(32, 240 - 80, "RDP %d", (u32) totalRDPReads[PROFILER_COUNT + 1]);
     print_text_fmt_int(32, 240 - 216, "RAM %x", (u32) sPoolFreeSpace);
 }
 
@@ -457,10 +458,10 @@ void profiler_logic(void) {
     }
     profiler->numSoundTimes &= 0xFFFE;
 
-    totalCPUReads[30] -= totalCPUReads[perfIteration];
+    totalCPUReads[PROFILER_COUNT] -= totalCPUReads[perfIteration];
     cpuTime = MIN(OS_CYCLES_TO_USEC(gVideoTime + (gSoundTime * 2) + gGameTime), 66666);
     totalCPUReads[perfIteration] = cpuTime;
-    totalCPUReads[30] += cpuTime;
+    totalCPUReads[PROFILER_COUNT] += cpuTime;
 
     /*rdpTime = IO_READ(DPC_TMEM_REG);
     rdpTime = MAX(IO_READ(DPC_BUFBUSY_REG), rdpTime);
@@ -474,10 +475,10 @@ void profiler_logic(void) {
     totalRDPReads[perfIteration] = rdpTime;
     totalRDPReads[30] += rdpTime;*/
 
-    totalCPUReads[31] = totalCPUReads[30] / 30;
+    totalCPUReads[PROFILER_COUNT + 1] = totalCPUReads[PROFILER_COUNT] / PROFILER_COUNT;
 
     perfIteration++;
-    if (perfIteration == 30) {
+    if (perfIteration == PROFILER_COUNT) {
         perfIteration = 0;
     }
 }

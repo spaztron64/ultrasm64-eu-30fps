@@ -730,7 +730,7 @@ void load_object_collision_model(void) {;
  * Transform an object's vertices and add them to the static surface pool.
  */
 void load_object_static_model(void) {
-    /*s16 vertexData[600];
+    s16 vertexData[600];
     s16 *collisionData = gCurrentObject->collisionData;
     u32 surfacePoolData;
 
@@ -753,5 +753,5 @@ void load_object_static_model(void) {
     main_pool_realloc(gCurrStaticSurfacePool, surfacePoolData);
 
     gNumStaticSurfaceNodes = gSurfaceNodesAllocated;
-    gNumStaticSurfaces = gSurfacesAllocated;*/
+    gNumStaticSurfaces = gSurfacesAllocated;
 }

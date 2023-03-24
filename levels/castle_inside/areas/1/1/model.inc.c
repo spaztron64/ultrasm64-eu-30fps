@@ -21,9 +21,7 @@ static const Vtx inside_castle_seg7_vertex_07023CB0[] = {
 // 0x07023DB0 - 0x07023FE0
 const Gfx inside_castle_seg7_dl_07023DB0[] = {
     gsDPPipeSync(),
-    gsDPSetCycleType(G_CYC_2CYCLE),
     gsDPSetCombineMode(G_CC_TRILERP, G_CC_DECALRGB2),
-    gsDPSetRenderMode(G_RM_PASS, G_RM_AA_ZB_OPA_SURF2),
     gsDPSetTextureLOD(G_TL_LOD),
     gsSPClearGeometryMode(G_LIGHTING | G_SHADING_SMOOTH),
     gsDPTileSync(),
@@ -80,9 +78,7 @@ const Gfx inside_castle_seg7_dl_07023DB0[] = {
     gsSP2Triangles(12, 13, 14, 0x0, 12, 14, 15, 0x0),
     gsSPTexture(0xFFFF, 0xFFFF, 1, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCycleType(G_CYC_1CYCLE),
     gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
-    gsDPSetRenderMode(G_RM_AA_ZB_OPA_SURF, G_RM_NOOP2),
     gsDPSetTextureLOD(G_TL_TILE),
     gsSPSetGeometryMode(G_LIGHTING | G_SHADING_SMOOTH),
     gsSPEndDisplayList(),

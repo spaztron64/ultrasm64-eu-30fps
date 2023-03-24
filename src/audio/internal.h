@@ -22,6 +22,8 @@
 #define LAYERS_MAX       4
 #define CHANNELS_MAX     16
 
+#define VIBRATO_DISABLED_VALUE (0xFF * 8)
+
 #define NO_LAYER ((struct SequenceChannelLayer *)(-1))
 
 #define MUTE_BEHAVIOR_STOP_SCRIPT 0x80 // stop processing sequence/channel scripts
@@ -132,7 +134,7 @@ struct VibratoState {
     /*    , 0x14*/ u8 active;
 #else
     /*0x08,     */ s8 *curve;
-    /*0x0C,     */ u8 active;
+    /*0x0C,     */ u8 activeFlags;
     /*0x0E,     */ u16 rate;
     /*0x10,     */ u16 extent;
 #endif

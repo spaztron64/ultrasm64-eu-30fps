@@ -209,6 +209,7 @@ s8 get_vibrato_pitch_change(struct VibratoState *vib) {
 #endif
 
 f32 get_vibrato_freq_scale(struct VibratoState *vib) {
+    s32 vibratoExtentTarget;
     s32 pitchChange;
     f32 extent;
     f32 result;
@@ -218,18 +219,26 @@ f32 get_vibrato_freq_scale(struct VibratoState *vib) {
         return 1;
     }
 
+    // This needs to be set locally because changing the original value to 0 overrides the whole channel,
+    // effectively negating the ability to disable vibrato and bypass this function in the first place.
+    // This function isn't huge but it otherwise would get called many thousands of times per second.
+    vibratoExtentTarget = vib->seqChannel->vibratoExtentTarget;
+    if (vibratoExtentTarget >= VIBRATO_DISABLED_VALUE) {
+        vibratoExtentTarget = 0;
+    }
+
+
     if (vib->extentChangeTimer) {
         if (vib->extentChangeTimer == 1) {
-            vib->extent = (s32) vib->seqChannel->vibratoExtentTarget;
+            vib->extent = vibratoExtentTarget;
         } else {
-            vib->extent +=
-                ((s32) vib->seqChannel->vibratoExtentTarget - vib->extent) / (s32) vib->extentChangeTimer;
+            vib->extent += (vibratoExtentTarget - vib->extent) / (s32) vib->extentChangeTimer;
         }
 
         vib->extentChangeTimer--;
-    } else if (vib->seqChannel->vibratoExtentTarget != (s32) vib->extent) {
+    } else if (vibratoExtentTarget != (s32) vib->extent) {
         if ((vib->extentChangeTimer = vib->seqChannel->vibratoExtentChangeDelay) == 0) {
-            vib->extent = (s32) vib->seqChannel->vibratoExtentTarget;
+            vib->extent = vibratoExtentTarget;
         }
     }
 
@@ -271,18 +280,16 @@ void note_vibrato_update(struct Note *note) {
         note->vibratoFreqScale = get_vibrato_freq_scale(&note->vibratoState);
     }
 #else
-    if (note->vibratoState.active) {
+    if (note->vibratoState.activeFlags & VIBMODE_PORTAMENTO) {
         note->portamentoFreqScale = get_portamento_freq_scale(&note->portamento);
-        if (note->parentLayer != NO_LAYER) {
-            note->vibratoFreqScale = get_vibrato_freq_scale(&note->vibratoState);
-        }
+    }
+    if ((note->vibratoState.activeFlags & VIBMODE_VIBRATO) && note->parentLayer != NO_LAYER) {
+        note->vibratoFreqScale = get_vibrato_freq_scale(&note->vibratoState);
     }
 #endif
 }
 
 void note_vibrato_init(struct Note *note) {
-    struct VibratoState *vib;
-    UNUSED struct SequenceChannel *seqChannel;
 #if defined(VERSION_EU) || defined(VERSION_SH)
     struct NotePlaybackState *seqPlayerState = (struct NotePlaybackState *) &note->priority;
 #endif
@@ -290,18 +297,25 @@ void note_vibrato_init(struct Note *note) {
     note->vibratoFreqScale = 1.0f;
     note->portamentoFreqScale = 1.0f;
 
-    vib = &note->vibratoState;
+    struct VibratoState *vib = &note->vibratoState;
 
 #if defined(VERSION_JP) || defined(VERSION_US)
-    if (note->parentLayer->seqChannel->vibratoExtentStart == 0
-        && note->parentLayer->seqChannel->vibratoExtentTarget == 0
-        && note->parentLayer->portamento.mode == 0) {
-        vib->active = FALSE;
+    vib->activeFlags = VIBMODE_NONE;
+    if (note->parentLayer->portamento.mode != 0) {
+        vib->activeFlags |= VIBMODE_PORTAMENTO;
+        note->portamento = note->parentLayer->portamento;
+    }
+
+    if (!(note->parentLayer->seqChannel->vibratoExtentStart == 0
+        && note->parentLayer->seqChannel->vibratoExtentTarget >= VIBRATO_DISABLED_VALUE)) {
+        vib->activeFlags |= VIBMODE_VIBRATO;
+    } else {
         return;
     }
+#else
+    vib->active = TRUE;
 #endif
 
-    vib->active = TRUE;
     vib->time = 0;
 
 #if defined(VERSION_EU) || defined(VERSION_SH)
@@ -324,7 +338,7 @@ void note_vibrato_init(struct Note *note) {
 #else
     vib->curve = gVibratoCurve;
     vib->seqChannel = note->parentLayer->seqChannel;
-    seqChannel = vib->seqChannel;
+    struct SequenceChannel *seqChannel = vib->seqChannel;
 
     if ((vib->extentChangeTimer = seqChannel->vibratoExtentChangeDelay) == 0) {
         vib->extent = seqChannel->vibratoExtentTarget;
@@ -338,8 +352,6 @@ void note_vibrato_init(struct Note *note) {
         vib->rate = seqChannel->vibratoRateStart;
     }
     vib->delay = seqChannel->vibratoDelay;
-
-    note->portamento = note->parentLayer->portamento;
 #endif
 }
 

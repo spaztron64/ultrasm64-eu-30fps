@@ -40,7 +40,7 @@ struct MacroPreset MacroObjectPresets[] = {
     {bhvBouncingFireball, MODEL_NONE, 0}, // unused
     {bhvFishSpawner, MODEL_NONE, 0}, // unused
     {bhvFishSpawner, MODEL_NONE, 1},
-    {bhvBetaFishSplashSpawner, MODEL_NONE, 0},
+    {NULL, MODEL_NONE, 0},
     {bhvHidden1upInPoleSpawner, MODEL_NONE, 0},
     {bhvGoomba, MODEL_GOOMBA, 1},
     {bhvGoomba, MODEL_GOOMBA, 2},
@@ -53,7 +53,7 @@ struct MacroPreset MacroObjectPresets[] = {
     {bhvHomingAmp, MODEL_AMP, 0},
     {bhvCirclingAmp, MODEL_AMP, 0},
     {bhvCarrySomething1, MODEL_UNKNOWN_7D, 0}, // unused
-    {bhvBetaTrampolineTop, MODEL_TRAMPOLINE, 0}, // unused
+    {NULL, MODEL_TRAMPOLINE, 0}, // unused
     {bhvFreeBowlingBall, MODEL_BOWLING_BALL, 0}, // unused
     {bhvSnufit, MODEL_SNUFIT, 0},
     {bhvRecoveryHeart, MODEL_HEART, 0},
@@ -248,7 +248,7 @@ struct MacroPreset MacroObjectPresets[] = {
     {bhvYellowCoin, MODEL_YELLOW_COIN, 0},
     {bhvChirpChirp, MODEL_NONE, 0},
     {bhvSeaweedBundle, MODEL_NONE, 0},
-    {bhvBetaChestBottom, MODEL_TREASURE_CHEST_BASE, 0}, // unused
+    {NULL, MODEL_TREASURE_CHEST_BASE, 0}, // unused
     {bhvBowserBomb, MODEL_WATER_MINE, 0}, // unused
     {bhvFishSpawner, MODEL_NONE, 2}, // unused
     {bhvFishSpawner, MODEL_NONE, 3},

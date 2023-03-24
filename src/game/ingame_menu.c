@@ -40,6 +40,7 @@ s16 gDialogY;
 s16 gCutsceneMsgXOffset;
 s16 gCutsceneMsgYOffset;
 s8 gRedCoinsCollected;
+s8 gOptionsPage = 0;
 
 extern u8 gLastCompletedCourseNum;
 extern u8 gLastCompletedStarNum;
@@ -2344,17 +2345,18 @@ void render_pause_castle_menu_box(s16 x, s16 y) {
     gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 105);
     gSPDisplayList(gDisplayListHead++, dl_draw_text_bg_box);
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+    if (gOptionsPage == 0) {
+        create_dl_translation_matrix(MENU_MTX_PUSH, x + 6, y - 28, 0);
+        create_dl_rotation_matrix(MENU_MTX_NOPUSH, DEFAULT_DIALOG_BOX_ANGLE, 0, 0, 1.0f);
+        gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlphaLerp);
+        gSPDisplayList(gDisplayListHead++, dl_draw_triangle);
+        gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 
-    create_dl_translation_matrix(MENU_MTX_PUSH, x + 6, y - 28, 0);
-    create_dl_rotation_matrix(MENU_MTX_NOPUSH, DEFAULT_DIALOG_BOX_ANGLE, 0, 0, 1.0f);
-    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlphaLerp);
-    gSPDisplayList(gDisplayListHead++, dl_draw_triangle);
-    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
-
-    create_dl_translation_matrix(MENU_MTX_PUSH, x - 9, y - 101, 0);
-    create_dl_rotation_matrix(MENU_MTX_NOPUSH, 270.0f, 0, 0, 1.0f);
-    gSPDisplayList(gDisplayListHead++, dl_draw_triangle);
-    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+        create_dl_translation_matrix(MENU_MTX_PUSH, x - 9, y - 101, 0);
+        create_dl_rotation_matrix(MENU_MTX_NOPUSH, 270.0f, 0, 0, 1.0f);
+        gSPDisplayList(gDisplayListHead++, dl_draw_triangle);
+        gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+    }
 }
 
 void highlight_last_course_complete_stars(void) {
@@ -2524,6 +2526,7 @@ s8 gCourseCompleteCoinsEqual = FALSE;
 s32 gCourseDoneMenuTimer = 0;
 s32 gCourseCompleteCoins = 0;
 s8 gHudFlash = 0;
+extern u8 sTitleString2[];
 
 void render_pause_courses_and_castle(void) {
 
@@ -2544,7 +2547,10 @@ void render_pause_courses_and_castle(void) {
             render_pause_castle_menu_box(160, 143);
             render_pause_castle_main_strings(104, 60);
             break;
-    }
+    } 
+    gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
+    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlphaLerp);
+    print_generic_string(32, 240 - 32, sTitleString2);
     gDialogTextAlphaLerp = approach_f32_asymptotic(gDialogTextAlphaLerp, gDialogTextAlpha, gLerpSpeed);
 }
 
@@ -2892,11 +2898,12 @@ s32 pause_menu_logic(void) {
                 handle_menu_scrolling(MENU_SCROLL_VERTICAL, &gDialogLineNum, 1, 3);
             }
 
-            if (gPlayer3Controller->buttonPressed & (A_BUTTON | Z_TRIG | START_BUTTON)) {
+            if (gPlayer3Controller->buttonPressed & (A_BUTTON | START_BUTTON)) {
                 level_set_transition(0, NULL);
                 play_sound(SOUND_MENU_PAUSE_2, gGlobalSoundSource);
                 gDialogBoxState = DIALOG_STATE_OPENING;
                 gMenuMode = MENU_MODE_NONE;
+                gOptionsPage = 0;
 
                 if (gDialogLineNum == MENU_OPT_EXIT_COURSE) {
                     index = gDialogLineNum;
@@ -2911,10 +2918,11 @@ s32 pause_menu_logic(void) {
         case DIALOG_STATE_HORIZONTAL:
         handle_menu_scrolling(MENU_SCROLL_VERTICAL, &gDialogLineNum, COURSE_NUM_TO_INDEX(COURSE_MIN) - 1, COURSE_NUM_TO_INDEX(COURSE_BONUS_STAGES) + 1);
 
-            if (gPlayer3Controller->buttonPressed & (A_BUTTON | Z_TRIG | START_BUTTON)) {
+            if (gPlayer3Controller->buttonPressed & (A_BUTTON | START_BUTTON)) {
                 level_set_transition(0, NULL);
                 play_sound(SOUND_MENU_PAUSE_2, gGlobalSoundSource);
                 gMenuMode = MENU_MODE_NONE;
+                gOptionsPage = 0;
                 gDialogBoxState = DIALOG_STATE_OPENING;
 
                 return MENU_OPT_DEFAULT;
@@ -2924,6 +2932,11 @@ s32 pause_menu_logic(void) {
 
     if (gDialogTextAlpha < 250) {
         gDialogTextAlpha += 25;
+    }
+
+    if (gPlayer1Controller->buttonPressed & (L_TRIG | R_TRIG | Z_TRIG)) {
+        gOptionsPage = TRUE;
+        play_sound(SOUND_MENU_CHANGE_SELECT, gGlobalSoundSource);
     }
 
     return MENU_OPT_NONE;
@@ -2980,12 +2993,12 @@ s32 clear_menu_logic(void) {
             increment_coin_score();
             handle_menu_scrolling(MENU_SCROLL_VERTICAL, &gDialogLineNum, 1, 3);
 
-            if (gCourseDoneMenuTimer > 110 && (gPlayer3Controller->buttonPressed & A_BUTTON
-                 || gPlayer3Controller->buttonPressed & START_BUTTON || gPlayer3Controller->buttonPressed & Z_TRIG )) {
+            if (gCourseDoneMenuTimer > 110 && (gPlayer3Controller->buttonPressed & A_BUTTON || gPlayer3Controller->buttonPressed & START_BUTTON)) {
                 level_set_transition(0, NULL);
                 play_sound(SOUND_MENU_STAR_SOUND, gGlobalSoundSource);
                 gDialogBoxState = DIALOG_STATE_OPENING;
                 gMenuMode = MENU_MODE_NONE;
+                gOptionsPage = 0;
                 index = gDialogLineNum;
                 gCourseDoneMenuTimer = 0;
                 gCourseCompleteCoins = 0;
@@ -3152,23 +3165,128 @@ void dialogue_logic(void) {
     }
 }
 
+u8 sOptionStrings[][32] = {
+    {TEXT_ANTI_ALIASING_OFF},
+    {TEXT_ANTI_ALIASING_FAST},
+    {TEXT_ANTI_ALIASING_FANCY},
+    {TEXT_SCREEN_MODE_4_3},
+    {TEXT_SCREEN_MODE_16_10},
+    {TEXT_SCREEN_MODE_16_9},
+    {TEXT_FRAMECAP_60},
+    {TEXT_FRAMECAP_30}
+};
+
+u8 sTitleString[] = {TEXT_OPTIONS_TITLE};
+u8 sTitleString2[] = {TEXT_OPTION_TIP};
+u8 sTitleString3[] = {TEXT_OPTION_TIP2};
+
+s8 gOptionsSelection = 1;
+extern u8 gAntiAliasing;
+extern u8 gScreenMode;
+extern u8 gFrameCap;
+
+void render_options_page(void) {
+    shade_screen();
+    s32 x;
+    s32 y;
+    
+    render_pause_castle_menu_box(160, 143);
+    gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
+    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+    // Return
+    print_generic_string(32, 240 - 32, sTitleString3);
+    // Title
+    x = get_str_x_pos_from_center(SCREEN_WIDTH / 2, sTitleString, 12.0f);
+    print_generic_string(x, 240 - 120, sTitleString);
+
+    x = get_str_x_pos_from_center(SCREEN_WIDTH / 2, sOptionStrings[0 + gAntiAliasing], 12.0f);
+    print_generic_string(x, 240 - 150, sOptionStrings[0 + gAntiAliasing]);
+    x = get_str_x_pos_from_center(SCREEN_WIDTH / 2, sOptionStrings[3 + gScreenMode], 12.0f);
+    print_generic_string(x, 240 - 168, sOptionStrings[3 + gScreenMode]);
+    x = get_str_x_pos_from_center(SCREEN_WIDTH / 2, sOptionStrings[6 + gFrameCap], 12.0f);
+    print_generic_string(x, 240 - 186, sOptionStrings[6 + gFrameCap]);
+    gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
+    y = (240 - 132) - (gOptionsSelection * 18);
+    create_dl_translation_matrix(MENU_MTX_PUSH, (SCREEN_WIDTH / 2) - 64, y, 0);
+    gSPDisplayList(gDisplayListHead++, dl_draw_triangle);
+    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+}
+
+u8 sOptX = 0;
+
+// I could make a better option system
+// I could also just not.
+s32 options_page_logic(void) {
+    if (gPlayer1Controller->buttonPressed & (L_TRIG | R_TRIG | Z_TRIG)) {
+        play_sound(SOUND_MENU_CHANGE_SELECT, gGlobalSoundSource);
+        gOptionsPage = FALSE;
+    }
+    s32 settingSwap = 0;
+
+    if (gPlayer1Controller->rawStickX > 40) {
+        if (sOptX == 0) {
+            sOptX = 1;
+            settingSwap = 1;
+        }
+    } else if (gPlayer1Controller->rawStickX < -40) {
+        if (sOptX == 0) {
+            sOptX = 1;
+            settingSwap = -1;
+        }
+    } else {
+        sOptX = 0;
+        settingSwap = 0;
+    }
+
+    if (settingSwap) {
+        switch(gOptionsSelection) {
+        case 1:
+            gAntiAliasing += settingSwap;
+            if (gAntiAliasing == 255 && settingSwap == -1) {
+                gAntiAliasing = 2;
+            } else if (gAntiAliasing == 3) {
+                gAntiAliasing = 0;
+            }
+            break;
+        case 2:
+            gScreenMode += settingSwap;
+            if (gScreenMode == 255 && settingSwap == -1) {
+                gScreenMode = 2;
+            } else if (gScreenMode == 3) {
+                gScreenMode = 0;
+            }
+            break;
+        case 3:
+            gFrameCap ^= 1;
+            break;
+        }
+    }
+    handle_menu_scrolling(MENU_SCROLL_VERTICAL, &gOptionsSelection, 1, 3);
+
+    return 0;
+}
+
 s32 ingame_menu_logic(void) {
     s16 index = MENU_OPT_NONE;
 
     if (gMenuMode != MENU_MODE_NONE) {
-        switch (gMenuMode) {
-            case MENU_MODE_UNUSED_0:
-                index = pause_menu_logic();
-                break;
-            case MENU_MODE_RENDER_PAUSE_SCREEN:
-                index = pause_menu_logic();
-                break;
-            case MENU_MODE_RENDER_COURSE_COMPLETE_SCREEN:
-                index = clear_menu_logic();
-                break;
-            case MENU_MODE_UNUSED_3:
-                index = clear_menu_logic();
-                break;
+        if (gOptionsPage) {
+            index = options_page_logic();
+        } else {
+            switch (gMenuMode) {
+                case MENU_MODE_UNUSED_0:
+                    index = pause_menu_logic();
+                    break;
+                case MENU_MODE_RENDER_PAUSE_SCREEN:
+                    index = pause_menu_logic();
+                    break;
+                case MENU_MODE_RENDER_COURSE_COMPLETE_SCREEN:
+                    index = clear_menu_logic();
+                    break;
+                case MENU_MODE_UNUSED_3:
+                    index = clear_menu_logic();
+                    break;
+            }
         }
 
         gDialogColorFadeTimer = (s16) gDialogColorFadeTimer + 0x1000;
@@ -3191,19 +3309,23 @@ void render_menus_and_dialogs(void) {
     create_dl_ortho_matrix();
 
     if (gMenuMode != MENU_MODE_NONE) {
-        switch (gMenuMode) {
-            case MENU_MODE_UNUSED_0:
-                render_pause_courses_and_castle();
-                break;
-            case MENU_MODE_RENDER_PAUSE_SCREEN:
-                render_pause_courses_and_castle();
-                break;
-            case MENU_MODE_RENDER_COURSE_COMPLETE_SCREEN:
-                render_course_complete_screen();
-                break;
-            case MENU_MODE_UNUSED_3:
-                render_course_complete_screen();
-                break;
+        if (gOptionsPage) {
+            render_options_page();
+        } else {
+            switch (gMenuMode) {
+                case MENU_MODE_UNUSED_0:
+                    render_pause_courses_and_castle();
+                    break;
+                case MENU_MODE_RENDER_PAUSE_SCREEN:
+                    render_pause_courses_and_castle();
+                    break;
+                case MENU_MODE_RENDER_COURSE_COMPLETE_SCREEN:
+                    render_course_complete_screen();
+                    break;
+                case MENU_MODE_UNUSED_3:
+                    render_course_complete_screen();
+                    break;
+            }
         }
     } else if (gDialogID != DIALOG_NONE) {
         // The Peach "Dear Mario" message needs to be repositioned separately

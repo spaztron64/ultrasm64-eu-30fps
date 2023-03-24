@@ -27,6 +27,7 @@
 #include "sram.h"
 #endif
 #include "engine/math_util.h"
+#include "rendering_graph_node.h"
 #include <prevent_bss_reordering.h>
 
 // First 3 controller slots
@@ -844,5 +845,8 @@ void thread9_graphics(UNUSED void *arg) {
         }
 
         osRecvMesg(&gVideoVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
+        if (gFrameCap) {
+            osRecvMesg(&gVideoVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
+        }
     }
 }

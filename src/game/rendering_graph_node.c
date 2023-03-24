@@ -76,7 +76,7 @@ Mat4 gCameraTransform;
 f32 gHalfFovVert;
 f32 gHalfFovHor;
 u32 gCurrAnimPos;
-u8 gMarioAnimHeap[0x4000];
+ALIGNED16 u8 gMarioAnimHeap[0x4000];
 struct AnimInfo gMarioGfxAnim;
 struct DmaHandlerList gMarioGfxAnimBuf;
 struct DmaHandlerList *gMarioGfxAnimList = &gMarioGfxAnimBuf;
@@ -88,6 +88,8 @@ struct RenderModeContainer {
 };
 
 u8 gAntiAliasing = 0;
+u8 gScreenMode = 0;
+u8 gFrameCap = 0;
 
 /* Rendermode settings for cycle 2 for all 8 layers. */
 static struct RenderModeContainer renderModeTable_2Cycle[3] = { { {

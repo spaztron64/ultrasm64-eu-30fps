@@ -20,6 +20,8 @@ extern Mat4 gThrowMatStack[2][THROWMATSTACK];
 extern u16 gThrowMatIndex;
 extern u8 gThrowMatSwap;
 extern Mat4 gCameraTransform;
+extern u8 gScreenMode;
+extern u8 gFrameCap;
 
 // after processing an object, the type is reset to this
 #define ANIM_TYPE_NONE                  0

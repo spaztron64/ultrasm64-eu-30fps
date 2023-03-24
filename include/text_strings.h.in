@@ -14,6 +14,18 @@
 #define TEXT_VARIABLE_X _("×")
 #define TEXT_UNFILLED_STAR _("☆")
 
+#define TEXT_OPTIONS_TITLE _("Options")
+#define TEXT_ANTI_ALIASING_OFF _("Anti Aliasing: Off")
+#define TEXT_ANTI_ALIASING_FAST _("Anti Aliasing: Fast")
+#define TEXT_ANTI_ALIASING_FANCY _("Anti Aliasing: Fancy")
+#define TEXT_SCREEN_MODE_4_3 _("Screen Mode: 4:3")
+#define TEXT_SCREEN_MODE_16_10 _("Screen Mode: 16:10")
+#define TEXT_SCREEN_MODE_16_9 _("Screen Mode: 16:9")
+#define TEXT_FRAMECAP_30 _("Frame Cap: 30")
+#define TEXT_FRAMECAP_60 _("Frame Cap: 60")
+#define TEXT_OPTION_TIP _("[Z]:[R]: Options")
+#define TEXT_OPTION_TIP2 _("[Z]:[R]: Return")
+
 /**
  * Global Text
  */

@@ -8,6 +8,11 @@
 #include "camera.h"
 #include "envfx_snow.h"
 #include "level_geo.h"
+#include "level_update.h"
+#include "object_list_processor.h"
+#include "ingame_menu.h"
+
+extern s16 sCurrPlayMode;
 
 /**
  * Geo function that generates a displaylist for environment effects such as
@@ -25,19 +30,18 @@ Gfx *geo_envfx_main(s32 callContext, struct GraphNode *node, Mat4 mtxf) {
         u32 *params = &execNode->parameter; // accessed a s32 as 2 u16s by pointing to the variable and
                                             // casting to a local struct as necessary.
 
-        if (GET_HIGH_U16_OF_32(*params) != gAreaUpdateCounter) {
-            UNUSED struct Camera *sp2C = gCurGraphNodeCamera->config.camera;
+        if ((gTimeStopState & TIME_STOP_ACTIVE) == 0 && sCurrPlayMode != 2) {
             s32 snowMode = GET_LOW_U16_OF_32(*params);
 
-            vec3f_to_vec3s(camTo, gCurGraphNodeCamera->focus);
-            vec3f_to_vec3s(camFrom, gCurGraphNodeCamera->pos);
-            vec3f_to_vec3s(marioPos, gPlayerCameraState->pos);
+            vec3f_to_vec3s(camTo, gCurGraphNodeCamera->focusLerp);
+            vec3f_to_vec3s(camFrom, gCurGraphNodeCamera->posLerp);
+            vec3f_to_vec3s(marioPos, gMarioState->marioObj->header.gfx.posLerp);
             particleList = envfx_update_particles(snowMode, marioPos, camTo, camFrom);
             if (particleList != NULL) {
                 Mtx *mtx = alloc_display_list(sizeof(*mtx));
 
                 gfx = alloc_display_list(2 * sizeof(*gfx));
-                mtxf_to_mtx(mtx, mtxf);
+                mtxf_to_mtx((s16 *) mtx, (f32 *) mtxf);
                 gSPMatrix(&gfx[0], VIRTUAL_TO_PHYSICAL(mtx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
                 gSPBranchList(&gfx[1], VIRTUAL_TO_PHYSICAL(particleList));
                 execNode->fnNode.node.flags = (execNode->fnNode.node.flags & 0xFF) | 0x400;
@@ -71,9 +75,9 @@ Gfx *geo_skybox_main(s32 callContext, struct GraphNode *node, UNUSED Mat4 *mtx) 
             (struct GraphNodePerspective *) camNode->fnNode.node.parent;
 
 #ifndef L3DEX2_ALONE
-        gfx = create_skybox_facing_camera(0, backgroundNode->background, camFrustum->fov, gLakituState.pos[0],
-                            gLakituState.pos[1], gLakituState.pos[2], gLakituState.focus[0],
-                            gLakituState.focus[1], gLakituState.focus[2]);
+        gfx = create_skybox_facing_camera(0, backgroundNode->background, camFrustum->fov, camNode->posLerp[0],
+                            camNode->posLerp[1], camNode->posLerp[2], camNode->focusLerp[0],
+                            camNode->focusLerp[1], camNode->focusLerp[2]);
 #endif
     }
 

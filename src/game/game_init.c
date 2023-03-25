@@ -41,6 +41,9 @@ struct GfxPool *gGfxPool;
 
 u32 gMoveSpeed = 1;
 f32 gLerpSpeed = 1;
+u16 gScreenWidth = 240;
+u8 gScreenSwapTimer;
+f32 gAspectRatio;
 
 // OS Controllers
 OSContStatus gControllerStatuses[4];
@@ -111,7 +114,7 @@ void init_rdp(void) {
     gDPPipeSync(gDisplayListHead++);
     gDPPipelineMode(gDisplayListHead++, G_PM_NPRIMITIVE);
 
-    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, gScreenWidth, SCREEN_HEIGHT);
     gDPSetCombineMode(gDisplayListHead++, G_CC_SHADE, G_CC_SHADE);
 
     gDPSetTextureLOD(gDisplayListHead++, G_TL_TILE);
@@ -161,12 +164,10 @@ void init_z_buffer(void) {
     gDPSetDepthSource(gDisplayListHead++, G_ZS_PIXEL);
     gDPSetDepthImage(gDisplayListHead++, gPhysicalZBuffer);
 
-    gDPSetColorImage(gDisplayListHead++, G_IM_FMT_RGBA, G_IM_SIZ_16b, SCREEN_WIDTH, gPhysicalZBuffer);
-    gDPSetFillColor(gDisplayListHead++,
-                    GPACK_ZDZ(G_MAXFBZ, 0) << 16 | GPACK_ZDZ(G_MAXFBZ, 0));
+    gDPSetColorImage(gDisplayListHead++, G_IM_FMT_RGBA, G_IM_SIZ_16b, gScreenWidth, gPhysicalZBuffer);
+    gDPSetFillColor(gDisplayListHead++, GPACK_ZDZ(G_MAXFBZ, 0) << 16 | GPACK_ZDZ(G_MAXFBZ, 0));
 
-    gDPFillRectangle(gDisplayListHead++, 0, 0, SCREEN_WIDTH - 1,
-                     SCREEN_HEIGHT - 1);
+    gDPFillRectangle(gDisplayListHead++, 0, 0, gScreenWidth - 1, SCREEN_HEIGHT - 1);
 }
 
 /**
@@ -176,10 +177,8 @@ void select_framebuffer(void) {
     gDPPipeSync(gDisplayListHead++);
 
     gDPSetCycleType(gDisplayListHead++, G_CYC_1CYCLE);
-    gDPSetColorImage(gDisplayListHead++, G_IM_FMT_RGBA, G_IM_SIZ_16b, SCREEN_WIDTH,
-                     gPhysicalFramebuffers[sRenderingFramebuffer]);
-    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, SCREEN_WIDTH,
-                  SCREEN_HEIGHT);
+    gDPSetColorImage(gDisplayListHead++, G_IM_FMT_RGBA, G_IM_SIZ_16b, gScreenWidth, gPhysicalFramebuffers[sRenderingFramebuffer]);
+    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, gScreenWidth, SCREEN_HEIGHT);
 }
 
 /**
@@ -211,11 +210,6 @@ void clear_viewport(Vp *viewport, s32 color) {
     s16 vpLrx = (viewport->vp.vtrans[0] + viewport->vp.vscale[0]) / 4 - 2;
     s16 vpLry = (viewport->vp.vtrans[1] + viewport->vp.vscale[1]) / 4 - 2;
 
-#ifdef WIDESCREEN
-    vpUlx = GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(vpUlx);
-    vpLrx = GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(SCREEN_WIDTH - vpLrx);
-#endif
-
     gDPPipeSync(gDisplayListHead++);
 
     gDPSetRenderMode(gDisplayListHead++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
@@ -235,7 +229,7 @@ void clear_viewport(Vp *viewport, s32 color) {
 void draw_screen_borders(void) {
     gDPPipeSync(gDisplayListHead++);
 
-    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, gScreenWidth, SCREEN_HEIGHT);
     gDPSetRenderMode(gDisplayListHead++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
     gDPSetCycleType(gDisplayListHead++, G_CYC_FILL);
 
@@ -357,12 +351,12 @@ void draw_reset_bars(void) {
         }
 
         fbPtr = (u64 *) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[fbNum]);
-        fbPtr += gNmiResetBarsTimer++ * (SCREEN_WIDTH / 4);
+        fbPtr += gNmiResetBarsTimer++ * (gScreenWidth / 4);
 
         for (width = 0; width < ((SCREEN_HEIGHT / 16) + 1); width++) {
             // Loop must be one line to match on -O2
-            for (height = 0; height < (SCREEN_WIDTH / 4); height++) *fbPtr++ = 0;
-            fbPtr += ((SCREEN_WIDTH / 4) * 14);
+            for (height = 0; height < (gScreenWidth / 4); height++) *fbPtr++ = 0;
+            fbPtr += ((gScreenWidth / 4) * 14);
         }
     }
 
@@ -776,6 +770,14 @@ void thread5_game_loop(UNUSED void *arg) {
         profiler_log_thread5_time(BEFORE_DISPLAY_LISTS);
         profiler_log_thread5_time(AFTER_DISPLAY_LISTS);
         profiler_log_thread5_time(THREAD5_END);
+        if (gPlayer1Controller->buttonPressed & D_JPAD) {
+            
+            gScreenMode ++;
+            if (gScreenMode == 3) {
+                gScreenMode = 0;
+            }
+            gScreenSwapTimer = 3;
+        }
         gGameTime = osGetTime() - first;
         osRecvMesg(&gGameVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
         osRecvMesg(&gGameVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
@@ -793,8 +795,32 @@ u8 gInstantWarpReady;
 u32 lastRenderedFrame = 0xFFFFFFFF;
 u8 gLoadReset = 0;
 
+void change_vi(OSViMode *mode, int width, int height);
+extern OSViMode VI;
+
+void swap_screen(void) {
+    if (gScreenSwapTimer > 0) {
+        gScreenSwapTimer--;
+        if (gScreenSwapTimer == 0) {
+            switch (gScreenMode) {
+            case 0:
+                gScreenWidth = 320;
+                break;
+            case 1:
+                gScreenWidth = 384;
+                break;
+            case 2:
+                gScreenWidth = 424;
+                break;
+            }
+            change_vi(&VI, gScreenWidth, SCREEN_HEIGHT);
+        }
+    }
+}
+
 void thread9_graphics(UNUSED void *arg) {
     u32 prevTime = 0;
+    gScreenSwapTimer = 1;
 
     set_vblank_handler(3, &gVideoVblankHandler, &gVideoVblankQueue, (OSMesg) 1);
     render_init();
@@ -829,6 +855,7 @@ void thread9_graphics(UNUSED void *arg) {
                 gMoveSpeed = 0;
             }
             lastRenderedFrame = gGlobalTimer;
+            swap_screen();
             select_gfx_pool();
             init_rcp();
             render_game();

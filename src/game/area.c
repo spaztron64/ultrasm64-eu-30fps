@@ -25,7 +25,7 @@
 
 struct SpawnInfo gPlayerSpawnInfos[1];
 struct GraphNode *D_8033A160[0x100];
-struct Area gAreaData[8];
+struct Area gAreaData[4];
 
 struct WarpTransition gWarpTransition;
 
@@ -112,9 +112,9 @@ void print_intro_text(void) {
     if ((gGlobalTimer & 31) < 20) {
         if (gControllerBits == 0) {
 #ifdef VERSION_EU
-            print_text_centered(SCREEN_WIDTH / 2, 20, gNoControllerMsg[language]);
+            print_text_centered(gScreenWidth / 2, 20, gNoControllerMsg[language]);
 #else
-            print_text_centered(SCREEN_WIDTH / 2, 20, "NO CONTROLLER");
+            print_text_centered(gScreenWidth / 2, 20, "NO CONTROLLER");
 #endif
         } else {
 #ifdef VERSION_EU
@@ -181,7 +181,7 @@ void clear_areas(void) {
     gWarpTransition.pauseRendering = FALSE;
     gMarioSpawnInfo->areaIndex = -1;
 
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 4; i++) {
         gAreaData[i].index = i;
         gAreaData[i].flags = 0;
         gAreaData[i].terrainType = 0;
@@ -213,7 +213,7 @@ void clear_area_graph_nodes(void) {
         gWarpTransition.isActive = FALSE;
     }
 
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 4; i++) {
         if (gAreaData[i].unk04 != NULL) {
             geo_call_global_function_nodes(&gAreaData[i].unk04->node, GEO_CONTEXT_AREA_INIT);
             gAreaData[i].unk04 = NULL;
@@ -326,9 +326,9 @@ void play_transition(s16 transType, s16 time, u8 red, u8 green, u8 blue) {
         // If you really wanted to, you could place the start at one corner and the end at
         // the opposite corner. This will make the transition image look like it is moving
         // across the screen.
-        gWarpTransition.data.startTexX = SCREEN_WIDTH / 2;
+        gWarpTransition.data.startTexX = gScreenWidth / 2;
         gWarpTransition.data.startTexY = SCREEN_HEIGHT / 2;
-        gWarpTransition.data.endTexX = SCREEN_WIDTH / 2;
+        gWarpTransition.data.endTexX = gScreenWidth / 2;
         gWarpTransition.data.endTexY = SCREEN_HEIGHT / 2;
 
         gWarpTransition.data.texTimer = 0;
@@ -390,16 +390,14 @@ void render_game(void) {
 
         gSPViewport(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&D_8032CF00));
 
-        gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, gBorderHeight, SCREEN_WIDTH,
-                      SCREEN_HEIGHT - gBorderHeight);
+        gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, gScreenWidth, SCREEN_HEIGHT);
         render_hud();
 
-        gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+        gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, gScreenWidth, SCREEN_HEIGHT);
         render_text_labels();
         do_cutscene_handler();
         print_displaying_credits_entry();
-        gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, gBorderHeight, SCREEN_WIDTH,
-                      SCREEN_HEIGHT - gBorderHeight);
+        gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, gScreenWidth, SCREEN_HEIGHT);
         render_menus_and_dialogs();
 
         if (gMenuOptSelectIndex != 0) {
@@ -409,8 +407,7 @@ void render_game(void) {
         if (D_8032CE78 != NULL) {
             make_viewport_clip_rect(D_8032CE78);
         } else
-            gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, gBorderHeight, SCREEN_WIDTH,
-                          SCREEN_HEIGHT - gBorderHeight);
+            gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, gScreenWidth, SCREEN_HEIGHT);
 
         if (gWarpTransition.isActive) {
             render_screen_transition(0, gWarpTransition.type, gWarpTransition.time, &gWarpTransition.data);

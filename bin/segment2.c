@@ -2579,6 +2579,7 @@ const Gfx dl_proj_mtx_fullscreen[] = {
 const Gfx dl_screen_transition_end[] = {
     gsDPPipeSync(),
     gsSPSetGeometryMode(G_LIGHTING),
+    gsDPSetCycleType(G_CYC_2CYCLE),
     gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsDPSetRenderMode(G_RM_OPA_SURF, G_RM_OPA_SURF2),
     gsSPEndDisplayList(),

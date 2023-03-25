@@ -2,6 +2,7 @@
 #include <PR/os_internal_error.h>
 #include <stdarg.h>
 #include <string.h>
+#include "game_init.h"
 
 #include "sm64.h"
 
@@ -252,6 +253,7 @@ void thread2_crash_screen(UNUSED void *arg) {
         osRecvMesg(&gCrashScreen.mesgQueue, &mesg, 1);
         thread = get_crashed_thread();
     } while (thread == NULL);
+    gCrashScreen.width = gScreenWidth;
     draw_crash_screen(thread);
     for (;;) {
     }
@@ -264,8 +266,8 @@ void crash_screen_set_framebuffer(u16 *framebuffer, u16 width, u16 height) {
 }
 
 void crash_screen_init(void) {
-    gCrashScreen.framebuffer = (u16 *) (osMemSize | 0x80000000) - SCREEN_WIDTH * SCREEN_HEIGHT;
-    gCrashScreen.width = SCREEN_WIDTH;
+    gCrashScreen.framebuffer = (u16 *) (osMemSize | 0x80000000) - SCREEN_WIDTH_WIDE * SCREEN_HEIGHT;
+    gCrashScreen.width = gScreenWidth;
     gCrashScreen.height = SCREEN_HEIGHT;
     osCreateMesgQueue(&gCrashScreen.mesgQueue, &gCrashScreen.mesg, 1);
     osCreateThread(&gCrashScreen.thread, 2, thread2_crash_screen, NULL,

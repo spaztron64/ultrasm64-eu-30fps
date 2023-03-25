@@ -43,6 +43,7 @@
 
 // Screen Size Defines
 #define SCREEN_WIDTH 320
+#define SCREEN_WIDTH_WIDE 424
 #define SCREEN_HEIGHT 240
 
 #define THREAD1_STACK 0x100

@@ -1785,7 +1785,7 @@ void render_dialog_entries(void) {
     if (gLastDialogPageStrPos == -1 && gLastDialogResponse == 1) {
         render_dialog_triangle_choice();
     }
-    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 2, 2, SCREEN_WIDTH - gBorderHeight/2, SCREEN_HEIGHT - gBorderHeight/2);
+    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 2, 2, gScreenWidth - gBorderHeight/2, SCREEN_HEIGHT - gBorderHeight/2);
     if (gLastDialogPageStrPos != -1 && gDialogBoxState == DIALOG_STATE_VERTICAL) {
         render_dialog_triangle_next(dialog->linesPerBox);
     }
@@ -2015,7 +2015,7 @@ void print_peach_letter_message(void) {
  * Formed by four triangles.
  */
 void render_hud_cannon_reticle(void) {
-    create_dl_translation_matrix(MENU_MTX_PUSH, 160.0f, 120.0f, 0);
+    create_dl_translation_matrix(MENU_MTX_PUSH, gScreenWidth / 2, 120.0f, 0);
 
     gDPSetEnvColor(gDisplayListHead++, 50, 50, 50, 180);
     create_dl_translation_matrix(MENU_MTX_PUSH, -20.0f, -8.0f, 0);
@@ -2053,7 +2053,7 @@ void change_dialog_camera_angle(void) {
 }
 
 void shade_screen(void) {
-    create_dl_translation_matrix(MENU_MTX_PUSH, GFX_DIMENSIONS_FROM_LEFT_EDGE(0), SCREEN_HEIGHT, 0);
+    create_dl_translation_matrix(MENU_MTX_PUSH, (0), SCREEN_HEIGHT, 0);
 
     // This is a bit weird. It reuses the dialog text box (width 130, height -80),
     // so scale to at least fit the screen.
@@ -2061,7 +2061,7 @@ void shade_screen(void) {
     create_dl_scale_matrix(MENU_MTX_NOPUSH,
                            GFX_DIMENSIONS_ASPECT_RATIO * SCREEN_HEIGHT / 130.0f, 3.0f, 1.0f);
 #else
-    create_dl_scale_matrix(MENU_MTX_NOPUSH, 2.6f, 3.4f, 1.0f);
+    create_dl_scale_matrix(MENU_MTX_NOPUSH, 4.5f, 3.4f, 1.0f);
 #endif
 
     gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 110);
@@ -2099,7 +2099,7 @@ void render_pause_red_coins(void) {
     s8 x;
 
     for (x = 0; x < gRedCoinsCollected; x++) {
-        print_animated_red_coin(GFX_DIMENSIONS_FROM_RIGHT_EDGE(30) - x * 20, 16);
+        print_animated_red_coin(gScreenWidth - (30) - x * 20, 16);
     }
 }
 
@@ -2113,27 +2113,27 @@ u8 gTextCourse[][7] = {
 #endif
 
 #if defined(VERSION_JP) || defined(VERSION_SH)
-    #define CRS_NUM_X1 93
+    #define CRS_NUM_X1 (gScreenWidth / 2) - 67
 #elif defined(VERSION_US)
-    #define CRS_NUM_X1 100
+    #define CRS_NUM_X1 (gScreenWidth / 2) - 60
 #elif defined(VERSION_EU)
     #define CRS_NUM_X1 get_string_width(LANGUAGE_ARRAY(textCourse)) + 51
 #endif
 
 #ifdef VERSION_EU
-    #define TXT_COURSE_X      48
-    #define TXT_STAR_X        89
-    #define ACT_NAME_X        107
-    #define LVL_NAME_X        108
+    #define TXT_COURSE_X      (gScreenWidth / 2) - 112
+    #define TXT_STAR_X        (gScreenWidth / 2) - 71
+    #define ACT_NAME_X        (gScreenWidth / 2) - 53
+    #define LVL_NAME_X        (gScreenWidth / 2) - 52
     #define SECRET_LVL_NAME_X get_str_x_pos_from_center(159, &courseName[3], 10.0f)
-    #define MYSCORE_X         48
+    #define MYSCORE_X         (gScreenWidth / 2) - 112
 #else
-    #define TXT_COURSE_X      63
-    #define TXT_STAR_X        98
-    #define ACT_NAME_X        116
-    #define LVL_NAME_X        117
-    #define SECRET_LVL_NAME_X 94
-    #define MYSCORE_X         62
+    #define TXT_COURSE_X      (gScreenWidth / 2) - 97
+    #define TXT_STAR_X        (gScreenWidth / 2) - 62
+    #define ACT_NAME_X        (gScreenWidth / 2) - 44
+    #define LVL_NAME_X        (gScreenWidth / 2) - 43
+    #define SECRET_LVL_NAME_X (gScreenWidth / 2) - 66
+    #define MYSCORE_X         (gScreenWidth / 2) - 98
 #endif
 
 void render_pause_my_score_coins(void) {
@@ -2187,8 +2187,8 @@ void render_pause_my_score_coins(void) {
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlphaLerp);
 
     if (courseIndex <= COURSE_NUM_TO_INDEX(COURSE_STAGES_MAX)) {
-        print_hud_my_score_coins(1, gCurrSaveFileNum - 1, courseIndex, 178, 103);
-        print_hud_my_score_stars(gCurrSaveFileNum - 1, courseIndex, 118, 103);
+        print_hud_my_score_coins(1, gCurrSaveFileNum - 1, courseIndex, (gScreenWidth / 2) + 18, 103);
+        print_hud_my_score_stars(gCurrSaveFileNum - 1, courseIndex, (gScreenWidth / 2) - 42, 103);
     }
 
     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_end);
@@ -2381,9 +2381,9 @@ void highlight_last_course_complete_stars(void) {
 }
 
 #ifdef VERSION_EU
-    #define PAUSE_X get_str_x_pos_from_center_scale(SCREEN_WIDTH / 2, textPause, 12.0f)
+    #define PAUSE_X get_str_x_pos_from_center_scale(gScreenWidth / 2, textPause, 12.0f)
 #else
-    #define PAUSE_X 123
+    #define PAUSE_X (gScreenWidth / 2) - 37
 #endif
 
 void print_hud_pause_colorful_str(void) {
@@ -2542,15 +2542,15 @@ void render_pause_courses_and_castle(void) {
             render_pause_red_coins();
 
             if (gMarioStates[0].action & ACT_FLAG_PAUSE_EXIT) {
-                render_pause_course_options(99, 93, &gDialogLineNum, 15);
+                render_pause_course_options((gScreenWidth / 2) - 61, 93, &gDialogLineNum, 15);
             }
             break;
 
         case DIALOG_STATE_HORIZONTAL:
             shade_screen();
             print_hud_pause_colorful_str();
-            render_pause_castle_menu_box(160, 143);
-            render_pause_castle_main_strings(104, 60);
+            render_pause_castle_menu_box(gScreenWidth / 2, 143);
+            render_pause_castle_main_strings((gScreenWidth / 2) - 56, 60);
             break;
     } 
     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
@@ -2568,9 +2568,9 @@ void render_pause_courses_and_castle(void) {
     #define TXT_HISCORE_Y 36
     #define TXT_CONGRATS_X 70
 #elif defined(VERSION_EU)
-    #define TXT_HISCORE_X get_str_x_pos_from_center_scale(160, LANGUAGE_ARRAY(textHiScore), 12.0f)
+    #define TXT_HISCORE_X get_str_x_pos_from_center_scale(gScreenWidth, LANGUAGE_ARRAY(textHiScore), 12.0f)
     #define TXT_HISCORE_Y 36
-    #define TXT_CONGRATS_X get_str_x_pos_from_center_scale(160, LANGUAGE_ARRAY(textCongratulations), 12.0f)
+    #define TXT_CONGRATS_X get_str_x_pos_from_center_scale(gScreenWidth, LANGUAGE_ARRAY(textCongratulations), 12.0f)
 #elif defined(VERSION_SH)
     #define TXT_HISCORE_X 118
     #define TXT_HISCORE_Y 48
@@ -3198,26 +3198,26 @@ void render_options_page(void) {
     s32 x;
     s32 y;
     
-    render_pause_castle_menu_box(160, 143);
+    render_pause_castle_menu_box((gScreenWidth / 2), 143);
     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
     // Return
     print_generic_string(32, 240 - 32, sTitleString3);
     // Title
-    x = get_str_x_pos_from_center(SCREEN_WIDTH / 2, sTitleString, 12.0f);
+    x = get_str_x_pos_from_center(gScreenWidth / 2, sTitleString, 12.0f);
     print_generic_string(x, 240 - 120, sTitleString);
 
-    x = get_str_x_pos_from_center(SCREEN_WIDTH / 2, sOptionStrings[0 + gAntiAliasing], 12.0f);
+    x = get_str_x_pos_from_center(gScreenWidth / 2, sOptionStrings[0 + gAntiAliasing], 12.0f);
     print_generic_string(x, 240 - 144, sOptionStrings[0 + gAntiAliasing]);
-    x = get_str_x_pos_from_center(SCREEN_WIDTH / 2, sOptionStrings[3 + gScreenMode], 12.0f);
+    x = get_str_x_pos_from_center(gScreenWidth / 2, sOptionStrings[3 + gScreenMode], 12.0f);
     print_generic_string(x, 240 - 160, sOptionStrings[3 + gScreenMode]);
-    x = get_str_x_pos_from_center(SCREEN_WIDTH / 2, sOptionStrings[8 + gDedither], 12.0f);
+    x = get_str_x_pos_from_center(gScreenWidth / 2, sOptionStrings[8 + gDedither], 12.0f);
     print_generic_string(x, 240 - 176, sOptionStrings[8 + gDedither]);
-    x = get_str_x_pos_from_center(SCREEN_WIDTH / 2, sOptionStrings[6 + gFrameCap], 12.0f);
+    x = get_str_x_pos_from_center(gScreenWidth / 2, sOptionStrings[6 + gFrameCap], 12.0f);
     print_generic_string(x, 240 - 192, sOptionStrings[6 + gFrameCap]);
     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
     y = (240 - 126) - (gOptionsSelection * 16);
-    create_dl_translation_matrix(MENU_MTX_PUSH, (SCREEN_WIDTH / 2) - 64, y, 0);
+    create_dl_translation_matrix(MENU_MTX_PUSH, (gScreenWidth / 2) - 64, y, 0);
     gSPDisplayList(gDisplayListHead++, dl_draw_triangle);
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 }
@@ -3265,6 +3265,7 @@ s32 options_page_logic(void) {
             } else if (gScreenMode == 3) {
                 gScreenMode = 0;
             }
+            gScreenSwapTimer = 3;
             break;
         case 3:
             gDedither ^= 1;

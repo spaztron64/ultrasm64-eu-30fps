@@ -2642,17 +2642,17 @@ void play_star_fanfare_and_flash_hud(s32 arg, u8 starNum) {
     #define TXT_NAME_X1 centerX
     #define TXT_NAME_X2 centerX - 1
 #else
-    #define TXT_NAME_X1 71
+    #define TXT_NAME_X1 (gScreenWidth / 2) - 89
     #define TXT_NAME_X2 TXT_NAME_X1 - 2
 #endif
 
 #if defined(VERSION_JP) || defined(VERSION_SH)
-    #define CRS_NUM_X2 95
+    #define CRS_NUM_X2 (gScreenWidth / 2) - 65
     #define CRS_NUM_X3 CRS_NUM_X2 - 2
-    #define TXT_CLEAR_X1 205
+    #define TXT_CLEAR_X1 (gScreenWidth / 2) + 45
     #define TXT_CLEAR_X2 TXT_CLEAR_X1 - 2
 #else
-    #define CRS_NUM_X2 104
+    #define CRS_NUM_X2 (gScreenWidth / 2) - 56
     #define CRS_NUM_X3 CRS_NUM_X2 - 2
     #define TXT_CLEAR_X1 get_string_width(name) + 81
     #define TXT_CLEAR_X2 TXT_CLEAR_X1 - 2
@@ -2702,7 +2702,7 @@ void render_course_complete_lvl_info_and_hud_str(void) {
 #endif
 
     if (gLastCompletedCourseNum <= COURSE_STAGES_MAX) { // Main courses
-        print_hud_course_complete_coins(118, 103);
+        print_hud_course_complete_coins((gScreenWidth / 2) - 42, 103);
 
         if (gLastCompletedStarNum == 7) {
             name = segmented_to_virtual(actNameTbl[COURSE_STAGES_MAX * 6 + 1]);
@@ -2716,11 +2716,11 @@ void render_course_complete_lvl_info_and_hud_str(void) {
         int_to_str(gLastCompletedCourseNum, strCourseNum);
 
         gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, gDialogTextAlphaLerp);
-        print_generic_string(65, 165, LANGUAGE_ARRAY(textCourse));
+        print_generic_string((gScreenWidth / 2) - 95, 165, LANGUAGE_ARRAY(textCourse));
         print_generic_string(CRS_NUM_X2, 165, strCourseNum);
 
         gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlphaLerp);
-        print_generic_string(63, 167, LANGUAGE_ARRAY(textCourse));
+        print_generic_string((gScreenWidth / 2) - 97, 167, LANGUAGE_ARRAY(textCourse));
         print_generic_string(CRS_NUM_X3, 167, strCourseNum);
 
         gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
@@ -2732,7 +2732,7 @@ void render_course_complete_lvl_info_and_hud_str(void) {
 
         gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, gDialogTextAlphaLerp);
 #ifdef VERSION_EU
-        centerX = get_str_x_pos_from_center(153, name, 12.0f);
+        centerX = get_str_x_pos_from_center((gScreenWidth / 2) - 7, name, 12.0f);
 #endif
         print_generic_string(TXT_NAME_X1, 130, name);
 #ifndef VERSION_EU
@@ -2748,20 +2748,20 @@ void render_course_complete_lvl_info_and_hud_str(void) {
         gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 
         print_hud_course_complete_string(HUD_PRINT_CONGRATULATIONS);
-        print_hud_course_complete_coins(118, 111);
+        print_hud_course_complete_coins((gScreenWidth / 2) - 42, 111);
 
         return;
     } else { // Castle secret stars
         name = segmented_to_virtual(actNameTbl[COURSE_STAGES_MAX * 6]);
 
-        print_hud_course_complete_coins(118, 103);
+        print_hud_course_complete_coins((gScreenWidth / 2) - 42, 103);
     }
 
     // Print star glyph
     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_begin);
 
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlphaLerp);
-    print_hud_lut_string(HUD_LUT_GLOBAL, 55, 77, textSymStar);
+    print_hud_lut_string(HUD_LUT_GLOBAL, (gScreenWidth / 2) - 105, 77, textSymStar);
 
     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_end);
 
@@ -2769,15 +2769,15 @@ void render_course_complete_lvl_info_and_hud_str(void) {
     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
 
     gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, gDialogTextAlphaLerp);
-    print_generic_string(76, 145, name);
+    print_generic_string((gScreenWidth / 2) - 84, 145, name);
 #if defined(VERSION_JP) || defined(VERSION_SH)
-    print_generic_string(220, 145, textCatch);
+    print_generic_string((gScreenWidth / 2) + 60, 145, textCatch);
 #endif
 
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlphaLerp);
-    print_generic_string(74, 147, name);
+    print_generic_string((gScreenWidth / 2) - 86, 147, name);
 #if defined(VERSION_JP) || defined(VERSION_SH)
-    print_generic_string(218, 147, textCatch);
+    print_generic_string((gScreenWidth / 2) + 58, 147, textCatch);
 #endif
 
     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
@@ -2824,7 +2824,7 @@ void render_save_confirmation(s16 x, s16 y, s8 *index, s16 sp6e)
         { TEXT_CONTINUE_WITHOUT_SAVING_FR },
         { TEXT_CONTINUE_WITHOUT_SAVING_DE }
     };
-    s16 xOffset = get_str_x_pos_from_center(160, LANGUAGE_ARRAY(textContinueWithoutSave), 12.0f);
+    s16 xOffset = get_str_x_pos_from_center(gScreenWidth / 2, LANGUAGE_ARRAY(textContinueWithoutSave), 12.0f);
 #else
     u8 textSaveAndContinue[] = { TEXT_SAVE_AND_CONTINUE };
     u8 textSaveAndQuit[] = { TEXT_SAVE_AND_QUIT };
@@ -2862,9 +2862,9 @@ void render_course_complete_screen(void) {
             shade_screen();
             render_course_complete_lvl_info_and_hud_str();
 #ifdef VERSION_EU
-            render_save_confirmation(86, &gDialogLineNum, 20);
+            render_save_confirmation((gScreenWidth / 2) - 74, &gDialogLineNum, 20);
 #else
-            render_save_confirmation(100, 86, &gDialogLineNum, 20);
+            render_save_confirmation((gScreenWidth / 2) - 60, 86, &gDialogLineNum, 20);
 #endif
             break;
     }

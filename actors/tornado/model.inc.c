@@ -118,6 +118,7 @@ const Gfx tornado_seg5_dl_050145C0[] = {
     gsDPSetTileSize(0, 0, 0, (32 - 1) << G_TEXTURE_IMAGE_FRAC, (64 - 1) << G_TEXTURE_IMAGE_FRAC),
     gsSPDisplayList(tornado_seg5_dl_05014450),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
+    gsDPSetPrimColor(0, 0, 255, 255, 255, 255),
     gsDPPipeSync(),
     gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_CULL_BACK),

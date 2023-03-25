@@ -63,6 +63,7 @@ const Gfx stomp_smoke_seg4_dl_04025148[] = {
 // 0x04025190 - 0x040251C8
 const Gfx stomp_smoke_seg4_dl_04025190[] = {
     gsSP2Triangles( 0,  1,  2, 0x0,  0,  2,  3, 0x0),
+    gsDPSetPrimColor(0, 0, 255, 255, 255, 255),
     gsDPPipeSync(),
     gsSPTexture(0x0001, 0x0001, 0, G_TX_RENDERTILE, G_OFF),
     gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),

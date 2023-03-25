@@ -27,5 +27,6 @@ const Gfx heart_seg8_dl_0800DFE0[] = {
     gsDPPipeSync(),
     gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_LIGHTING | G_CULL_BACK),
+    gsDPSetPrimColor(0, 0, 255, 255, 255, 255),
     gsSPEndDisplayList(),
 };

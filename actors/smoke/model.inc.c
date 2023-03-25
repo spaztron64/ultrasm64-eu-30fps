@@ -39,5 +39,6 @@ const Gfx smoke_seg5_dl_05007AF8[] = {
     gsSPSetGeometryMode(G_LIGHTING),
     gsDPPipeSync(),
     gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
+    gsDPSetPrimColor(0, 0, 255, 255, 255, 255),
     gsSPEndDisplayList(),
 };

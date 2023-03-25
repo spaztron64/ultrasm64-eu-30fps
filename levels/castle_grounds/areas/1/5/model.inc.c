@@ -191,6 +191,7 @@ static const Gfx castle_grounds_seg7_dl_0700AFD0[] = {
 // 0x0700B1D0 - 0x0700B240
 const Gfx castle_grounds_seg7_dl_0700B1D0[] = {
     gsDPPipeSync(),
+    gsDPSetEnvColor(255, 255, 255, 255),
     gsDPSetCombineMode(G_CC_MODULATEIA, G_CC_PASS2),
     gsSPClearGeometryMode(G_LIGHTING),
     gsDPSetTile(G_IM_FMT_IA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),

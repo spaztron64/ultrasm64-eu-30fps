@@ -183,8 +183,10 @@ s16 find_mario_anim_flags_and_translation(struct Object *obj, s32 yaw, Vec3s tra
     f32 dx;
     f32 dz;
 
-    struct Animation *curAnim = (void *) gMarioGfxAnim.curAnim;
-    s16 animFrame = geo_update_animation_frame(&gMarioGfxAnim, NULL);
+    //struct Animation *curAnim = (void *) gMarioGfxAnim.curAnim;
+    //s16 animFrame = geo_update_animation_frame(&gMarioGfxAnim, NULL);
+    struct Animation *curAnim = (void *) obj->header.gfx.animInfo.curAnim;
+    s16 animFrame = geo_update_animation_frame(&obj->header.gfx.animInfo, NULL);
     u16 *animIndex = segmented_to_virtual((void *) curAnim->index);
     s16 *animValues = segmented_to_virtual((void *) curAnim->values);
 

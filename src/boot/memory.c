@@ -603,7 +603,8 @@ s32 load_patchable_table(struct DmaHandlerList *list, s32 index) {
 
     if ((u32)index < table->count) {
         u8 *addr = table->srcAddr + table->anim[index].offset;
-        s32 size = sizeof(struct Animation);
+        //s32 size = sizeof(struct Animation);
+        s32 size = table->anim[index].size;
 
         if (list->currentAddr != addr) {
             dma_read(list->bufTarget, addr, addr + size);

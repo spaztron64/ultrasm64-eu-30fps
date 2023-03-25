@@ -397,9 +397,7 @@ void render_init(void) {
     exec_display_list(&gGfxPool->spTask);
 
     // Skip incrementing the initial framebuffer index on emulators other than Ares so that they display immediately as the Gfx task finishes
-    if (gIsConsole || gCacheEmulated) { // Read RDP Clock Register, has a value of zero on emulators
         sRenderingFramebuffer++;
-    }
     gVideoTimer++;
 }
 
@@ -430,14 +428,12 @@ void display_and_vsync(void) {
     exec_display_list(&gGfxPool->spTask);
     osViSwapBuffer((void *) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[sRenderedFramebuffer]));
     // Skip swapping buffers on emulator other than Ares so that they display immediately as the Gfx task finishes
-    if (gIsConsole || gCacheEmulated) { // Read RDP Clock Register, has a value of zero on emulators
         if (++sRenderedFramebuffer == 3) {
             sRenderedFramebuffer = 0;
         }
         if (++sRenderingFramebuffer == 3) {
             sRenderingFramebuffer = 0;
         }
-    }
     gVideoTimer++;
 }
 
@@ -734,12 +730,17 @@ void thread5_game_loop(UNUSED void *arg) {
         profiler_log_thread5_time(AFTER_DISPLAY_LISTS);
         profiler_log_thread5_time(THREAD5_END);
         if (gPlayer1Controller->buttonPressed & D_JPAD) {
-            
             gScreenMode ++;
             if (gScreenMode == 3) {
                 gScreenMode = 0;
             }
             gScreenSwapTimer = 3;
+        }
+        if (gPlayer1Controller->buttonPressed & R_JPAD) {
+            gAntiAliasing++;
+            if (gAntiAliasing == 3) {
+                gAntiAliasing = 0;
+            }
         }
         gGameTime = osGetTime() - first;
         osRecvMesg(&gGameVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);

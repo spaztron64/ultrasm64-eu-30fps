@@ -7,6 +7,8 @@
 #include "gd_types.h"
 #include "macros.h"
 
+#define gd_printf(x, ...) 
+
 // types
 /// Properties types used in [gd_setproperty](@ref gd_setproperty); most are stubbed out.
 enum GdProperty {

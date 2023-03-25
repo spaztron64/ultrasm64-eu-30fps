@@ -1457,9 +1457,9 @@ void update_view(struct ObjView *view) {
     start_view_dl(sUpdateViewState.view);
     gd_shading(9);
 
-    if (view->flags & (VIEW_UNK_2000 | VIEW_UNK_4000)) {
+    //if (view->flags & (VIEW_UNK_2000 | VIEW_UNK_4000)) {
         gd_set_one_cycle();
-    }
+    //}
 
     if (view->components != NULL) {
         if (gGdCtrl.dragging) {

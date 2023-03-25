@@ -23,6 +23,7 @@ extern Mat4 gCameraTransform;
 extern u8 gScreenMode;
 extern u8 gFrameCap;
 extern u8 gDedither;
+extern u8 gAntiAliasing;
 
 // after processing an object, the type is reset to this
 #define ANIM_TYPE_NONE                  0

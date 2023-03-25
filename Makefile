@@ -209,7 +209,7 @@ $(eval $(call validate-option,GZIPVER,std libdef))
 # GODDARD - whether to use libgoddard (Mario Head)
 #   1 - includes code in ROM
 #   0 - does not 
-GODDARD ?= 0
+GODDARD ?= 1
 $(eval $(call validate-option,GODDARD,0 1))
 ifeq ($(GODDARD),1)
   GODDARDRULE := $(BUILD_DIR)/libgoddard.a

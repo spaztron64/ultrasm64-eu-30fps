@@ -25,7 +25,8 @@ static const Vtx title_screen_bg_vertex_0A000000[] = {
 
 // 0x0A000100 - 0x0A000118
 const Gfx title_screen_bg_dl_0A000100[] = {
-    gsDPSetCombineMode(G_CC_DECALRGB, G_CC_PASS2),
+    gsDPSetCombineMode(G_CC_DECALRGB, G_CC_DECALRGB),
+    gsDPSetCycleType(G_CYC_1CYCLE),
     gsDPSetRenderMode(G_RM_AA_OPA_SURF, G_RM_AA_OPA_SURF2),
     gsSPEndDisplayList(),
 };
@@ -67,6 +68,7 @@ const Gfx title_screen_bg_dl_0A000190[] = {
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsSPSetGeometryMode(G_LIGHTING),
     gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
+    gsDPSetCycleType(G_CYC_2CYCLE),
     gsDPSetRenderMode(G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2),
     gsSPEndDisplayList(),
 };

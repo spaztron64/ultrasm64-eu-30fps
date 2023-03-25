@@ -395,6 +395,10 @@ void render_game(void) {
         gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, gScreenWidth, SCREEN_HEIGHT);
         render_text_labels();
         do_cutscene_handler();
+        
+        if (gCurrDemoInput != NULL) {
+            print_intro_text();
+        }
         print_displaying_credits_entry();
         gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, gScreenWidth, SCREEN_HEIGHT);
         render_menus_and_dialogs();

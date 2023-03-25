@@ -10,6 +10,7 @@
 #include "game/paintings.h"
 #include "menu/debug_level_select.h"
 #include "menu/intro_geo.h"
+#include "game/area.h"
 
 #include "make_const_nonconst.h"
 
@@ -73,6 +74,7 @@ const GeoLayout intro_geo_mario_head_regular[] = {
       GEO_ASM(0, geo_intro_rumble_pak_graphic),
    GEO_CLOSE_NODE(),
 #endif
+   GEO_ASM(0, print_intro_text),
    GEO_CLOSE_NODE(),
    GEO_END(),
 };
@@ -106,6 +108,7 @@ const GeoLayout intro_geo_mario_head_dizzy[] = {
          GEO_ASM(1, geo_intro_rumble_pak_graphic),
       GEO_CLOSE_NODE(),
 #endif
+   GEO_ASM(0, print_intro_text),
    GEO_CLOSE_NODE(),
    GEO_END(),
 };

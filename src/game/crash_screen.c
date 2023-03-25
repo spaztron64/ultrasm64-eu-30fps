@@ -112,6 +112,7 @@ void crash_screen_print(s32 x, s32 y, const char *fmt, ...) {
 
     va_list args;
     va_start(args, fmt);
+    bzero(&buf, sizeof(buf));
 
     size = _Printf(write_to_buf, buf, fmt, args);
 
@@ -243,6 +244,9 @@ OSThread *get_crashed_thread(void) {
     return NULL;
 }
 
+extern uintptr_t gPhysicalFramebuffers[3];
+extern u16 sRenderingFramebuffer;
+
 void thread2_crash_screen(UNUSED void *arg) {
     OSMesg mesg;
     OSThread *thread;
@@ -253,6 +257,7 @@ void thread2_crash_screen(UNUSED void *arg) {
         osRecvMesg(&gCrashScreen.mesgQueue, &mesg, 1);
         thread = get_crashed_thread();
     } while (thread == NULL);
+    gCrashScreen.framebuffer = (u16 *) gPhysicalFramebuffers[sRenderingFramebuffer];
     gCrashScreen.width = gScreenWidth;
     draw_crash_screen(thread);
     for (;;) {

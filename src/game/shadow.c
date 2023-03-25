@@ -143,7 +143,6 @@ s32 correct_shadow_solidity_for_animations(u8 initialSolidity) {
     }
 }
 
-#ifdef ENABLE_VANILLA_LEVEL_SPECIFIC_CHECKS
 /**
  * Slightly change the height of a shadow in levels with lava.
  */
@@ -162,7 +161,6 @@ void correct_lava_shadow_height(f32 *floorHeight) {
         s->isDecal = FALSE;
     }
 }
-#endif
 
 /**
  * Add a shadow to the given display list.
@@ -254,11 +252,9 @@ Gfx *create_shadow_below_xyz(Vec3f pos, s16 shadowScale, u8 shadowSolidity, s8 s
         if (type == SURFACE_ICE) {
             // Ice floors are usually transparent.
             s->isDecal = FALSE;
-#ifdef ENABLE_VANILLA_LEVEL_SPECIFIC_CHECKS
         } else if (type == SURFACE_BURNING) {
             // Set the shadow height to the lava height in specific areas.
             correct_lava_shadow_height(&floorHeight);
-#endif
         } else if (floor->object != NULL
                    && floor->object->behavior == segmented_to_virtual(bhvPlatformOnTrack)
                    && floor->object->oPlatformOnTrackType == PLATFORM_ON_TRACK_TYPE_CARPET) {

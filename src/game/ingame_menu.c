@@ -1757,18 +1757,10 @@ void render_dialog_entries(void) {
 #endif
         ensure_nonnegative(DIAG_VAL2 - dialog->width),
 #ifdef VERSION_EU
-#ifdef WIDESCREEN
-        SCREEN_WIDTH,
-#else
         ensure_nonnegative(dialog->leftOffset + (DIAG_VAL3 / gDialogBoxScaleLerp)),
-#endif
         ensure_nonnegative((240 - dialog->width) + (dialog->linesPerBox * 80 / DIAG_VAL4 / gDialogBoxScaleLerp))
 #else
-#ifdef WIDESCREEN
-        SCREEN_WIDTH,
-#else
         ensure_nonnegative(dialog->leftOffset + DIAG_VAL3),
-#endif
         ensure_nonnegative((240 - dialog->width) + (dialog->linesPerBox * 80 / DIAG_VAL4))
 #endif
     );

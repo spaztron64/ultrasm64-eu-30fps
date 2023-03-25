@@ -2967,7 +2967,6 @@ void increment_coin_score(void) {
         }
     }
     if (gLastCompletedCourseNum <= COURSE_STAGES_MAX) {
-        print_hud_course_complete_coins(118, 103);
         play_star_fanfare_and_flash_hud(1, 1 << (gLastCompletedStarNum - 1));
     } else if (gLastCompletedCourseNum == COURSE_BITDW || gLastCompletedCourseNum == COURSE_BITFS) {
         play_star_fanfare_and_flash_hud(2, 0);

@@ -705,7 +705,7 @@ void setup_game_memory(void) {
         gPhysicalFramebuffers[2] = (uintptr_t) 0x80700000;
     }
     // Setup Mario Animations
-    gMarioAnimsMemAlloc = main_pool_alloc(0x4000, MEMORY_POOL_LEFT);
+    gMarioAnimsMemAlloc = main_pool_alloc(sizeof(struct Animation), MEMORY_POOL_LEFT);
     set_segment_base_addr(17, (void *) gMarioAnimsMemAlloc);
     setup_dma_table_list(&gMarioAnimsBuf, gMarioAnims, gMarioAnimsMemAlloc);
     setup_dma_table_list(&gMarioGfxAnimBuf, gMarioAnims, &gMarioAnimHeap);

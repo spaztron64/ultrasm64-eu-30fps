@@ -814,11 +814,28 @@ void geo_process_animated_part(const struct GraphNodeAnimatedPart *node) {
     append_dl_and_return((struct GraphNodeDisplayList *) node);
 }
 
+s32 load_patchable_table_render(struct DmaHandlerList *list, s32 index) {
+    s32 ret = FALSE;
+    struct DmaTable *table = list->dmaTable;
+
+    if ((u32)index < table->count) {
+        u8 *addr = table->srcAddr + table->anim[index].offset;
+        s32 size = table->anim[index].size;
+
+        if (list->currentAddr != addr) {
+            dma_read(list->bufTarget, addr, addr + size);
+            list->currentAddr = addr;
+            ret = TRUE;
+        }
+    }
+    return ret;
+}
+
 void load_mario_anim_gfx(void) {
     s32 targetAnimID = gMarioState->marioObj->header.gfx.animInfo.animID;
     struct Animation *targetAnim = gMarioGfxAnimList->bufTarget;
 
-    if (load_patchable_table(gMarioGfxAnimList, targetAnimID)) {
+    if (load_patchable_table_render(gMarioGfxAnimList, targetAnimID)) {
         targetAnim->values = (void *) VIRTUAL_TO_PHYSICAL((u8 *) targetAnim + (uintptr_t) targetAnim->values);
         targetAnim->index = (void *) VIRTUAL_TO_PHYSICAL((u8 *) targetAnim + (uintptr_t) targetAnim->index);
     }

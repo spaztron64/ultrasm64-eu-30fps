@@ -165,6 +165,7 @@ void set_cutscene_message(s16 xOffset, s16 yOffset, s16 msgIndex, s16 msgDuratio
 void do_cutscene_handler(void);
 void render_hud_cannon_reticle(void);
 void reset_red_coins_collected(void);
+void create_dl_scale_matrix(s8 pushOp, f32 x, f32 y, f32 z);
 void render_menus_and_dialogs(void);
 s32 ingame_menu_logic(void);
 void cutscene_handler_logic(void);

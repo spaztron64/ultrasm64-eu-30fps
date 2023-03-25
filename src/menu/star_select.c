@@ -207,7 +207,8 @@ void print_course_number(void) {
 #endif
     u8 courseNum[4];
 
-    create_dl_translation_matrix(MENU_MTX_PUSH, 158.0f, 81.0f, 0.0f);
+    f32 scaleVal = (f32) SCREEN_WIDTH / (f32)gScreenWidth;
+    create_dl_translation_matrix(MENU_MTX_PUSH, (gScreenWidth / 2) - 2.0f, 81.0f, 0.0f);
 
     // Full wood texture in JP & US, lower part of it on EU
     gSPDisplayList(gDisplayListHead++, dl_menu_rgba16_wood_course);
@@ -278,7 +279,9 @@ void print_act_selector_strings(void) {
     s16 language = eu_get_language();
 #endif
 
+    f32 scaleVal = (f32) SCREEN_WIDTH / (f32)gScreenWidth;
     create_dl_ortho_matrix();
+    create_dl_scale_matrix(MENU_MTX_PUSH, scaleVal, 1.0f, 1.0f);
 
 #ifdef VERSION_EU
     switch (language) {
@@ -309,13 +312,13 @@ void print_act_selector_strings(void) {
     // Print the "MY SCORE" text if the coin score is more than 0
     if (save_file_get_course_coin_score(gCurrSaveFileNum - 1, COURSE_NUM_TO_INDEX(gCurrCourseNum)) != 0) {
 #ifdef VERSION_EU
-        print_generic_string(95, 118, myScore[language]);
+        print_generic_string((gScreenWidth / 2) - 65, 118, myScore[language]);
 #else
-        print_generic_string(102, 118, myScore);
+        print_generic_string((gScreenWidth / 2) - 58, 118, myScore);
 #endif
     }
 
-    lvlNameX = get_str_x_pos_from_center(160, currLevelName + 3, 10.0f);
+    lvlNameX = get_str_x_pos_from_center((gScreenWidth / 2), currLevelName + 3, 10.0f);
     print_generic_string(lvlNameX, 33, currLevelName + 3);
 
     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);

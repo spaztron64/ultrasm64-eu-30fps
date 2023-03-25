@@ -77,14 +77,14 @@ void unk_pools_init(u32 size1, u32 size2);
  * Assuming 'k' in [9, 24],
  * Computes a newton's method step for f(x) = x^k - d
  */
-f64 root_newton_step(f64 x, s32 k, f64 d) {
-    f64 deg2 = x * x;
-    f64 deg4 = deg2 * deg2;
-    f64 deg8 = deg4 * deg4;
+f32 root_newton_step(f32 x, s32 k, f32 d) {
+    f32 deg2 = x * x;
+    f32 deg4 = deg2 * deg2;
+    f32 deg8 = deg4 * deg4;
     s32 degree = k - 9;
-    f64 fx;
+    f32 fx;
 
-    f64 deriv = deg8;
+    f32 deriv = deg8;
     if (degree & 1) {
         deriv *= x;
     }
@@ -108,13 +108,13 @@ f64 root_newton_step(f64 x, s32 k, f64 d) {
  *
  * @return the root, or 1.0 if d is 0
  */
-f64 kth_root(f64 d, s32 k) {
-    f64 root = 1.5f;
-    f64 next;
-    f64 diff;
+f32 kth_root(f32 d, s32 k) {
+    f32 root = 1.5f;
+    f32 next;
+    f32 diff;
     s32 i;
-    if (d == 0.0) {
-        root = 1.0;
+    if (d == 0.0f) {
+        root = 1.0f;
     } else {
         for (i = 0; i < 64; i++) {
             if (1) {
@@ -151,11 +151,11 @@ void build_vol_rampings_table(s32 UNUSED unused, s32 len) {
         }
 
         gLeftVolRampings[0][i]  = kth_root(      d, k - 1);
-        gRightVolRampings[0][i] = kth_root(1.0 / d, k - 1) * 65536.0;
+        gRightVolRampings[0][i] = kth_root(1.0f / d, k - 1) * 65536.0f;
         gLeftVolRampings[1][i]  = kth_root(      d, k);
-        gRightVolRampings[1][i] = kth_root(1.0 / d, k) * 65536.0;
+        gRightVolRampings[1][i] = kth_root(1.0f / d, k) * 65536.0f;
         gLeftVolRampings[2][i]  = kth_root(      d, k + 1);
-        gRightVolRampings[2][i] = kth_root(1.0 / d, k + 1) * 65536.0;
+        gRightVolRampings[2][i] = kth_root(1.0f / d, k + 1) * 65536.0f;
     }
 }
 #endif

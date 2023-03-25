@@ -666,9 +666,6 @@ u64 *synthesis_process_notes(s16 *aiBuf, s32 bufLen, u64 *cmd) {
         } else {
 #endif
             flags = 0;
-#ifdef VERSION_EU
-            tempBufLen = bufLen;
-#endif
 
 #ifdef VERSION_EU
             if (noteSubEu->needsInit == TRUE) {
@@ -712,7 +709,7 @@ u64 *synthesis_process_notes(s16 *aiBuf, s32 bufLen, u64 *cmd) {
 #else
             resamplingRateFixedPoint = noteSubEu->resamplingRateFixedPoint;
             nParts = noteSubEu->hasTwoAdpcmParts + 1;
-            samplesLenFixedPoint = (resamplingRateFixedPoint * tempBufLen * 2) + synthesisState->samplePosFrac;
+            samplesLenFixedPoint = (resamplingRateFixedPoint * bufLen * 2) + synthesisState->samplePosFrac;
             synthesisState->samplePosFrac = samplesLenFixedPoint & 0xFFFF;
 #endif
 

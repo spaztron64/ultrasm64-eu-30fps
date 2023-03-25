@@ -878,6 +878,7 @@ void audio_init() {
 #if defined(VERSION_EU)
     UNUSED u8 buf[0x10];
     s32 UNUSED lim2, lim3;
+    u32 size;
 #else
     s32 lim2, lim3;
     u32 size;
@@ -907,10 +908,6 @@ void audio_init() {
 #ifdef TARGET_N64
     // It seems boot.s doesn't clear the .bss area for audio, so do it here.
     lim3 = ((uintptr_t) &gAudioGlobalsEndMarker - (uintptr_t) &gAudioGlobalsStartMarker) / 8;
-    ptr64 = &gAudioGlobalsStartMarker;
-    for (k = lim3; k >= 0; k--) {
-        *ptr64++ = 0;
-    }
 #endif
 
     D_EU_802298D0 = 20.03042f;

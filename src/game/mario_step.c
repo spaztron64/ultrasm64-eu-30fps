@@ -16,20 +16,6 @@ struct Surface gWaterSurfacePseudoFloor = {
     { 0.0f, 1.0f, 0.0f },  0.0f, NULL,
 };
 
-/**
- * Always returns zero. This may have been intended
- * to be used for the beta trampoline. Its return value
- * is used by set_mario_y_vel_based_on_fspeed as a constant
- * addition to Mario's Y velocity. Given the closeness of
- * this function to stub_mario_step_2, it is probable that this
- * was intended to check whether a trampoline had made itself
- * known through stub_mario_step_2 and whether Mario was on it,
- * and if so return a higher value than 0.
- */
-f32 get_additive_y_vel_for_jumps(void) {
-    return 0.0f;
-}
-
 void transfer_bully_speed(struct BullyCollisionData *obj1, struct BullyCollisionData *obj2) {
     f32 rx = obj2->posX - obj1->posX;
     f32 rz = obj2->posZ - obj1->posZ;

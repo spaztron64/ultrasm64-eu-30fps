@@ -271,7 +271,6 @@ static void eyerok_hand_act_show_eye(void) {
             if (o->oAnimState < 3) {
                 o->oAnimState++;
             } else if (cur_obj_check_if_near_animation_end()) {
-                UNUSED s16 val06 = (s16)(o->oAngleToMario - o->oFaceAngleYaw) * o->oBehParams2ndByte;
                 o->oAction = EYEROK_HAND_ACT_CLOSE;
             }
         } else {

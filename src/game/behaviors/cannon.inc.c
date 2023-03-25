@@ -1,9 +1,5 @@
 // cannon.inc.c
 
-void bhv_cannon_base_unused_loop(void) {
-    o->oPosY += o->oVelY;
-}
-
 void opened_cannon_act_0(void) {
     if (o->oTimer == 0) {
         o->oInteractStatus = 0;
@@ -94,7 +90,6 @@ void opened_cannon_act_5(void) {
 }
 
 void opened_cannon_act_1(void) {
-    UNUSED u8 filler[4];
 
     cur_obj_become_intangible();
     cur_obj_disable_rendering();
@@ -108,7 +103,6 @@ void opened_cannon_act_2(void) {
 }
 
 void opened_cannon_act_3(void) {
-    UNUSED u8 filler[4];
     if (o->oTimer > 3) {
         o->oAction = 0;
     }

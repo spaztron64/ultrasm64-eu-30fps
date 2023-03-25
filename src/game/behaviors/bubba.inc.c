@@ -96,7 +96,6 @@ void bubba_act_1(void) {
 }
 
 void bhv_bubba_loop(void) {
-    UNUSED u8 filler[4];
 
     o->oInteractionSubtype &= ~INT_SUBTYPE_EATS_MARIO;
     o->oBubbaUnk104 = obj_turn_pitch_toward_mario(120.0f, 0);

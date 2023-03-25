@@ -163,7 +163,6 @@ void update_sliding_angle(struct MarioState *m, f32 accel, f32 lossFactor) {
     struct Surface *floor = m->floor;
     s16 slopeAngle = atan2s(floor->normal.z, floor->normal.x);
     f32 steepness = sqrtf(floor->normal.x * floor->normal.x + floor->normal.z * floor->normal.z);
-    UNUSED f32 normalY = floor->normal.y;
 
     m->slideVelX += accel * steepness * sins(slopeAngle);
     m->slideVelZ += accel * steepness * coss(slopeAngle);
@@ -284,9 +283,8 @@ void apply_slope_accel(struct MarioState *m) {
     f32 slopeAccel;
 
     struct Surface *floor = m->floor;
-    f32 steepness = sqrtf(floor->normal.x * floor->normal.x + floor->normal.z * floor->normal.z);
+    f32 steepness = (floor->normal.x * floor->normal.x + floor->normal.z * floor->normal.z);
 
-    UNUSED f32 normalY = floor->normal.y;
     s16 floorDYaw = m->floorAngle - m->faceAngle[1];
 
     if (mario_floor_is_slope(m)) {
@@ -312,9 +310,9 @@ void apply_slope_accel(struct MarioState *m) {
         }
 
         if (floorDYaw > -0x4000 && floorDYaw < 0x4000) {
-            m->forwardVel += slopeAccel * steepness;
+            m->forwardVel += slopeAccel * sqrtf(steepness);
         } else {
-            m->forwardVel -= slopeAccel * steepness;
+            m->forwardVel -= slopeAccel * sqrtf(steepness);
         }
     }
 
@@ -483,7 +481,6 @@ s32 analog_stick_held_back(struct MarioState *m) {
 }
 
 s32 check_ground_dive_or_punch(struct MarioState *m) {
-    UNUSED u8 filler[4];
 
     if (m->input & INPUT_B_PRESSED) {
         //! Speed kick (shoutouts to SimpleFlips)
@@ -710,7 +707,6 @@ void push_or_sidle_wall(struct MarioState *m, Vec3f startPos) {
 
 void tilt_body_walking(struct MarioState *m, s16 startYaw) {
     struct MarioBodyState *val0C = m->marioBodyState;
-    UNUSED struct Object *marioObj = m->marioObj;
     s16 animID = m->marioObj->header.gfx.animInfo.animID;
 
     if (animID == MARIO_ANIM_WALKING || animID == MARIO_ANIM_RUNNING) {

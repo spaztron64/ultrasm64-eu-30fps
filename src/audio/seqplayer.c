@@ -44,7 +44,6 @@ void sequence_channel_init(struct SequenceChannel *seqChannel) {
     seqChannel->scriptState.depth = 0;
     seqChannel->newPan = 0x40;
     seqChannel->panChannelWeight = 0x80;
-    seqChannel->noteUnused = NULL;
     seqChannel->reverbIndex = 0;
 #else
     seqChannel->scriptState.depth = 0;
@@ -53,7 +52,6 @@ void sequence_channel_init(struct SequenceChannel *seqChannel) {
     seqChannel->freqScale = 1.0f;
     seqChannel->pan = 0.5f;
     seqChannel->panChannelWeight = 1.0f;
-    seqChannel->noteUnused = NULL;
 #endif
     seqChannel->reverbVol = 0;
 #ifdef VERSION_SH
@@ -67,9 +65,6 @@ void sequence_channel_init(struct SequenceChannel *seqChannel) {
     seqChannel->adsr.envelope = gDefaultEnvelope;
     seqChannel->adsr.releaseRate = 0x20;
     seqChannel->adsr.sustain = 0;
-#if defined(VERSION_JP) || defined(VERSION_US)
-    seqChannel->updatesPerFrameUnused = gAudioUpdatesPerFrame;
-#endif
     seqChannel->vibratoRateTarget = 0x800;
     seqChannel->vibratoRateStart = 0x800;
     seqChannel->vibratoExtentTarget = VIBRATO_DISABLED_VALUE;
@@ -90,7 +85,6 @@ void sequence_channel_init(struct SequenceChannel *seqChannel) {
         seqChannel->soundScriptIO[i] = -1;
     }
 
-    seqChannel->unused = FALSE;
     init_note_lists(&seqChannel->notePool);
 }
 
@@ -135,7 +129,6 @@ s32 seq_channel_set_layer(struct SequenceChannel *seqChannel, s32 layerIndex) {
     layer->transposition = 0;
     layer->delay = 0;
     layer->duration = 0;
-    layer->delayUnused = 0;
     layer->note = NULL;
     layer->instrument = NULL;
 #if defined(VERSION_EU) || defined(VERSION_SH)
@@ -220,7 +213,6 @@ void sequence_player_init_channels(struct SequencePlayer *seqPlayer, u16 channel
             }
             seqChannel = allocate_sequence_channel();
             if (IS_SEQUENCE_CHANNEL_VALID(seqChannel) == FALSE) {
-                eu_stubbed_printf_0("Audio:Track:Warning: No Free Notetrack\n");
                 gAudioErrorFlags = i + 0x10000;
                 seqPlayer->channels[i] = seqChannel;
             } else {
@@ -244,7 +236,6 @@ void sequence_player_disable_channels(struct SequencePlayer *seqPlayer, u16 chan
     struct SequenceChannel *seqChannel;
     s32 i;
 
-    eu_stubbed_printf_0("SUBTRACK DIM\n");
     for (i = 0; i < CHANNELS_MAX; i++) {
         if (channelBits & 1) {
             seqChannel = seqPlayer->channels[i];
@@ -253,13 +244,6 @@ void sequence_player_disable_channels(struct SequencePlayer *seqPlayer, u16 chan
                     sequence_channel_disable(seqChannel);
                     seqChannel->seqPlayer = NULL;
                 }
-#if defined(VERSION_EU) || defined(VERSION_SH)
-                else {
-#ifdef VERSION_EU
-                    stubbed_printf("Audio:Track: Warning SUBTRACK PARENT CHANGED\n");
-#endif
-                }
-#endif
                 seqPlayer->channels[i] = &gSequenceChannelNone;
             }
         }
@@ -278,16 +262,6 @@ void sequence_channel_enable(struct SequencePlayer *seqPlayer, u8 channelIndex, 
 #ifdef VERSION_EU
         struct SequencePlayer *bgMusic = &gSequencePlayers[0];
         struct SequencePlayer *miscMusic = &gSequencePlayers[1];
-
-        if (seqPlayer == bgMusic) {
-            stubbed_printf("GROUP 0:");
-        } else if (seqPlayer == miscMusic) {
-            stubbed_printf("GROUP 1:");
-        } else {
-            stubbed_printf("SEQID %d,BANKID %d\n",
-                    seqPlayer->seqId, seqPlayer->defaultBank[0]);
-        }
-        stubbed_printf("ERR:SUBTRACK %d NOT ALLOCATED\n", channelIndex);
 #endif
     } else {
         seqChannel->enabled = TRUE;
@@ -351,9 +325,7 @@ void sequence_player_disable(struct SequencePlayer *seqPlayer) {
  * Add an item to the end of a list, if it's not already in any list.
  */
 void audio_list_push_back(struct AudioListItem *list, struct AudioListItem *item) {
-    if (item->prev != NULL) {
-        eu_stubbed_printf_0("Error:Same List Add\n");
-    } else {
+    if (item->prev == NULL) {
         list->prev->next = item;
         item->prev = list->prev;
         item->next = list;
@@ -460,9 +432,6 @@ void seq_channel_layer_process_script(struct SequenceChannelLayer *layer) {
 void seq_channel_layer_process_script(struct SequenceChannelLayer *layer) {
     struct SequencePlayer *seqPlayer;
     struct SequenceChannel *seqChannel;
-#ifdef VERSION_EU
-    UNUSED u32 pad0;
-#endif
     struct M64ScriptState *state;
     struct Portamento *portamento;
     struct AudioBankSound *sound;
@@ -473,22 +442,16 @@ void seq_channel_layer_process_script(struct SequenceChannelLayer *layer) {
     u16 sp3A = 0;
     s32 sameSound;
 #endif
-    UNUSED u32 pad1;
 #ifndef VERSION_EU
     u8 sameSound;
 #endif
     u8 cmd;
-    UNUSED u8 cmdSemitone;
 #ifndef VERSION_EU
     u16 sp3A;
 #endif
     f32 tuning;
     s32 vel = 0;
-    UNUSED s32 usedSemitone;
     f32 freqScale;
-#ifndef VERSION_EU
-    UNUSED f32 sp24;
-#endif
     f32 temp_f12;
     f32 temp_f2;
 
@@ -541,18 +504,12 @@ void seq_channel_layer_process_script(struct SequenceChannelLayer *layer) {
                 break;
 
             case 0xfc: // layer_call
-                if (0 && state->depth >= 4) {
-                    eu_stubbed_printf_0("Macro Level Over Error!\n");
-                }
                 sp3A = m64_read_s16(state);
                 state->stack[state->depth++] = state->pc;
                 state->pc = seqPlayer->seqData + sp3A;
                 break;
 
             case 0xf8: // layer_loop; loop start, N iterations (or 256 if N = 0)
-                if (0 && state->depth >= 4) {
-                    eu_stubbed_printf_0("Macro Level Over Error!\n");
-                }
                 state->remLoopIters[state->depth] = m64_read_u8(state);
                 state->stack[state->depth++] = state->pc;
                 break;
@@ -640,7 +597,6 @@ void seq_channel_layer_process_script(struct SequenceChannelLayer *layer) {
                 }
 
                 if ((layer->instOrWave = get_instrument(seqChannel, cmd, &layer->instrument, &layer->adsr)) == 0) {
-                    eu_stubbed_printf_1("WARNING: NPRG: cannot change %d\n", cmd);
                     layer->instOrWave = 0xff;
                 }
 #endif
@@ -695,7 +651,6 @@ void seq_channel_layer_process_script(struct SequenceChannelLayer *layer) {
                         layer->noteDuration = seqPlayer->shortNoteDurationTable[cmd & 0xf];
                         break;
                     default:
-                        eu_stubbed_printf_1("Audio:Track:NOTE:UNDEFINED NOTE COM. %x\n", cmd);
                         break;
                 }
         }
@@ -920,7 +875,6 @@ void seq_channel_layer_process_script(struct SequenceChannelLayer *layer) {
                     }
                 }
             }
-            layer->delayUnused = layer->delay;
         }
     }
 
@@ -1041,7 +995,6 @@ s32 seq_channel_layer_process_script_part2(struct SequenceChannelLayer *layer) {
 
             case 0xfc: // layer_call
                 if (0 && state->depth >= 4) {
-                    eu_stubbed_printf_0("Macro Level Over Error!\n");
                 }
                 sp3A = m64_read_s16(state);
                 state->stack[state->depth++] = state->pc;
@@ -1050,7 +1003,6 @@ s32 seq_channel_layer_process_script_part2(struct SequenceChannelLayer *layer) {
 
             case 0xf8: // layer_loop; loop start, N iterations (or 256 if N = 0)
                 if (0 && state->depth >= 4) {
-                    eu_stubbed_printf_0("Macro Level Over Error!\n");
                 }
                 state->remLoopIters[state->depth] = m64_read_u8(state);
                 state->stack[state->depth++] = state->pc;
@@ -1128,7 +1080,6 @@ s32 seq_channel_layer_process_script_part2(struct SequenceChannelLayer *layer) {
                 }
 
                 if ((layer->instOrWave = get_instrument(seqChannel, cmd, &layer->instrument, &layer->adsr)) == 0) {
-                    eu_stubbed_printf_1("WARNING: NPRG: cannot change %d\n", cmd);
                     layer->instOrWave = 0xff;
                 }
                 break;
@@ -1190,7 +1141,6 @@ s32 seq_channel_layer_process_script_part2(struct SequenceChannelLayer *layer) {
                         layer->noteDuration = seqPlayer->shortNoteDurationTable[cmd & 0xf];
                         break;
                     default:
-                        eu_stubbed_printf_1("Audio:Track:NOTE:UNDEFINED NOTE COM. %x\n", cmd);
                         break;
                 }
         }
@@ -1210,7 +1160,6 @@ s32 seq_channel_layer_process_script_part4(struct SequenceChannelLayer *layer, s
     f32 freqScale;
     f32 sp24;
     f32 temp_f12;
-    UNUSED s32 pad[2];
     struct SequencePlayer *seqPlayer = seqChannel->seqPlayer;
     u8 cmd = cmd1;
     f32 temp_f2;
@@ -1229,7 +1178,6 @@ s32 seq_channel_layer_process_script_part4(struct SequenceChannelLayer *layer, s
         drum = get_drum(seqChannel->bankId, cmd);
         if (drum == NULL) {
             layer->stopSomething = TRUE;
-            layer->delayUnused = layer->delay;
             return -1;
         } else {
             layer->adsr.envelope = drum->envelope;
@@ -1320,7 +1268,6 @@ s32 seq_channel_layer_process_script_part4(struct SequenceChannelLayer *layer, s
             }
         }
     }
-    layer->delayUnused = layer->delay;
     layer->freqScale *= layer->freqScaleMultiplier;
     return sameSound;
 }
@@ -1414,7 +1361,6 @@ u8 get_instrument(struct SequenceChannel *seqChannel, u8 instId, struct Instrume
     instId++;
     return instId;
 #else
-    UNUSED u32 pad;
 
     if (instId >= gCtlEntries[seqChannel->bankId].numInstruments) {
         instId = gCtlEntries[seqChannel->bankId].numInstruments;
@@ -1574,9 +1520,6 @@ void sequence_channel_process_script(struct SequenceChannel *seqChannel) {
                         goto out;
 #endif
                     case 0xfc: // chan_call
-                        if (0 && state->depth >= 4) {
-                            eu_stubbed_printf_0("Audio:Track :Call Macro Level Over Error!\n");
-                        }
                         sp5A = m64_read_s16(state);
 #if defined(VERSION_EU) || defined(VERSION_SH)
                         state->stack[state->depth++] = state->pc;
@@ -1587,9 +1530,6 @@ void sequence_channel_process_script(struct SequenceChannel *seqChannel) {
                         break;
 
                     case 0xf8: // chan_loop; loop start, N iterations (or 256 if N = 0)
-                        if (0 && state->depth >= 4) {
-                            eu_stubbed_printf_0("Audio:Track :Loops Macro Level Over Error!\n");
-                        }
                         state->remLoopIters[state->depth] = m64_read_u8(state);
 #if defined(VERSION_EU) || defined(VERSION_SH)
                         state->stack[state->depth++] = state->pc;
@@ -1691,8 +1631,6 @@ void sequence_channel_process_script(struct SequenceChannel *seqChannel) {
 #endif
                         {
                             seqChannel->bankId = cmd;
-                        } else {
-                            eu_stubbed_printf_1("SUB:ERR:BANK %d NOT CACHED.\n", cmd);
                         }
                         // fallthrough
                         FALL_THROUGH;
@@ -1819,7 +1757,6 @@ void sequence_channel_process_script(struct SequenceChannel *seqChannel) {
                         if (cmd == 0) {
                             cmd = gAudioUpdatesPerFrame;
                         }
-                        seqChannel->updatesPerFrameUnused = cmd;
                         break;
 #endif
 
@@ -1849,8 +1786,6 @@ void sequence_channel_process_script(struct SequenceChannel *seqChannel) {
 #endif
                         {
                             seqChannel->bankId = cmd;
-                        } else {
-                            eu_stubbed_printf_1("SUB:ERR:BANK %d NOT CACHED.\n", cmd);
                         }
                         break;
 
@@ -1933,19 +1868,12 @@ void sequence_channel_process_script(struct SequenceChannel *seqChannel) {
                     case 0xe4: // chan_dyncall
                         if (value != -1) {
 #if defined(VERSION_EU) || defined(VERSION_SH)
-                            if (state->depth >= 4) {
-                                eu_stubbed_printf_0("Audio:Track: CTBLCALL Macro Level Over Error!\n");
-                            }
 #endif
                             seqData = (*seqChannel->dynTable)[value];
 #if defined(VERSION_EU) || defined(VERSION_SH)
                             state->stack[state->depth++] = state->pc;
                             sp38 = (u16)((seqData[0] << 8) + seqData[1]);
                             state->pc = seqPlayer->seqData + sp38;
-
-                            if (0 && sp38 >= gSeqFileHeader->seqArray[seqPlayer->seqId].len) {
-                                eu_stubbed_printf_3("Err :Sub %x ,address %x:Undefined SubTrack Function %x", seqChannel, state->pc, sp38);
-                            }
 #else
                             state->depth++, state->stack[state->depth - 1] = state->pc;
                             sp5A = ((seqData[0] << 8) + seqData[1]);
@@ -2226,9 +2154,6 @@ void sequence_channel_process_script(struct SequenceChannel *seqChannel) {
 
 void sequence_player_process_sequence(struct SequencePlayer *seqPlayer) {
     u8 cmd;
-#ifdef VERSION_SH
-    UNUSED u32 pad;
-#endif
     u8 loBits;
     u8 temp;
     s32 value = 0;
@@ -2315,7 +2240,6 @@ void sequence_player_process_sequence(struct SequencePlayer *seqPlayer) {
         seqPlayer->defaultBank[0] != 0xff &&
 #endif
         IS_BANK_LOAD_COMPLETE(seqPlayer->defaultBank[0]) == FALSE)) {
-        eu_stubbed_printf_1("Disappear Sequence or Bank %d\n", seqPlayer->seqId);
         sequence_player_disable(seqPlayer);
         return;
     }
@@ -2387,9 +2311,6 @@ void sequence_player_process_sequence(struct SequencePlayer *seqPlayer) {
 
                     case 0xfc: // seq_call
                         u16v = m64_read_s16(state);
-                        if (0 && state->depth >= 4) {
-                            eu_stubbed_printf_0("Macro Level Over Error!\n");
-                        }
 #if defined(VERSION_EU) || defined(VERSION_SH)
                         state->stack[state->depth++] = state->pc;
 #else
@@ -2399,9 +2320,6 @@ void sequence_player_process_sequence(struct SequencePlayer *seqPlayer) {
                         break;
 
                     case 0xf8: // seq_loop; loop start, N iterations (or 256 if N = 0)
-                        if (0 && state->depth >= 4) {
-                            eu_stubbed_printf_0("Macro Level Over Error!\n");
-                        }
                         state->remLoopIters[state->depth] = m64_read_u8(state);
 #if defined(VERSION_EU) || defined(VERSION_SH)
                         state->stack[state->depth++] = state->pc;
@@ -2651,7 +2569,6 @@ void sequence_player_process_sequence(struct SequencePlayer *seqPlayer) {
 #endif
 
                     default:
-                        eu_stubbed_printf_1("Group:Undefine upper C0h command (%x)\n", cmd);
                         break;
                 }
             } else {
@@ -2709,7 +2626,6 @@ void sequence_player_process_sequence(struct SequencePlayer *seqPlayer) {
 #endif
 
                     default:
-                        eu_stubbed_printf_0("Group:Undefined Command\n");
                         break;
                 }
             }

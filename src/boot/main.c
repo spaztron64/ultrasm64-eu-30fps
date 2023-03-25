@@ -26,7 +26,6 @@
 #define MESG_START_GFX_SPTASK 103
 #define MESG_NMI_REQUEST 104
 
-OSThread D_80339210; // unused?
 OSThread gIdleThread;
 OSThread gMainThread;
 OSThread gGameLoopThread;
@@ -66,34 +65,6 @@ s8 gDebugLevelSelect = FALSE;
 
 s8 gShowProfiler = FALSE;
 s8 gShowDebugText = FALSE;
-
-// unused
-void handle_debug_key_sequences(void) {
-    static u16 sProfilerKeySequence[] = {
-        U_JPAD, U_JPAD, D_JPAD, D_JPAD, L_JPAD, R_JPAD, L_JPAD, R_JPAD
-    };
-    static u16 sDebugTextKeySequence[] = { D_JPAD, D_JPAD, U_JPAD, U_JPAD,
-                                           L_JPAD, R_JPAD, L_JPAD, R_JPAD };
-    static s16 sProfilerKey = 0;
-    static s16 sDebugTextKey = 0;
-    if (gPlayer3Controller->buttonPressed != 0) {
-        if (sProfilerKeySequence[sProfilerKey++] == gPlayer3Controller->buttonPressed) {
-            if (sProfilerKey == ARRAY_COUNT(sProfilerKeySequence)) {
-                sProfilerKey = 0, gShowProfiler ^= 1;
-            }
-        } else {
-            sProfilerKey = 0;
-        }
-
-        if (sDebugTextKeySequence[sDebugTextKey++] == gPlayer3Controller->buttonPressed) {
-            if (sDebugTextKey == ARRAY_COUNT(sDebugTextKeySequence)) {
-                sDebugTextKey = 0, gShowDebugText ^= 1;
-            }
-        } else {
-            sDebugTextKey = 0;
-        }
-    }
-}
 
 void setup_mesg_queues(void) {
     osCreateMesgQueue(&gDmaMesgQueue, gDmaMesgBuf, ARRAY_COUNT(gDmaMesgBuf));
@@ -166,7 +137,6 @@ void receive_new_tasks(void) {
 }
 
 void start_sptask(s32 taskType) {
-    UNUSED u8 filler[4];
 
     if (taskType == M_AUDTASK) {
         gActiveSPTask = sCurrentAudioSPTask;

@@ -586,29 +586,6 @@ s32 act_panting(struct MarioState *m) {
     return FALSE;
 }
 
-s32 act_hold_panting_unused(struct MarioState *m) {
-    if (m->marioObj->oInteractStatus & INT_STATUS_MARIO_DROP_OBJECT) {
-        return drop_and_set_mario_action(m, ACT_PANTING, 0);
-    }
-
-    if (m->input & INPUT_STOMPED) {
-        return drop_and_set_mario_action(m, ACT_SHOCKWAVE_BOUNCE, 0);
-    }
-
-    if (m->health >= 0x500) {
-        return set_mario_action(m, ACT_HOLD_IDLE, 0);
-    }
-
-    if (check_common_hold_idle_cancels(m)) {
-        return TRUE;
-    }
-
-    set_mario_animation(m, MARIO_ANIM_WALK_PANTING);
-    stationary_ground_step(m);
-    m->marioBodyState->eyeState = MARIO_EYES_HALF_CLOSED;
-    return FALSE;
-}
-
 void stopping_step(struct MarioState *m, s32 animID, u32 action) {
     stationary_ground_step(m);
     set_mario_animation(m, animID);
@@ -1121,7 +1098,6 @@ s32 mario_execute_stationary_action(struct MarioState *m) {
         case ACT_SLEEPING:                cancel = act_sleeping(m);                         break;
         case ACT_WAKING_UP:               cancel = act_waking_up(m);                        break;
         case ACT_PANTING:                 cancel = act_panting(m);                          break;
-        case ACT_HOLD_PANTING_UNUSED:     cancel = act_hold_panting_unused(m);              break;
         case ACT_HOLD_IDLE:               cancel = act_hold_idle(m);                        break;
         case ACT_HOLD_HEAVY_IDLE:         cancel = act_hold_heavy_idle(m);                  break;
         case ACT_IN_QUICKSAND:            cancel = act_in_quicksand(m);                     break;

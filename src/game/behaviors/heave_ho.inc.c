@@ -47,7 +47,6 @@ void heave_ho_act_1(void) {
 }
 
 void heave_ho_act_2(void) {
-    UNUSED u8 filler[4];
     s16 angleVel;
 
     if (cur_obj_lateral_dist_from_mario_to_home() > 1000.0f) {

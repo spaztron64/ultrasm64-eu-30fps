@@ -34,7 +34,6 @@ static struct Object *sEndPeachObj;
 static struct Object *sEndRightToadObj;
 static struct Object *sEndLeftToadObj;
 static struct Object *sEndJumboStarObj;
-static UNUSED s32 sUnused;
 static s16 sEndPeachAnimation;
 static s16 sEndToadAnims[2];
 
@@ -211,13 +210,6 @@ s32 geo_switch_peach_eyes(s32 run, struct GraphNode *node, UNUSED s32 a2) {
     }
 
     return 0;
-}
-
-// unused
-UNUSED static void stub_is_textbox_active(u16 *arg) {
-    if (get_dialog_id() == DIALOG_NONE) {
-        *arg = 0;
-    }
 }
 
 /**
@@ -1186,22 +1178,6 @@ s32 act_death_exit(struct MarioState *m) {
     return FALSE;
 }
 
-s32 act_unused_death_exit(struct MarioState *m) {
-    if (launch_mario_until_land(m, ACT_FREEFALL_LAND_STOP, MARIO_ANIM_GENERAL_FALL, 0.0f)) {
-#ifdef VERSION_JP
-        play_sound(SOUND_MARIO_OOOF, m->marioObj->header.gfx.cameraToObject);
-#else
-        play_sound(SOUND_MARIO_OOOF2, m->marioObj->header.gfx.cameraToObject);
-#endif
-        m->numLives--;
-        // restore 7.75 units of health
-        m->healCounter = 31;
-    }
-    // one unit of health
-    m->health = 0x0100;
-    return FALSE;
-}
-
 s32 act_falling_death_exit(struct MarioState *m) {
     if (launch_mario_until_land(m, ACT_DEATH_EXIT_LAND, MARIO_ANIM_GENERAL_FALL, 0.0f)) {
 #ifdef VERSION_JP
@@ -1495,7 +1471,6 @@ s32 act_shocked(struct MarioState *m) {
 }
 
 s32 act_squished(struct MarioState *m) {
-    UNUSED u8 filler[4];
     f32 squishAmount;
     f32 spaceUnderCeil;
     s16 surfAngle;
@@ -1903,7 +1878,6 @@ static s32 jumbo_star_cutscene_taking_off(struct MarioState *m) {
 // jumbo star cutscene: Mario flying
 static s32 jumbo_star_cutscene_flying(struct MarioState *m) {
     Vec3f targetPos;
-    UNUSED struct Object *marioObj = m->marioObj;
     f32 targetDX;
     f32 targetDY;
     f32 targetDZ;
@@ -2736,7 +2710,6 @@ s32 mario_execute_cutscene_action(struct MarioState *m) {
         case ACT_EXIT_AIRBORNE:              cancel = act_exit_airborne(m);              break;
         case ACT_EXIT_LAND_SAVE_DIALOG:      cancel = act_exit_land_save_dialog(m);      break;
         case ACT_DEATH_EXIT:                 cancel = act_death_exit(m);                 break;
-        case ACT_UNUSED_DEATH_EXIT:          cancel = act_unused_death_exit(m);          break;
         case ACT_FALLING_DEATH_EXIT:         cancel = act_falling_death_exit(m);         break;
         case ACT_SPECIAL_EXIT_AIRBORNE:      cancel = act_special_exit_airborne(m);      break;
         case ACT_SPECIAL_DEATH_EXIT:         cancel = act_special_death_exit(m);         break;

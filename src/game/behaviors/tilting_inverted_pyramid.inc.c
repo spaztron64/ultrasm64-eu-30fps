@@ -78,9 +78,7 @@ void bhv_tilting_inverted_pyramid_loop(void) {
     f32 mz;
 
     s32 marioOnPlatform = FALSE;
-    UNUSED u8 filler1[4];
     Mat4 *transform = &o->transform;
-    UNUSED u8 filler2[28];
 
     if (gMarioObject->platform == o) {
         get_mario_pos(&mx, &my, &mz);

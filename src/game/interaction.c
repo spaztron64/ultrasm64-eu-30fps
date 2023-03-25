@@ -453,7 +453,6 @@ u32 bully_knock_back_mario(struct MarioState *mario) {
     s16 newMarioYaw;
     s16 newBullyYaw;
     s16 marioDYaw;
-    UNUSED s16 bullyDYaw;
 
     u32 bonkAction = 0;
 
@@ -480,7 +479,6 @@ u32 bully_knock_back_mario(struct MarioState *mario) {
     newBullyYaw = atan2s(bullyData.velZ, bullyData.velX);
 
     marioDYaw = newMarioYaw - mario->faceAngle[1];
-    bullyDYaw = newBullyYaw - bully->oMoveAngleYaw;
 
     mario->faceAngle[1] = newMarioYaw;
     mario->forwardVel = sqrtf(marioData.velX * marioData.velX + marioData.velZ * marioData.velZ);
@@ -524,36 +522,6 @@ void bounce_off_object(struct MarioState *m, struct Object *o, f32 velY) {
 void hit_object_from_below(struct MarioState *m, UNUSED struct Object *o) {
     m->vel[1] = 0.0f;
     set_camera_shake_from_hit(SHAKE_HIT_FROM_BELOW);
-}
-
-UNUSED static u32 unused_determine_knockback_action(struct MarioState *m) {
-    u32 bonkAction;
-    s16 angleToObject = mario_obj_angle_to_object(m, m->interactObj);
-    s16 facingDYaw = angleToObject - m->faceAngle[1];
-
-    if (m->forwardVel < 16.0f) {
-        m->forwardVel = 16.0f;
-    }
-
-    m->faceAngle[1] = angleToObject;
-
-    if (facingDYaw >= -0x4000 && facingDYaw <= 0x4000) {
-        m->forwardVel *= -1.0f;
-        if (m->action & (ACT_FLAG_AIR | ACT_FLAG_ON_POLE | ACT_FLAG_HANGING)) {
-            bonkAction = ACT_BACKWARD_AIR_KB;
-        } else {
-            bonkAction = ACT_SOFT_BACKWARD_GROUND_KB;
-        }
-    } else {
-        m->faceAngle[1] += 0x8000;
-        if (m->action & (ACT_FLAG_AIR | ACT_FLAG_ON_POLE | ACT_FLAG_HANGING)) {
-            bonkAction = ACT_FORWARD_AIR_KB;
-        } else {
-            bonkAction = ACT_SOFT_FORWARD_GROUND_KB;
-        }
-    }
-
-    return bonkAction;
 }
 
 u32 determine_knockback_action(struct MarioState *m, UNUSED s32 arg) {
@@ -1133,7 +1101,6 @@ u32 interact_whirlpool(struct MarioState *m, UNUSED u32 interactType, struct Obj
 }
 
 u32 interact_strong_wind(struct MarioState *m, UNUSED u32 interactType, struct Object *o) {
-    UNUSED struct Object *marioObj = m->marioObj;
 
     if (m->action != ACT_GETTING_BLOWN) {
         mario_stop_riding_and_holding(m);
@@ -1226,7 +1193,6 @@ u32 interact_clam_or_bubba(struct MarioState *m, UNUSED u32 interactType, struct
 }
 
 u32 interact_bully(struct MarioState *m, UNUSED u32 interactType, struct Object *o) {
-    UNUSED u8 filler[4];
 
     u32 interaction;
     if (m->flags & MARIO_METAL_CAP) {
@@ -1301,13 +1267,6 @@ u32 interact_shock(struct MarioState *m, UNUSED u32 interactType, struct Object 
     return FALSE;
 }
 
-UNUSED static u32 interact_stub(UNUSED struct MarioState *m, UNUSED u32 interactType, struct Object *o) {
-    if (!(o->oInteractionSubtype & INT_SUBTYPE_DELAY_INVINCIBILITY)) {
-        sDelayInvincTimer = TRUE;
-    }
-    return FALSE;
-}
-
 u32 interact_mr_blizzard(struct MarioState *m, UNUSED u32 interactType, struct Object *o) {
     if (take_damage_and_knock_back(m, o)) {
         return TRUE;
@@ -1321,7 +1280,6 @@ u32 interact_mr_blizzard(struct MarioState *m, UNUSED u32 interactType, struct O
 }
 
 u32 interact_hit_from_below(struct MarioState *m, UNUSED u32 interactType, struct Object *o) {
-    UNUSED u8 filler[4];
 
     u32 interaction;
     if (m->flags & MARIO_METAL_CAP) {

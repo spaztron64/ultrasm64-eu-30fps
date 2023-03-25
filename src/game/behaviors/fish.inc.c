@@ -155,7 +155,6 @@ static void fish_act_roam(void) {
  */
 static void fish_act_flee(void) {
     f32 fishY = o->oPosY - gMarioObject->oPosY;
-    UNUSED s32 distance;
 
     o->oFishGoalY = gMarioObject->oPosY + o->oFishHeightOffset;
 
@@ -164,14 +163,6 @@ static void fish_act_flee(void) {
         o->oFishActiveDistance = random_float() * 300.0f;
         o->oFishYawVel = random_float() * 1024.0f + 1024.0f;
         o->oFishGoalVel = random_float() * 4.0f + 8.0f + 5.0f;
-
-        if (o->oDistanceToMario < 600.0f) {
-            distance = 1;
-        } else {
-            distance = (s32)(1.0 / (o->oDistanceToMario / 600.0));
-        }
-
-        distance *= 127;
 
         cur_obj_play_sound_2(SOUND_GENERAL_MOVING_WATER);
     }
@@ -239,7 +230,6 @@ static void (*sFishActions[])(void) = {
  * Main loop for fish
  */
 void bhv_fish_loop(void) {
-    UNUSED u8 filler[16];
     cur_obj_scale(1.0f);
 
     // oFishWaterLevel tracks if a fish has roamed out of water.

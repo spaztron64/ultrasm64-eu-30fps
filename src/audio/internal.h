@@ -69,35 +69,6 @@
 #else
 #define FLOAT_CAST(x) (f32) (s32) (x)
 #endif
-
-#if defined(ISVPRINT) || defined(UNF)
-#define stubbed_printf osSyncPrintf
-#else
-
-// No-op printf macro which leaves string literals in rodata in IDO. IDO
-// doesn't support variadic macros, so instead we let the parameter list
-// expand to a no-op comma expression. Another possibility is that it might
-// have expanded to something with "if (0)". See also goddard/gd_main.h.
-// On US/JP, -sopt optimizes away these except for external.c.
-#ifdef __sgi
-#define stubbed_printf
-#else
-#define stubbed_printf(...)
-#endif
-#endif
-
-#ifdef VERSION_EU
-#define eu_stubbed_printf_0(msg) stubbed_printf(msg)
-#define eu_stubbed_printf_1(msg, a) stubbed_printf(msg, a)
-#define eu_stubbed_printf_2(msg, a, b) stubbed_printf(msg, a, b)
-#define eu_stubbed_printf_3(msg, a, b, c) stubbed_printf(msg, a, b, c)
-#else
-#define eu_stubbed_printf_0(msg)
-#define eu_stubbed_printf_1(msg, a)
-#define eu_stubbed_printf_2(msg, a, b)
-#define eu_stubbed_printf_3(msg, a, b, c)
-#endif
-
 struct NotePool;
 
 struct AudioListItem {
@@ -181,7 +152,6 @@ struct AudioBankSample {
     /* 0x00 */ u32 isPatched : 1;
     /* 0x01 */ u32 size : 24;
 #else
-    u8 unused;
     u8 loaded;
 #endif
     u8 *sampleAddr;
@@ -222,9 +192,6 @@ struct AudioBank {
 }; // dynamic size
 
 struct CtlEntry {
-#ifndef VERSION_SH
-    u8 unused;
-#endif
     u8 numInstruments;
     u8 numDrums;
 #ifdef VERSION_SH
@@ -379,7 +346,6 @@ struct ReverbInfo {
     union ReverbBits reverbBits;
     f32 freqScale;
     f32 velocity;
-    s32 unused;
     s16 *filter;
 };
 
@@ -415,7 +381,6 @@ struct SequenceChannel {
     /*0x00, 0x00*/ u8 hasInstrument : 1;
     /*0x00, 0x00*/ u8 stereoHeadsetEffects : 1;
     /*0x00, ????*/ u8 largeNotes : 1; // notes specify duration and velocity
-    /*0x00, ????*/ u8 unused : 1; // never read, set to 0
 #if defined(VERSION_EU) || defined(VERSION_SH)
     /*    , 0x01*/ union {
         struct {
@@ -439,8 +404,6 @@ struct SequenceChannel {
     /*    , 0x08, 0x09*/ u8 bookOffset;
     /*    , 0x09*/ u8 newPan;
     /*    , 0x0A*/ u8 panChannelWeight; // proportion of pan that comes from the channel (0..128)
-#else
-    /*0x06,     */ u8 updatesPerFrameUnused;
 #endif
 #ifdef VERSION_SH
     /*            0x0C*/ u8 synthesisVolume; // UQ4.4, although 0 <= x < 1 is rounded up to 1
@@ -467,8 +430,6 @@ struct SequenceChannel {
 #endif
     /*0x2C, 0x30*/ f32 freqScale;
     /*0x30, 0x34*/ u8 (*dynTable)[][2];
-    /*0x34, ????*/ struct Note *noteUnused; // never read
-    /*0x38, ????*/ struct SequenceChannelLayer *layerUnused; // never read
     /*0x3C, 0x40*/ struct Instrument *instrument;
     /*0x40, 0x44*/ struct SequencePlayer *seqPlayer;
     /*0x44, 0x48*/ struct SequenceChannelLayer *layers[LAYERS_MAX];
@@ -533,7 +494,6 @@ struct SequenceChannelLayer {
     /*0x3A, 0x36*/ s16 playPercentage; // it's not really a percentage...
     /*0x3C, 0x38*/ s16 delay;
     /*0x3E, 0x3A*/ s16 duration;
-    /*0x40, 0x3C*/ s16 delayUnused; // set to 'delay', never read
     /*0x44, 0x40, 0x44*/ struct Note *note;
     /*0x48, 0x44*/ struct Instrument *instrument;
     /*0x4C, 0x48*/ struct AudioBankSound *sound;
@@ -671,7 +631,7 @@ struct Note {
     /*0x06*/ u8 instOrWave;
     /*0x07*/ u8 bankId; // in NoteSubEu on EU
     /*0x08*/ s16 adsrVolScale;
-    /*    */ u8 pad1[2];
+    /*0xA0*/ s16 reverbVolShifted; // Q1.15
     /*0x0C, 0xB3*/ u16 headsetPanRight;
     /*0x0E, 0xB4*/ u16 headsetPanLeft;
     /*0x10*/ u16 prevHeadsetPanRight;
@@ -688,18 +648,14 @@ struct Note {
     /*0x38*/ f32 frequency;
     /*0x3C*/ u16 targetVolLeft; // Q1.15, but will always be non-negative
     /*0x3E*/ u16 targetVolRight; // Q1.15, but will always be non-negative
-    /*0x40*/ u8 reverbVol; // Q1.7
-    /*0x41*/ u8 unused1; // never read, set to 0x3f
+    /*0x9C*/ s16 curVolLeft; // Q1.15, but will always be non-negative
+    /*0x9E*/ s16 curVolRight; // Q1.15, but will always be non-negative
     /*0x44*/ struct NoteAttributes attributes;
     /*0x54, 0x58*/ struct AdsrState adsr;
     /*0x74, 0x7C*/ struct Portamento portamento;
     /*0x84, 0x8C*/ struct VibratoState vibratoState;
-    /*0x9C*/ s16 curVolLeft; // Q1.15, but will always be non-negative
-    /*0x9E*/ s16 curVolRight; // Q1.15, but will always be non-negative
-    /*0xA0*/ s16 reverbVolShifted; // Q1.15
-    /*0xA2*/ s16 unused2; // never read, set to 0
     /*0xA4, 0x00*/ struct AudioListItem listItem;
-    /*          */ u8 pad2[0xc];
+    /*0x40*/ u8 reverbVol; // Q1.7
 }; // size = 0xC0
 #endif
 

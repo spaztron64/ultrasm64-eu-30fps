@@ -1027,17 +1027,6 @@ void audio_init() {
     gRefreshRate = 60;
     port_eu_init();
 
-#ifdef TARGET_N64
-    eu_stubbed_printf_3(
-        "Clear Workarea %x -%x size %x \n",
-        (uintptr_t) &gAudioGlobalsStartMarker,
-        (uintptr_t) &gAudioGlobalsEndMarker,
-        (uintptr_t) &gAudioGlobalsEndMarker - (uintptr_t) &gAudioGlobalsStartMarker
-    );
-#endif
-
-    eu_stubbed_printf_1("AudioHeap is %x\n", gAudioHeapSize);
-
     for (i = 0; i < NUMAIBUFFERS; i++) {
         gAiBufferLengths[i] = 0xa0;
     }
@@ -1070,11 +1059,6 @@ void audio_init() {
     gAudioResetPresetIdToLoad = 0;
     gAudioResetStatus = 1;
     audio_shut_down_and_reset_step();
-
-    // Not sure about these prints
-    eu_stubbed_printf_1("Heap reset.Synth Change %x \n", 0);
-    eu_stubbed_printf_3("Heap %x %x %x\n", 0, 0, 0);
-    eu_stubbed_printf_0("Main Heap Initialize.\n");
 
     // Load headers for sounds and sequences
     gSeqFileHeader = (ALSeqFile *) gShindouSequencesHeader;
@@ -1428,9 +1412,7 @@ void patch_sound(struct AudioBankSound *sound, struct AudioBank *memBase, struct
 }
 
 BAD_RETURN(s32) func_sh_802f5310(s32 bankId, struct AudioBank *mem, struct PatchStruct *patchInfo, s32 arg3) {
-    UNUSED u32 pad[2];
     u8 *addr = NULL;
-    UNUSED u32 pad1[3];
     s32 sp4C;
     struct AudioBankSample *temp_s0;
     s32 i;

@@ -65,7 +65,6 @@ static s16 sBooHitRotations[] = {
 #include "behaviors/thi_top.inc.c"
 #include "behaviors/capswitch.inc.c"
 #include "behaviors/king_bobomb.inc.c"
-#include "behaviors/beta_chest.inc.c"
 #include "behaviors/water_objs.inc.c"
 #include "behaviors/cannon.inc.c"
 #include "behaviors/chuckya.inc.c"
@@ -122,7 +121,6 @@ void spawn_mist_particles_variable(s32 count, s32 offsetY, f32 size) {
 #include "behaviors/water_mist.inc.c"
 #include "behaviors/ground_particles.inc.c"
 #include "behaviors/wind.inc.c"
-#include "behaviors/unused_particle_spawn.inc.c"
 #include "behaviors/ukiki_cage.inc.c"
 #include "behaviors/falling_rising_platform.inc.c"
 #include "behaviors/fishing_boo.inc.c"
@@ -130,7 +128,6 @@ void spawn_mist_particles_variable(s32 count, s32 offsetY, f32 size) {
 #include "behaviors/bouncing_fireball.inc.c"
 #include "behaviors/shock_wave.inc.c"
 #include "behaviors/flame_mario.inc.c"
-#include "behaviors/beta_fish_splash_spawner.inc.c"
 #include "behaviors/spindrift.inc.c"
 #include "behaviors/tower_platform.inc.c"
 #include "behaviors/tree_particles.inc.c"
@@ -159,8 +156,6 @@ Gfx *geo_move_mario_part_from_parent(s32 run, UNUSED struct GraphNode *node, Mat
 
 #include "behaviors/heave_ho.inc.c"
 #include "behaviors/spawn_star_exit.inc.c"
-#include "behaviors/unused_poundable_platform.inc.c"
-#include "behaviors/beta_trampoline.inc.c"
 #include "behaviors/jumping_box.inc.c"
 #include "behaviors/boo_cage.inc.c"
 
@@ -179,7 +174,6 @@ void spawn_sparkle_particles(s32 n, s32 a1, s32 a2, s32 r) {
     D_8035FF10 += r * 0x100;
 }
 
-#include "behaviors/beta_boo_key.inc.c"
 #include "behaviors/grand_star.inc.c"
 #include "behaviors/bowser_key.inc.c"
 #include "behaviors/bullet_bill.inc.c"
@@ -251,7 +245,6 @@ s32 set_obj_anim_with_accel_and_sound(s16 a0, s16 a1, s32 a2) {
 #include "behaviors/bbh_haunted_bookshelf.inc.c"
 #include "behaviors/bbh_merry_go_round.inc.c"
 #include "behaviors/static_checkered_platform.inc.c"
-#include "behaviors/beta_bowser_anchor.inc.c"
 #ifndef VERSION_JP
 #include "behaviors/music_touch.inc.c"
 #endif

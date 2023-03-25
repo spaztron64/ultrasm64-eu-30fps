@@ -56,7 +56,6 @@ void play_climbing_sounds(struct MarioState *m, s32 b) {
 }
 
 s32 set_pole_position(struct MarioState *m, f32 offsetY) {
-    UNUSED u8 filler[12];
     struct Surface *floor;
     struct Surface *ceil;
     f32 floorHeight;
@@ -280,7 +279,6 @@ s32 act_top_of_pole_transition(struct MarioState *m) {
 }
 
 s32 act_top_of_pole(struct MarioState *m) {
-    UNUSED struct Object *marioObj = m->marioObj;
 
     if (m->input & INPUT_A_PRESSED) {
         return set_mario_action(m, ACT_TOP_OF_POLE_JUMP, 0);
@@ -297,7 +295,6 @@ s32 act_top_of_pole(struct MarioState *m) {
 }
 
 s32 perform_hanging_step(struct MarioState *m, Vec3f nextPos) {
-    UNUSED u8 filler[4];
     struct Surface *ceil;
     struct Surface *floor;
     f32 ceilHeight;

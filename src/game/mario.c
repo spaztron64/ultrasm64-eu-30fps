@@ -33,9 +33,6 @@
 #include "sound_init.h"
 #include "rumble_init.h"
 
-u32 unused80339F10;
-u8 unused80339F1C[20];
-
 /**************************************************
  *                    ANIMATIONS                  *
  **************************************************/
@@ -547,7 +544,6 @@ struct Surface *resolve_and_return_wall_collisions(Vec3f pos, f32 offset, f32 ra
  * Finds the ceiling from a vec3f horizontally and a height (with 80 vertical buffer).
  */
 f32 vec3f_find_ceil(Vec3f pos, f32 height, struct Surface **ceil) {
-    UNUSED u8 filler[4];
 
     return find_ceil(pos[0], height + 80.0f, pos[2], ceil);
 }
@@ -765,7 +761,7 @@ void set_steep_jump_action(struct MarioState *m) {
 static void set_mario_y_vel_based_on_fspeed(struct MarioState *m, f32 initialVelY, f32 multiplier) {
     // get_additive_y_vel_for_jumps is always 0 and a stubbed function.
     // It was likely trampoline related based on code location.
-    m->vel[1] = initialVelY + get_additive_y_vel_for_jumps() + m->forwardVel * multiplier;
+    m->vel[1] = initialVelY + m->forwardVel * multiplier;
 
     if (m->squishTimer != 0 || m->quicksandDepth > 1.0f) {
         m->vel[1] *= 0.5f;
@@ -1074,7 +1070,6 @@ s32 set_jump_from_landing(struct MarioState *m) {
  * either a quicksand or steep jump.
  */
 s32 set_jumping_action(struct MarioState *m, u32 action, u32 actionArg) {
-    UNUSED u32 currAction = m->action;
 
     if (m->quicksandDepth >= 11.0f) {
         // Checks whether Mario is holding an object or not.
@@ -1402,10 +1397,6 @@ void update_mario_inputs(struct MarioState *m) {
         m->input |= INPUT_STOMPED;
     }
 
-    // This function is located near other unused trampoline functions,
-    // perhaps logically grouped here with the timers.
-    stub_mario_step_1(m);
-
     if (m->wallKickTimer > 0) {
         m->wallKickTimer--;
     }
@@ -1660,26 +1651,6 @@ void mario_update_hitbox_and_cap_model(struct MarioState *m) {
     }
 }
 
-/**
- * An unused and possibly a debug function. Z + another button input
- * sets Mario with a different cap.
- */
-UNUSED static void debug_update_mario_cap(u16 button, s32 flags, u16 capTimer, u16 capMusic) {
-    // This checks for Z_TRIG instead of Z_DOWN flag
-    // (which is also what other debug functions do),
-    // so likely debug behavior rather than unused behavior.
-    if ((gPlayer1Controller->buttonDown & Z_TRIG) && (gPlayer1Controller->buttonPressed & button)
-        && !(gMarioState->flags & flags)) {
-        gMarioState->flags |= (flags + MARIO_CAP_ON_HEAD);
-
-        if (capTimer > gMarioState->capTimer) {
-            gMarioState->capTimer = capTimer;
-        }
-
-        play_cap_music(capMusic);
-    }
-}
-
 #if ENABLE_RUMBLE
 void func_sh_8025574C(void) {
     if (gMarioState->particleFlags & PARTICLE_HORIZONTAL_STAR) {
@@ -1790,8 +1761,6 @@ s32 execute_mario_action(UNUSED struct Object *o) {
 void init_mario(void) {
     Vec3s capPos;
     struct Object *capObject;
-
-    unused80339F10 = 0;
 
     gMarioState->actionTimer = 0;
     gMarioState->framesSinceA = 0xFF;

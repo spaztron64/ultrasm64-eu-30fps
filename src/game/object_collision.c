@@ -5,10 +5,10 @@
 #include "mario.h"
 #include "object_list_processor.h"
 #include "spawn_object.h"
+#include "engine/math_util.h"
 
 struct Object *debug_print_obj_collision(struct Object *a) {
     struct Object *sp24;
-    UNUSED u8 filler[4];
     s32 i;
 
     for (i = 0; i < a->numCollidedObjs; i++) {
@@ -24,12 +24,11 @@ s32 detect_object_hitbox_overlap(struct Object *a, struct Object *b) {
     f32 sp3C = a->oPosY - a->hitboxDownOffset;
     f32 sp38 = b->oPosY - b->hitboxDownOffset;
     f32 dx = a->oPosX - b->oPosX;
-    UNUSED f32 sp30 = sp3C - sp38;
     f32 dz = a->oPosZ - b->oPosZ;
     f32 collisionRadius = a->hitboxRadius + b->hitboxRadius;
-    f32 distance = sqrtf(dx * dx + dz * dz);
+    f32 distance = (dx * dx + dz * dz);
 
-    if (collisionRadius > distance) {
+    if (sqr(collisionRadius) > distance) {
         f32 sp20 = a->hitboxHeight + sp3C;
         f32 sp1C = b->hitboxHeight + sp38;
 
@@ -64,16 +63,15 @@ s32 detect_object_hurtbox_overlap(struct Object *a, struct Object *b) {
     f32 sp3C = a->oPosY - a->hitboxDownOffset;
     f32 sp38 = b->oPosY - b->hitboxDownOffset;
     f32 sp34 = a->oPosX - b->oPosX;
-    UNUSED f32 sp30 = sp3C - sp38;
     f32 sp2C = a->oPosZ - b->oPosZ;
     f32 sp28 = a->hurtboxRadius + b->hurtboxRadius;
-    f32 sp24 = sqrtf(sp34 * sp34 + sp2C * sp2C);
+    f32 sp24 = (sp34 * sp34 + sp2C * sp2C);
 
     if (a == gMarioObject) {
         b->oInteractionSubtype |= INT_SUBTYPE_DELAY_INVINCIBILITY;
     }
 
-    if (sp28 > sp24) {
+    if (sqr(sp28) > sp24) {
         f32 sp20 = a->hitboxHeight + sp3C;
         f32 sp1C = b->hurtboxHeight + sp38;
 

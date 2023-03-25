@@ -67,9 +67,7 @@ static u8 sGoombaAttackHandlers[][6] = {
  * Update function for goomba triplet spawner.
  */
 void bhv_goomba_triplet_spawner_update(void) {
-    UNUSED u8 filler1[4];
     s16 goombaFlag;
-    UNUSED u8 filler2[2];
     s32 angle;
 
     // If mario is close enough and the goombas aren't currently loaded, then

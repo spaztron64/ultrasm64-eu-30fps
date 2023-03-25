@@ -194,7 +194,6 @@ void clear_areas(void) {
         gAreaData[i].instantWarps = NULL;
         gAreaData[i].objectSpawnInfos = NULL;
         gAreaData[i].camera = NULL;
-        gAreaData[i].unused = NULL;
         gAreaData[i].whirlpools[0] = NULL;
         gAreaData[i].whirlpools[1] = NULL;
         gAreaData[i].dialog[0] = DIALOG_NONE;

@@ -101,7 +101,6 @@ void exclamation_box_act_2(void) {
 }
 
 void exclamation_box_act_3(void) {
-    UNUSED u8 filler[4];
     cur_obj_move_using_fvel_and_gravity();
     if (o->oVelY < 0.0f) {
         o->oVelY = 0.0f;

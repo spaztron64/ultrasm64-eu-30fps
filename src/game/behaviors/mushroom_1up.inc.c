@@ -1,7 +1,6 @@
 // mushroom_1up.inc.c
 
 void bhv_1up_interact(void) {
-    UNUSED u8 filler[4];
 
     if (obj_check_if_collided_with_object(o, gMarioObject) == TRUE) {
         play_sound(SOUND_GENERAL_COLLECT_1UP, gGlobalSoundSource);
@@ -278,7 +277,6 @@ void bhv_1up_hidden_trigger_loop(void) {
 }
 
 void bhv_1up_hidden_in_pole_loop(void) {
-    UNUSED s16 collisionFlags;
 
     switch (o->oAction) {
         case 0:
@@ -293,11 +291,11 @@ void bhv_1up_hidden_in_pole_loop(void) {
 
         case 1:
             pole_1up_move_towards_mario();
-            collisionFlags = object_step();
+            object_step();
             break;
 
         case 3:
-            collisionFlags = object_step();
+            object_step();
             if (o->oTimer > 17) {
                 spawn_object(o, MODEL_NONE, bhvSparkleSpawn);
             }

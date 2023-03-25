@@ -435,13 +435,6 @@ end:;
 }
 
 /**
- * Unused action function.
- */
-static void koopa_unshelled_act_unused3(void) {
-    cur_obj_init_anim_extend(0);
-}
-
-/**
  * Update function for koopa after losing his shell.
  */
 static void koopa_unshelled_update(void) {
@@ -455,9 +448,6 @@ static void koopa_unshelled_update(void) {
         case KOOPA_UNSHELLED_ACT_DIVE:
         case KOOPA_UNSHELLED_ACT_LYING:
             koopa_unshelled_act_dive();
-            break;
-        case KOOPA_UNSHELLED_ACT_UNUSED3:
-            koopa_unshelled_act_unused3();
             break;
     }
 
@@ -520,7 +510,6 @@ static void koopa_the_quick_act_show_init_text(void) {
         sKoopaTheQuickProperties[o->oKoopaTheQuickRaceIndex].initText);
 
     if (response == DIALOG_RESPONSE_YES) {
-        UNUSED u8 filler[4];
 
         gMarioShotFromCannon = FALSE;
         o->oAction = KOOPA_THE_QUICK_ACT_RACE;

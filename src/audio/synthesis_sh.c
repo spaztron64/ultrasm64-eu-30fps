@@ -849,7 +849,6 @@ u64 *note_apply_headset_pan_effects(u64 *cmd, struct NoteSubEu *noteSubEu, struc
     u16 pitch;
     u8 prevPanShift;
     u8 panShift;
-    UNUSED u8 unkDebug;
 
     switch (leftRight) {
         case 1:

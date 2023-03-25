@@ -52,14 +52,13 @@ void adjust_rolling_face_pitch(f32 f12) {
 }
 
 void snowmans_bottom_act_1(void) {
-    UNUSED s16 collisionFlags;
     s32 followStatus;
 #ifdef AVOID_UB
     followStatus = 0;
 #endif
 
     o->oPathedStartWaypoint = segmented_to_virtual(&ccm_seg7_trajectory_snowman);
-    collisionFlags = object_step_without_floor_orient();
+    object_step_without_floor_orient();
     followStatus = cur_obj_follow_path(followStatus);
     o->oSnowmansBottomUnkF8 = o->oPathedTargetYaw;
     o->oMoveAngleYaw = approach_s16_symmetric(o->oMoveAngleYaw, o->oSnowmansBottomUnkF8, 0x400);
@@ -69,7 +68,6 @@ void snowmans_bottom_act_1(void) {
     }
 
     if (followStatus == PATH_REACHED_END) {
-        UNUSED s16 sp1E = (u16) o->oAngleToMario - (u16) o->oMoveAngleYaw;
         if (obj_check_if_facing_toward_angle(o->oMoveAngleYaw, o->oAngleToMario, 0x2000) == TRUE
             && o->oSnowmansBottomUnk1AC == 1) {
             o->oSnowmansBottomUnkF8 = o->oAngleToMario;
@@ -81,7 +79,7 @@ void snowmans_bottom_act_1(void) {
 }
 
 void snowmans_bottom_act_2(void) {
-    UNUSED s16 collisionFlags = object_step_without_floor_orient();
+    object_step_without_floor_orient();
 
     if (o->oForwardVel > 70.0) {
         o->oForwardVel = 70.0f;
@@ -184,7 +182,6 @@ void bhv_snowmans_head_init(void) {
 }
 
 void bhv_snowmans_head_loop(void) {
-    UNUSED s16 unused;
     s16 collisionFlags;
 
     switch (o->oAction) {

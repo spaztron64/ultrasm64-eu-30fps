@@ -79,10 +79,6 @@ void *gDemoInputsMemAlloc;
 struct DmaHandlerList gMarioAnimsBuf;
 struct DmaHandlerList gDemoInputsBuf;
 
-// fillers
-UNUSED static u8 sfillerGameInit[0x90];
-UNUSED static s32 sUnusedGameInitValue = 0;
-
 // General timer that runs as the game starts
 u32 gGlobalTimer = 0;
 u32 gVideoTimer = 0;
@@ -445,43 +441,10 @@ void display_and_vsync(void) {
     gVideoTimer++;
 }
 
-// this function records distinct inputs over a 255-frame interval to RAM locations and was likely
-// used to record the demo sequences seen in the final game. This function is unused.
-UNUSED static void record_demo(void) {
-    // record the player's button mask and current rawStickX and rawStickY.
-    u8 buttonMask =
-        ((gPlayer1Controller->buttonDown & (A_BUTTON | B_BUTTON | Z_TRIG | START_BUTTON)) >> 8)
-        | (gPlayer1Controller->buttonDown & (U_CBUTTONS | D_CBUTTONS | L_CBUTTONS | R_CBUTTONS));
-    s8 rawStickX = gPlayer1Controller->rawStickX;
-    s8 rawStickY = gPlayer1Controller->rawStickY;
-
-    // If the stick is in deadzone, set its value to 0 to
-    // nullify the effects. We do not record deadzone inputs.
-    if (rawStickX > -8 && rawStickX < 8) {
-        rawStickX = 0;
-    }
-
-    if (rawStickY > -8 && rawStickY < 8) {
-        rawStickY = 0;
-    }
-
-    // Rrecord the distinct input and timer so long as they are unique.
-    // If the timer hits 0xFF, reset the timer for the next demo input.
-    if (gRecordedDemoInput.timer == 0xFF || buttonMask != gRecordedDemoInput.buttonMask
-        || rawStickX != gRecordedDemoInput.rawStickX || rawStickY != gRecordedDemoInput.rawStickY) {
-        gRecordedDemoInput.timer = 0;
-        gRecordedDemoInput.buttonMask = buttonMask;
-        gRecordedDemoInput.rawStickX = rawStickX;
-        gRecordedDemoInput.rawStickY = rawStickY;
-    }
-    gRecordedDemoInput.timer++;
-}
-
 /**
  * Take the updated controller struct and calculate the new x, y, and distance floats.
  */
 void adjust_analog_stick(struct Controller *controller) {
-    UNUSED u8 filler[8];
 
     // Reset the controller's x and y floats.
     controller->stickX = 0;
@@ -677,7 +640,6 @@ extern u8 gMarioAnimHeap[0x4000];
  * Setup main segments and framebuffers.
  */
 void setup_game_memory(void) {
-    UNUSED u8 filler[8];
 
     // Setup general Segment 0
     set_segment_base_addr(0, (void *) 0x80000000);

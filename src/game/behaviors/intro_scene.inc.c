@@ -25,7 +25,6 @@ void spawn_child_obj_relative(struct Object *parent, s16 xOffset, s16 yOffset, s
 }
 
 void bhv_intro_scene_loop(void) {
-    UNUSED struct Object *obj;
 
     if (gCutsceneObjSpawn != 0) {
         o->oPosX = gCamera->pos[0];
@@ -37,11 +36,11 @@ void bhv_intro_scene_loop(void) {
 
         switch (gCutsceneObjSpawn) {
             case 6:
-                obj = spawn_object(o, MODEL_LAKITU, bhvBeginningLakitu);
+                spawn_object(o, MODEL_LAKITU, bhvBeginningLakitu);
                 break;
 
             case 5:
-                obj = spawn_object(o, MODEL_PEACH, bhvBeginningPeach);
+                spawn_object(o, MODEL_PEACH, bhvBeginningPeach);
                 break;
 
             case 7:

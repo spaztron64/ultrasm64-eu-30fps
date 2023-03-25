@@ -854,11 +854,6 @@ f64 gd_sqrt_d(f64 x) {
     return sqrtf(x);
 }
 
-
-#if defined(ISVPRINT) || defined(UNF)
-#define stubbed_printf osSyncPrintf
-#else
-
 /* 249BCC -> 24A19C */
 void gd_printf(const char *format, ...) {
     s32 i;

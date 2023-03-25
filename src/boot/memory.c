@@ -367,7 +367,6 @@ void *load_segment_decompress(s32 segment, u8 *srcStart, u8 *srcEnd) {
 }
 
 void *load_segment_decompress_heap(u32 segment, u8 *srcStart, u8 *srcEnd) {
-    UNUSED void *dest = NULL;
 
 #ifdef UNCOMPRESSED
     dma_read(gDecompressionHeap, srcStart, srcEnd);
@@ -407,7 +406,6 @@ void *load_segment_decompress_heap(u32 segment, u8 *srcStart, u8 *srcEnd) {
 void load_engine_code_segment(void) {
     void *startAddr = (void *) _engineSegmentStart;
     u32 totalSize = _engineSegmentEnd - _engineSegmentStart;
-    UNUSED u32 alignedSize = ALIGN16(_engineSegmentRomEnd - _engineSegmentRomStart);
 
     bzero(startAddr, totalSize);
     osWritebackDCacheAll();

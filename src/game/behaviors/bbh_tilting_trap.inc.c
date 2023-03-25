@@ -9,7 +9,6 @@
  * Update function for bhvBbhTiltingTrapPlatform.
  */
 void bhv_bbh_tilting_trap_platform_loop(void) {
-    UNUSED u8 filler[4];
 
     // Post-JP versions use oAction for the
     // if statement, while immediately setting it over here.

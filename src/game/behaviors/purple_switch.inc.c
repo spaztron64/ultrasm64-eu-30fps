@@ -8,7 +8,6 @@
  */
 
 void bhv_purple_switch_loop(void) {
-    UNUSED u8 filler[4];
 
     switch (o->oAction) {
         /**

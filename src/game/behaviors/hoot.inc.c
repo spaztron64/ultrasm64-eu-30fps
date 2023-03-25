@@ -13,7 +13,6 @@ void bhv_hoot_init(void) {
 
 f32 hoot_find_next_floor(struct FloorGeometry **floorGeo, f32 arg1) {
     f32 sp24 = arg1 * sins(o->oMoveAngleYaw) + o->oPosX;
-    UNUSED f32 sp20 = o->oPosY;
     f32 sp1c = arg1 * coss(o->oMoveAngleYaw) + o->oPosZ;
     f32 floorY = find_floor_height_and_data(sp24, 10000.0f, sp1c, floorGeo);
 
@@ -80,7 +79,6 @@ void hoot_free_step(s16 fastOscY, s32 speed) {
 void hoot_player_set_yaw(void) {
     s16 stickX = gPlayer3Controller->rawStickX;
     s16 stickY = gPlayer3Controller->rawStickY;
-    UNUSED s16 pitch = o->oMoveAnglePitch;
 
     if (stickX < 10 && stickX >= -9) {
         stickX = 0;

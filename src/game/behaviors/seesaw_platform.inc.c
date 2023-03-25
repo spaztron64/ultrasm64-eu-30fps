@@ -34,7 +34,6 @@ void bhv_seesaw_platform_init(void) {
  * Update function for bhvSeesawPlatform.
  */
 void bhv_seesaw_platform_update(void) {
-    UNUSED s32 startPitch = o->oFaceAnglePitch;
     o->oFaceAnglePitch += (s32) o->oSeesawPlatformPitchVel;
 
     if (absf(o->oSeesawPlatformPitchVel) > 10.0f) {
@@ -44,7 +43,6 @@ void bhv_seesaw_platform_update(void) {
     if (gMarioObject->platform == o) {
         // Rotate toward mario
         f32 rotation = o->oDistanceToMario * coss(o->oAngleToMario - o->oMoveAngleYaw);
-        UNUSED u8 filler[4];
 
         // Deceleration is faster than acceleration
         if (o->oSeesawPlatformPitchVel * rotation < 0) {

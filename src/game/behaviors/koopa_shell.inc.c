@@ -13,7 +13,6 @@ struct ObjectHitbox sKoopaShellHitbox = {
 };
 
 void koopa_shell_spawn_water_drop(void) {
-    UNUSED u8 filler[4];
 
     spawn_object(o, MODEL_WAVE_TRAIL, bhvObjectWaveTrail);
 

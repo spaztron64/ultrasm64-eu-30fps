@@ -30,7 +30,6 @@ void falling_bowser_plat_act_start(void) {
 }
 
 void falling_bowser_plat_act_check(void) {
-    UNUSED u8 filler[4];
     struct Object *bowser = o->oBitsPlatformBowser;
 
     if (bowser->platform == o) {
@@ -60,7 +59,6 @@ void falling_bowser_plat_act_fall(void) {
     Vec3f pos;
     s16 angle;
     f32 val;
-    UNUSED struct Object *bowser = o->oBitsPlatformBowser;
 
     if (o->oTimer == 0 || o->oTimer == 22) {
         cur_obj_play_sound_2(SOUND_GENERAL_BOWSER_PLATFORM_2);

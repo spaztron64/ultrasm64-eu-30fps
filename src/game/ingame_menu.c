@@ -212,8 +212,7 @@ void create_dl_ortho_matrix(void) {
 }
 
 #if defined(VERSION_US) || defined(VERSION_EU)
-UNUSED
-#endif
+#else
 static u8 *alloc_ia8_text_from_i1(u16 *in, s16 width, s16 height) {
     s32 inPos;
     u16 bitMask;
@@ -243,6 +242,7 @@ static u8 *alloc_ia8_text_from_i1(u16 *in, s16 width, s16 height) {
 
     return out;
 }
+#endif
 
 void render_generic_char(u8 c) {
     void **fontLUT = segmented_to_virtual(main_font_lut);
@@ -843,7 +843,6 @@ void print_hud_my_score_stars(s8 fileIndex, s8 courseIndex, s16 x, s16 y) {
     u8 strStarCount[4];
     s16 starCount;
     u8 textSymStar[] = { GLYPH_STAR, GLYPH_SPACE };
-    UNUSED u16 unused;
     u8 textSymX[] = { GLYPH_MULTIPLY, GLYPH_SPACE };
 
     starCount = save_file_get_course_star_count(fileIndex, courseIndex);
@@ -948,7 +947,6 @@ void reset_dialog_render_state(void) {
 #endif
 
 void render_dialog_box_type(struct DialogEntry *dialog, s8 linesPerBox) {
-    UNUSED u8 filler[4];
 
     create_dl_translation_matrix(MENU_MTX_NOPUSH, dialog->leftOffset, dialog->width, 0);
 
@@ -1196,7 +1194,6 @@ void handle_dialog_text_and_pages(s8 colorMode, struct DialogEntry *dialog)
 void handle_dialog_text_and_pages(s8 colorMode, struct DialogEntry *dialog, s8 lowerBound)
 #endif
 {
-    UNUSED u8 filler[8];
 #ifdef VERSION_EU
     s16 startY = 14;
 #endif

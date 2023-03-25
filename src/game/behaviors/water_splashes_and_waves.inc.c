@@ -60,7 +60,6 @@ void bhv_water_splash_spawn_droplets(void) {
 }
 
 void bhv_water_droplet_loop(void) {
-    UNUSED u8 filler[4];
     f32 waterLevel = find_water_level(o->oPosX, o->oPosZ);
 
     if (o->oTimer == 0) {

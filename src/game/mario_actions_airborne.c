@@ -331,7 +331,6 @@ void update_flying_pitch(struct MarioState *m) {
 }
 
 void update_flying(struct MarioState *m) {
-    UNUSED u8 filler[4];
 
     update_flying_pitch(m);
     update_flying_yaw(m);

@@ -81,7 +81,6 @@ STATIC_ASSERT(sizeof(struct SaveBuffer) <= EEPROM_SIZE, "ERROR: Save struct too 
 
 extern u8 gLastCompletedCourseNum;
 extern u8 gLastCompletedStarNum;
-extern s8 sUnusedGotGlobalCoinHiScore;
 extern u8 gGotFileCoinHiScore;
 extern u8 gCurrCourseStarFlags;
 extern u8 gSpecialTripleJump;

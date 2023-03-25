@@ -16,10 +16,6 @@ void bhv_moving_yellow_coin_loop(void);
 void bhv_moving_blue_coin_init(void);
 void bhv_moving_blue_coin_loop(void);
 void bhv_blue_coin_sliding_jumping_init(void);
-void blue_coin_sliding_away_from_mario(void); /* likely unused */
-void blue_coin_sliding_slow_down(void); /* likely unused */
-void bhv_blue_coin_sliding_loop(void); /* likely unused */
-void bhv_blue_coin_jumping_loop(void); /* likely unused */
 void bhv_seaweed_init(void);
 void bhv_seaweed_bundle_init(void);
 void bhv_bobomb_init(void);
@@ -75,8 +71,6 @@ void hoot_action_loop(void);
 void hoot_turn_to_home(void);
 void hoot_awake_loop(void);
 void bhv_hoot_loop(void);
-void bhv_beta_holdable_object_init(void); /* unused */
-void bhv_beta_holdable_object_loop(void); /* unused */
 void bhv_object_bubble_init(void);
 void bhv_object_bubble_loop(void);
 void bhv_object_water_wave_init(void);
@@ -112,7 +106,6 @@ void water_ring_set_scale(f32 avgScale);
 void water_ring_act_collected(void);
 void water_ring_act_not_collected(void);
 void bhv_jet_stream_water_ring_loop(void);
-void spawn_manta_ray_ring_manager(void); /* unused */
 void water_ring_spawner_act_inactive(void);
 void bhv_jet_stream_ring_spawner_loop(void);
 void bhv_manta_ray_water_ring_init(void);
@@ -155,9 +148,6 @@ void bhv_generic_bowling_ball_spawner_loop(void);
 void bhv_thi_bowling_ball_spawner_loop(void);
 void bhv_bob_pit_bowling_ball_init(void);
 void bhv_bob_pit_bowling_ball_loop(void);
-void bhv_free_bowling_ball_init(void); /* likely unused */
-void bhv_free_bowling_ball_roll_loop(void); /* likely unused */
-void bhv_free_bowling_ball_loop(void); /* likely unused */
 void bhv_rr_cruiser_wing_init(void);
 void bhv_rr_cruiser_wing_loop(void);
 void spawn_default_star(f32 sp20, f32 sp24, f32 sp28);

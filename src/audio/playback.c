@@ -26,8 +26,6 @@ void note_set_vel_pan_reverb(struct Note *note, f32 velocity, u8 pan, u8 reverbV
 #ifdef VERSION_EU
     u16 unkMask = ~0x80;
 #else
-    UNUSED u32 pad;
-    UNUSED u32 pad1;
     f32 velocity;
     u8 pan;
     u8 reverbVol;
@@ -132,11 +130,9 @@ void note_set_vel_pan_reverb(struct Note *note, f32 velocity, u8 pan, u8 reverbV
     sub->filter = reverbInfo->filter;
 #else
     if (velocity < 0.0f) {
-        stubbed_printf("Audio: setvol: volume minus %f\n", velocity);
         velocity = 0.0f;
     }
     if (velocity > 32767.f) {
-        stubbed_printf("Audio: setvol: volume overflow %f\n", velocity);
         velocity = 32767.f;
     }
 
@@ -174,7 +170,6 @@ void note_set_resampling_rate(struct Note *note, f32 resamplingRateInput) {
 
 #ifdef VERSION_EU
     if (resamplingRateInput < 0.0f) {
-        stubbed_printf("Audio: setpitch: pitch minus %f\n", resamplingRateInput);
         resamplingRateInput = 0.0f;
     }
 #endif
@@ -215,21 +210,17 @@ struct Instrument *get_instrument_inner(s32 bankId, s32 instId) {
     struct Instrument *inst;
 
     if (IS_BANK_LOAD_COMPLETE(bankId) == FALSE) {
-        stubbed_printf("Audio: voiceman: No bank error %d\n", bankId);
         gAudioErrorFlags = bankId + 0x10000000;
         return NULL;
     }
 
     if (instId >= gCtlEntries[bankId].numInstruments) {
-        stubbed_printf("Audio: voiceman: progNo. overflow %d,%d\n",
-                instId, gCtlEntries[bankId].numInstruments);
         gAudioErrorFlags = ((bankId << 8) + instId) + 0x3000000;
         return NULL;
     }
 
     inst = gCtlEntries[bankId].instruments[instId];
     if (inst == NULL) {
-        stubbed_printf("Audio: voiceman: progNo. undefined %d,%d\n", bankId, instId);
         gAudioErrorFlags = ((bankId << 8) + instId) + 0x1000000;
         return inst;
     }
@@ -244,7 +235,6 @@ struct Instrument *get_instrument_inner(s32 bankId, s32 instId) {
         return inst;
     }
 
-    stubbed_printf("Audio: voiceman: BAD Voicepointer %x,%d,%d\n", inst, bankId, instId);
     gAudioErrorFlags = ((bankId << 8) + instId) + 0x2000000;
     return NULL;
 #else
@@ -257,27 +247,22 @@ struct Drum *get_drum(s32 bankId, s32 drumId) {
 
 #ifdef VERSION_SH
     if (IS_BANK_LOAD_COMPLETE(bankId) == FALSE) {
-        stubbed_printf("Audio: voiceman: No bank error %d\n", bankId);
         gAudioErrorFlags = bankId + 0x10000000;
         return NULL;
     }
 #endif
 
     if (drumId >= gCtlEntries[bankId].numDrums) {
-        stubbed_printf("Audio: voiceman: Percussion Overflow %d,%d\n",
-                drumId, gCtlEntries[bankId].numDrums);
         gAudioErrorFlags = ((bankId << 8) + drumId) + 0x4000000;
         return NULL;
     }
 
     if ((uintptr_t) gCtlEntries[bankId].drums < 0x80000000U) {
-        stubbed_printf("Percussion Pointer Error\n");
         return NULL;
     }
 
     drum = gCtlEntries[bankId].drums[drumId];
     if (drum == NULL) {
-        stubbed_printf("Audio: voiceman: Percpointer NULL %d,%d\n", bankId, drumId);
         gAudioErrorFlags = ((bankId << 8) + drumId) + 0x5000000;
     }
     return drum;
@@ -357,12 +342,9 @@ void process_notes(void) {
     struct NotePlaybackState *playbackState;
     struct NoteSubEu *noteSubEu;
 #ifndef VERSION_SH
-    UNUSED u8 pad[12];
     u8 reverbVol;
-    UNUSED u8 pad3;
     u8 pan;
 #else
-    UNUSED u8 pad[8];
     struct ReverbInfo reverbInfo;
 #endif
     u8 bookOffset;
@@ -428,7 +410,6 @@ void process_notes(void) {
             if (!playbackState->parentLayer->enabled && playbackState->priority >= NOTE_PRIORITY_MIN) {
                 goto c;
             } else if (playbackState->parentLayer->seqChannel->seqPlayer == NULL) {
-                eu_stubbed_printf_0("CAUTION:SUB IS SEPARATED FROM GROUP");
                 sequence_channel_disable(playbackState->parentLayer->seqChannel);
                 playbackState->priority = NOTE_PRIORITY_STOPPING;
                 continue;
@@ -472,7 +453,6 @@ void process_notes(void) {
                             playbackState->wantedParentLayer = NO_LAYER;
                             // don't skip
                         } else {
-                            eu_stubbed_printf_0("Error:Wait Track disappear\n");
                             note_disable(note);
                             audio_list_remove(&note->listItem);
                             audio_list_push_back(&note->listItem.pool->disabled, &note->listItem);
@@ -721,8 +701,6 @@ void seq_channel_layer_decay_release_internal(struct SequenceChannelLayer *seqLa
 #if defined(VERSION_EU) || defined(VERSION_SH)
         if (note->parentLayer == NO_LAYER && note->wantedParentLayer == NO_LAYER &&
                 note->prevParentLayer == seqLayer && target != ADSR_STATE_DECAY) {
-            // Just guessing that this printf goes here... it's hard to parse.
-            eu_stubbed_printf_0("Slow Release Batting\n");
             note->adsr.fadeOutVel = gAudioBufferParameters.updatesPerFrameInv;
             note->adsr.action |= ADSR_ACTION_RELEASE;
         }
@@ -814,9 +792,6 @@ s32 build_synthetic_wave(struct Note *note, struct SequenceChannelLayer *seqLaye
     u8 sampleCountIndex;
 
     if (waveId < 128) {
-#ifdef VERSION_EU
-        stubbed_printf("Audio:Wavemem: Bad voiceno (%d)\n", waveId);
-#endif
         waveId = 128;
     }
 
@@ -994,7 +969,6 @@ void note_pool_clear(struct NotePool *pool) {
                 break;
             }
             if (cur == NULL) {
-                eu_stubbed_printf_0("Audio: C-Alloc : Dealloc voice is NULL\n");
                 break;
             }
             audio_list_remove(cur);
@@ -1026,7 +1000,6 @@ void note_pool_fill(struct NotePool *pool, s32 count) {
 
     for (i = 0, j = 0; j < count; i++) {
         if (i == 4) {
-            eu_stubbed_printf_1("Alloc Error:Dim voice-Alloc %d", count);
             return;
         }
 
@@ -1065,9 +1038,7 @@ void note_pool_fill(struct NotePool *pool, s32 count) {
 
 void audio_list_push_front(struct AudioListItem *list, struct AudioListItem *item) {
     // add 'item' to the front of the list given by 'list', if it's not in any list
-    if (item->prev != NULL) {
-        eu_stubbed_printf_0("Error:Same List Add\n");
-    } else {
+    if (item->prev == NULL) {
         item->prev = list;
         item->next = list->next;
         list->next->prev = item;
@@ -1079,9 +1050,7 @@ void audio_list_push_front(struct AudioListItem *list, struct AudioListItem *ite
 
 void audio_list_remove(struct AudioListItem *item) {
     // remove 'item' from the list it's in, if any
-    if (item->prev == NULL) {
-        eu_stubbed_printf_0("Already Cut\n");
-    } else {
+    if (item->prev != NULL) {
         item->prev->next = item->next;
         item->next->prev = item->prev;
         item->prev = NULL;
@@ -1124,7 +1093,6 @@ struct Note *pop_node_with_lower_prio(struct AudioListItem *list, s32 limit) {
 
 #if defined(VERSION_EU) || defined(VERSION_SH)
 void note_init_for_layer(struct Note *note, struct SequenceChannelLayer *seqLayer) {
-    UNUSED s32 pad[4];
     s16 instId;
     struct NoteSubEu *sub = &note->noteSubEu;
 
@@ -1134,8 +1102,6 @@ void note_init_for_layer(struct Note *note, struct SequenceChannelLayer *seqLaye
     seqLayer->notePropertiesNeedInit = TRUE;
     seqLayer->status = SOUND_LOAD_STATUS_DISCARDABLE; // "loaded"
     seqLayer->note = note;
-    seqLayer->seqChannel->noteUnused = note;
-    seqLayer->seqChannel->layerUnused = seqLayer;
     seqLayer->noteVelocity = 0.0f;
     note_init(note);
     instId = seqLayer->instOrWave;
@@ -1175,8 +1141,6 @@ s32 note_init_for_layer(struct Note *note, struct SequenceChannelLayer *seqLayer
     note->sound = seqLayer->sound;
     seqLayer->status = SOUND_LOAD_STATUS_DISCARDABLE; // "loaded"
     seqLayer->note = note;
-    seqLayer->seqChannel->noteUnused = note;
-    seqLayer->seqChannel->layerUnused = seqLayer;
     if (note->sound == NULL) {
         build_synthetic_wave(note, seqLayer);
     }
@@ -1249,9 +1213,7 @@ struct Note *alloc_note_from_active(struct NotePool *pool, struct SequenceChanne
 
     aNote = pop_node_with_lower_prio(&pool->active, seqLayer->seqChannel->notePriority);
 
-    if (aNote == NULL) {
-        eu_stubbed_printf_0("Audio: C-Alloc : lowerPrio is NULL\n");
-    } else {
+    if (aNote != NULL) {
 #ifdef VERSION_SH
         aPriority = aNote->priority;
 #else
@@ -1309,7 +1271,6 @@ struct Note *alloc_note(struct SequenceChannelLayer *seqLayer) {
 #ifdef VERSION_SH
             goto null_return;
 #else
-            eu_stubbed_printf_0("Sub Limited Warning: Drop Voice");
             seqLayer->status = SOUND_LOAD_STATUS_NOT_LOADED;
             return NULL;
 #endif
@@ -1327,7 +1288,6 @@ struct Note *alloc_note(struct SequenceChannelLayer *seqLayer) {
 #ifdef VERSION_SH
             goto null_return;
 #else
-            eu_stubbed_printf_0("Warning: Drop Voice");
             seqLayer->status = SOUND_LOAD_STATUS_NOT_LOADED;
             return NULL;
 #endif
@@ -1342,7 +1302,6 @@ struct Note *alloc_note(struct SequenceChannelLayer *seqLayer) {
 #ifdef VERSION_SH
             goto null_return;
 #else
-            eu_stubbed_printf_0("Warning: Drop Voice");
             seqLayer->status = SOUND_LOAD_STATUS_NOT_LOADED;
             return NULL;
 #endif
@@ -1362,7 +1321,6 @@ struct Note *alloc_note(struct SequenceChannelLayer *seqLayer) {
 #ifdef VERSION_SH
         goto null_return;
 #else
-        eu_stubbed_printf_0("Warning: Drop Voice");
         seqLayer->status = SOUND_LOAD_STATUS_NOT_LOADED;
         return NULL;
 #endif
@@ -1447,7 +1405,6 @@ void note_init_all(void) {
         note->targetVolLeft = 0;
         note->targetVolRight = 0;
         note->frequency = 0.0f;
-        note->unused1 = 0x3f;
         note->vibratoState.activeFlags = VIBMODE_NONE;
 #endif
         note->attributes.velocity = 0.0f;

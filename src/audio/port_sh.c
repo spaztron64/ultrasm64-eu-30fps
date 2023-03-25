@@ -309,11 +309,6 @@ void func_802ad7ec(u32 arg0) {
     struct SequenceChannel *chan;
     u8 end;
 
-    UNUSED static char shindouDebugPrint134[] = "Continue Port\n";
-    UNUSED static char shindouDebugPrint135[] = "%d -> %d\n";
-    UNUSED static char shindouDebugPrint136[] = "Sync-Frame  Break. (Remain %d)\n";
-    UNUSED static char shindouDebugPrint137[] = "Undefined Port Command %d\n";
-
     static u8 D_SH_80315098 = 0;
     static u8 D_SH_8031509C = 0;
 

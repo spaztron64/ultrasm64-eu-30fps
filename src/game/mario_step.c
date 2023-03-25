@@ -30,28 +30,6 @@ f32 get_additive_y_vel_for_jumps(void) {
     return 0.0f;
 }
 
-/**
- * Does nothing, but takes in a MarioState. This is only ever
- * called by update_mario_inputs, which is called as part of Mario's
- * update routine. Due to its proximity to stub_mario_step_2, an
- * incomplete trampoline function, and get_additive_y_vel_for_jumps,
- * a potentially trampoline-related function, it is plausible that
- * this could be used for checking if Mario was on the trampoline.
- * It could, for example, make him bounce.
- */
-void stub_mario_step_1(UNUSED struct MarioState *x) {
-}
-
-/**
- * Does nothing. This is only called by the beta trampoline.
- * Due to its proximity to get_additive_y_vel_for_jumps, another
- * currently-pointless function, it is probable that this was used
- * by the trampoline to make itself known to get_additive_y_vel_for_jumps,
- * or to set a variable with its intended additive Y vel.
- */
-void stub_mario_step_2(void) {
-}
-
 void transfer_bully_speed(struct BullyCollisionData *obj1, struct BullyCollisionData *obj2) {
     f32 rx = obj2->posX - obj1->posX;
     f32 rz = obj2->posZ - obj1->posZ;
@@ -256,7 +234,6 @@ s32 stationary_ground_step(struct MarioState *m) {
 }
 
 static s32 perform_ground_quarter_step(struct MarioState *m, Vec3f nextPos) {
-    UNUSED struct Surface *lowerWall;
     struct Surface *upperWall;
     struct Surface *ceil;
     struct Surface *floor;
@@ -264,7 +241,7 @@ static s32 perform_ground_quarter_step(struct MarioState *m, Vec3f nextPos) {
     f32 floorHeight;
     f32 waterLevel;
 
-    lowerWall = resolve_and_return_wall_collisions(nextPos, 30.0f, 24.0f);
+    resolve_and_return_wall_collisions(nextPos, 30.0f, 24.0f);
     upperWall = resolve_and_return_wall_collisions(nextPos, 60.0f, 50.0f);
 
     floorHeight = find_floor(nextPos[0], nextPos[1], nextPos[2], &floor);

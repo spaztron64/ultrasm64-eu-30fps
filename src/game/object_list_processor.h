@@ -31,17 +31,14 @@
  */
 enum ObjectList {
     OBJ_LIST_PLAYER,      //  (0) Mario
-    OBJ_LIST_UNUSED_1,    //  (1) (unused)
     OBJ_LIST_DESTRUCTIVE, //  (2) things that can be used to destroy other objects, like
                           //      bob-ombs and corkboxes
-    OBJ_LIST_UNUSED_3,    //  (3) (unused)
     OBJ_LIST_GENACTOR,    //  (4) general actors. most normal 'enemies' or actors are
                           //      on this list. (MIPS, bullet bill, bully, etc)
     OBJ_LIST_PUSHABLE,    //  (5) pushable actors. This is a group of objects which
                           //      can push each other around as well as their parent
                           //      objects. (goombas, koopas, spinies)
     OBJ_LIST_LEVEL,       //  (6) level objects. general level objects such as heart, star
-    OBJ_LIST_UNUSED_7,    //  (7) (unused)
     OBJ_LIST_DEFAULT,     //  (8) default objects. objects that didnt start with a 00
                           //      command are put here, so this is treated as a default.
     OBJ_LIST_SURFACE,     //  (9) surface objects. objects that specifically have surface
@@ -62,7 +59,6 @@ extern struct ObjectNode gObjectListArray[];
 
 extern s32 gDebugInfoFlags;
 extern s32 gNumFindFloorMisses;
-extern UNUSED s32 unused_8033BEF8;
 extern s32 gUnknownWallCount;
 extern u32 gObjectCounter;
 

@@ -9,7 +9,6 @@
  */
 static Collision const *sTTCPitBlockCollisionModels[] = {
     ttc_seg7_collision_07015754,
-    ttc_seg7_collision_070157D8,
 };
 
 /**

@@ -41,14 +41,6 @@ struct SpawnInfo {
     /*0x1C*/ struct SpawnInfo *next;
 };
 
-struct UnusedArea28 {
-    /*0x00*/ s16 unk00;
-    /*0x02*/ s16 unk02;
-    /*0x04*/ s16 unk04;
-    /*0x06*/ s16 unk06;
-    /*0x08*/ s16 unk08;
-};
-
 struct Whirlpool {
     /*0x00*/ Vec3s pos;
     /*0x03*/ s16 strength;

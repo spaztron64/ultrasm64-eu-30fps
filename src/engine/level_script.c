@@ -542,20 +542,6 @@ static void level_cmd_create_painting_warp_node(void) {
 }
 
 static void level_cmd_3A(void) {
-    struct UnusedArea28 *val4;
-
-    if (sCurrAreaIndex != -1) {
-        if ((val4 = gAreas[sCurrAreaIndex].unused) == NULL) {
-            val4 = gAreas[sCurrAreaIndex].unused =
-                alloc_only_pool_alloc(sLevelPool, sizeof(struct UnusedArea28));
-        }
-
-        val4->unk00 = CMD_GET(s16, 2);
-        val4->unk02 = CMD_GET(s16, 4);
-        val4->unk04 = CMD_GET(s16, 6);
-        val4->unk06 = CMD_GET(s16, 8);
-        val4->unk08 = CMD_GET(s16, 10);
-    }
 
     sCurrentCmd = CMD_NEXT;
 }
@@ -615,7 +601,6 @@ static void level_cmd_set_macro_objects(void) {
 
 static void level_cmd_load_area(void) {
     s16 areaIndex = CMD_GET(u8, 2);
-    UNUSED void *unused = (u8 *) sCurrentCmd + 4;
 
     stop_sounds_in_continuous_banks();
     load_area(areaIndex);

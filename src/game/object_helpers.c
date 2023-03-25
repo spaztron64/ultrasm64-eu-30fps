@@ -53,7 +53,6 @@ Gfx *geo_update_layer_transparency(s32 callContext, struct GraphNode *node, UNUS
     Gfx *dlStart, *dlHead;
     struct Object *objectGraphNode;
     struct GraphNodeGenerated *currentGraphNode;
-    UNUSED struct GraphNodeGenerated *sp2C;
     s32 objectOpacity;
 
     dlStart = NULL;
@@ -61,7 +60,6 @@ Gfx *geo_update_layer_transparency(s32 callContext, struct GraphNode *node, UNUS
     if (callContext == GEO_CONTEXT_RENDER) {
         objectGraphNode = (struct Object *) gCurGraphNodeObject; // TODO: change this to object pointer?
         currentGraphNode = (struct GraphNodeGenerated *) node;
-        sp2C = (struct GraphNodeGenerated *) node;
 
         if (gCurGraphNodeHeldObject != NULL) {
             objectGraphNode = gCurGraphNodeHeldObject->objNode;
@@ -377,7 +375,6 @@ s16 obj_angle_to_object(struct Object *obj1, struct Object *obj2) {
 
 s16 obj_turn_toward_object(struct Object *obj, struct Object *target, s16 angleIndex, s16 turnAmount) {
     f32 a, b, c, d;
-    UNUSED u8 filler[4];
     s16 startAngle;
     s16 targetAngle = 0;
 
@@ -439,7 +436,7 @@ struct Object *spawn_object_abs_with_rot(struct Object *parent, s16 uselessArg, 
                                          const BehaviorScript *behavior,
                                          s16 x, s16 y, s16 z, s16 pitch, s16 yaw, s16 roll) {
     // 'uselessArg' is unused in the function spawn_object_at_origin()
-    struct Object *newObj = spawn_object_at_origin(parent, uselessArg, model, behavior);
+    struct Object *newObj = spawn_object_at_origin(parent, 0, model, behavior);
     obj_set_pos(newObj, x, y, z);
     obj_set_angle(newObj, pitch, yaw, roll);
 
@@ -769,16 +766,6 @@ void cur_obj_set_pos_relative_to_parent(f32 dleft, f32 dy, f32 dforward) {
 
 void cur_obj_enable_rendering_2(void) {
     cur_obj_enable_rendering();
-}
-
-void cur_obj_unused_init_on_floor(void) {
-    cur_obj_enable_rendering();
-
-    o->oPosY = find_floor_height(o->oPosX, o->oPosY, o->oPosZ);
-    if (o->oPosY < FLOOR_LOWER_LIMIT_MISC) {
-        cur_obj_set_pos_relative_to_parent(0, 0, -70);
-        o->oPosY = find_floor_height(o->oPosX, o->oPosY, o->oPosZ);
-    }
 }
 
 void obj_set_face_angle_to_move_angle(struct Object *obj) {
@@ -1192,9 +1179,6 @@ static s32 cur_obj_move_xz(f32 steepSlopeNormalY, s32 careAboutEdgesAndSteepSlop
     f32 intendedFloorHeight = find_floor(intendedX, o->oPosY, intendedZ, &intendedFloor);
     f32 deltaFloorHeight = intendedFloorHeight - o->oFloorHeight;
 
-    UNUSED u8 filler[4];
-    UNUSED f32 ny;
-
     o->oMoveFlags &= ~OBJ_MOVE_HIT_EDGE;
 
     if (o->oRoom != -1 && intendedFloor != NULL) {
@@ -1228,7 +1212,7 @@ static s32 cur_obj_move_xz(f32 steepSlopeNormalY, s32 careAboutEdgesAndSteepSlop
             o->oMoveFlags |= OBJ_MOVE_HIT_EDGE;
             return FALSE;
         }
-    } else if ((ny = intendedFloor->normal.y) > steepSlopeNormalY || o->oPosY > intendedFloorHeight) {
+    } else if ((intendedFloor->normal.y) > steepSlopeNormalY || o->oPosY > intendedFloorHeight) {
         // Allow movement upward, provided either:
         // - The target floor is flat enough (e.g. walking up stairs)
         // - We are above the target floor (most likely in the air)
@@ -1362,21 +1346,12 @@ void cur_obj_move_y(f32 gravity, f32 bounciness, f32 buoyancy) {
     }
 }
 
-UNUSED static void stub_obj_helpers_1(void) {
-}
-
 static s32 clear_move_flag(u32 *bitSet, s32 flag) {
     if (*bitSet & flag) {
         *bitSet &= flag ^ 0xFFFFFFFF;
         return TRUE;
     } else {
         return FALSE;
-    }
-}
-
-void cur_obj_unused_resolve_wall_collisions(f32 offsetY, f32 radius) {
-    if (radius > 0.1L) {
-        f32_find_wall_collision(&o->oPosX, &o->oPosY, &o->oPosZ, offsetY, radius);
     }
 }
 
@@ -1536,13 +1511,6 @@ void cur_obj_shake_y(f32 amount) {
 void cur_obj_start_cam_event(UNUSED struct Object *obj, s32 cameraEvent) {
     gPlayerCameraState->cameraEvent = (s16) cameraEvent;
     gSecondCameraFocus = o;
-}
-
-// unused, self explanatory, maybe oInteractStatus originally had TRUE/FALSE statements
-void set_mario_interact_true_if_in_range(UNUSED s32 arg0, UNUSED s32 arg1, f32 range) {
-    if (o->oDistanceToMario < range) {
-        gMarioObject->oInteractStatus = TRUE;
-    }
 }
 
 void obj_set_billboard(struct Object *obj) {
@@ -1955,7 +1923,6 @@ s32 cur_obj_follow_path(UNUSED s32 unusedArg) {
     struct Waypoint *lastWaypoint;
     struct Waypoint *targetWaypoint;
     f32 prevToNextX, prevToNextY, prevToNextZ;
-    UNUSED u8 filler[4];
     f32 objToNextXZ;
     f32 objToNextX, objToNextY, objToNextZ;
 
@@ -2206,9 +2173,6 @@ void bhv_dust_smoke_loop(void) {
     o->oSmokeTimer++;
 }
 
-UNUSED static void stub_obj_helpers_2(void) {
-}
-
 s32 cur_obj_set_direction_table(s8 *a0) {
     o->oToxBoxMovementPattern = a0;
     o->oToxBoxMovementStep = 0;
@@ -2230,9 +2194,6 @@ s32 cur_obj_progress_direction_table(void) {
     }
 
     return spF;
-}
-
-void stub_obj_helpers_3(UNUSED s32 sp0, UNUSED s32 sp4) {
 }
 
 void cur_obj_scale_over_time(s32 a0, s32 a1, f32 sp10, f32 sp14) {
@@ -2298,21 +2259,6 @@ void cur_obj_call_action_function(void (*actionFunctions[])(void)) {
     actionFunction();
 }
 
-static struct Object *spawn_star_with_no_lvl_exit(s32 sp20, s32 sp24) {
-    struct Object *sp1C = spawn_object(o, MODEL_STAR, bhvSpawnedStarNoLevelExit);
-    sp1C->oSparkleSpawnUnk1B0 = sp24;
-    sp1C->oBehParams = o->oBehParams;
-    sp1C->oBehParams2ndByte = sp20;
-
-    return sp1C;
-}
-
-// old unused initializer for 2d star spawn behavior.
-// uses behavior parameters not used in the current sparkle code.
-void spawn_base_star_with_no_lvl_exit(void) {
-    spawn_star_with_no_lvl_exit(0, 0);
-}
-
 s32 bit_shift_left(s32 a0) {
     return sPowersOfTwo[a0];
 }
@@ -2352,9 +2298,6 @@ s32 is_item_in_array(s8 item, s8 *array) {
     }
 
     return FALSE;
-}
-
-UNUSED static void stub_obj_helpers_5(void) {
 }
 
 void bhv_init_room(void) {
@@ -2500,7 +2443,6 @@ void clear_time_stop_flags(s32 flags) {
 s32 cur_obj_can_mario_activate_textbox(f32 radius, f32 height, UNUSED s32 unused) {
     if (o->oDistanceToMario < 1500.0f) {
         f32 latDistToMario = lateral_dist_between_objects(o, gMarioObject);
-        UNUSED s16 angleFromMario = obj_angle_to_object(gMarioObject, o);
 
         if (latDistToMario < radius && o->oPosY < gMarioObject->oPosY + 160.0f
             && gMarioObject->oPosY < o->oPosY + height && !(gMarioStates[0].action & ACT_FLAG_AIR)
@@ -2514,7 +2456,7 @@ s32 cur_obj_can_mario_activate_textbox(f32 radius, f32 height, UNUSED s32 unused
 
 s32 cur_obj_can_mario_activate_textbox_2(f32 radius, f32 height) {
     // The last argument here is unused. When this function is called directly the argument is always set to 0x7FFF.
-    return cur_obj_can_mario_activate_textbox(radius, height, 0x1000);
+    return cur_obj_can_mario_activate_textbox(radius, height, 0);
 }
 
 static void cur_obj_end_dialog(s32 dialogFlags, s32 dialogResult) {
@@ -2528,7 +2470,6 @@ static void cur_obj_end_dialog(s32 dialogFlags, s32 dialogResult) {
 
 s32 cur_obj_update_dialog(s32 actionArg, s32 dialogFlags, s32 dialogID, UNUSED s32 unused) {
     s32 dialogResponse = DIALOG_RESPONSE_NONE;
-    UNUSED s32 doneTurning = TRUE;
 
     switch (o->oDialogState) {
 #if BUGFIX_DIALOG_TIME_STOP
@@ -2827,12 +2768,6 @@ s32 player_performed_grab_escape_action(void) {
     }
 
     return result;
-}
-
-void cur_obj_unused_play_footstep_sound(s32 animFrame1, s32 animFrame2, s32 sound) {
-    if (cur_obj_check_anim_frame(animFrame1) || cur_obj_check_anim_frame(animFrame2)) {
-        cur_obj_play_sound_2(sound);
-    }
 }
 
 void enable_time_stop_including_mario(void) {

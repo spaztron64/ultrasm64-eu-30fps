@@ -32,7 +32,7 @@ struct MacroPreset MacroObjectPresets[] = {
     {bhvYellowCoin, MODEL_YELLOW_COIN, 0},
     {bhvYellowCoin, MODEL_YELLOW_COIN, 0},
     {bhvYellowCoin, MODEL_YELLOW_COIN, 0},
-    {bhvUnusedFakeStar, MODEL_STAR, 0}, // unused
+    {NULL, MODEL_STAR, 0}, // unused
     {bhvMessagePanel, MODEL_WOODEN_SIGNPOST, 0},
     {bhvCannonClosed, MODEL_DL_CANNON_LID, 0},
     {bhvBobombBuddyOpensCannon, MODEL_BOBOMB_BUDDY, 0},
@@ -135,7 +135,7 @@ struct MacroPreset MacroObjectPresets[] = {
     {bhvYellowCoin, MODEL_YELLOW_COIN, 0},
     {bhvYellowCoin, MODEL_YELLOW_COIN, 0},
     {bhvYellowCoin, MODEL_YELLOW_COIN, 0},
-    {bhvUnusedFakeStar, MODEL_UNKNOWN_54, 0}, // unused
+    {NULL, MODEL_UNKNOWN_54, 0}, // unused
     {bhvYellowCoin, MODEL_YELLOW_COIN, 0},
     {bhvUnagi, MODEL_UNAGI, 0}, // unused
     {bhvSushiShark, MODEL_SUSHI, 0}, // unused
@@ -208,7 +208,7 @@ struct MacroPreset MacroObjectPresets[] = {
     {bhvGhostHuntBoo, MODEL_BOO, 0}, // unused
     {bhvCourtyardBooTriplet, MODEL_BOO, 0}, // unused
     {bhvBooWithCage, MODEL_BOO, 0}, // unused
-    {bhvAlphaBooKey, MODEL_BETA_BOO_KEY, 0}, // unused
+    {NULL, MODEL_BETA_BOO_KEY, 0}, // unused
     {bhvYellowCoin, MODEL_YELLOW_COIN, 0},
     {bhvYellowCoin, MODEL_YELLOW_COIN, 0},
     {bhvYellowCoin, MODEL_YELLOW_COIN, 0},

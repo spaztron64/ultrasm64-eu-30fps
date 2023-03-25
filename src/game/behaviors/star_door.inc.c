@@ -8,7 +8,6 @@ void star_door_update_pos(void) {
 }
 
 void bhv_star_door_loop(void) {
-    UNUSED u8 filler[4];
     struct Object *sp18 = cur_obj_nearest_object_with_behavior(bhvStarDoor);
 
     switch (o->oAction) {

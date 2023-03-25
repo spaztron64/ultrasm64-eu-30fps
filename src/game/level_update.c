@@ -170,17 +170,11 @@ s16 sDelayedWarpOp;
 s16 sDelayedWarpTimer;
 s16 sSourceWarpNodeId;
 s32 sDelayedWarpArg;
-#if defined(VERSION_EU) || defined(VERSION_SH)
-s16 unusedEULevelUpdateBss1;
-#endif
 s8 sTimerRunning;
 s8 gNeverEnteredCastle;
 
 struct MarioState *gMarioState = &gMarioStates[0];
-u8 unused1[4] = { 0 };
 s8 sWarpCheckpointActive = FALSE;
-u8 unused2[4];
-u8 unused3[2];
 
 u16 level_control_timer(s32 timerOp) {
     switch (timerOp) {
@@ -355,9 +349,6 @@ void set_mario_initial_action(struct MarioState *m, u32 spawnType, u32 actionArg
             break;
         case MARIO_SPAWN_AIRBORNE_STAR_COLLECT:
             set_mario_action(m, ACT_FALLING_EXIT_AIRBORNE, 0);
-            break;
-        case MARIO_SPAWN_AIRBORNE_DEATH:
-            set_mario_action(m, ACT_UNUSED_DEATH_EXIT, 0);
             break;
         case MARIO_SPAWN_LAUNCH_STAR_COLLECT:
             set_mario_action(m, ACT_SPECIAL_EXIT_AIRBORNE, 0);
@@ -1108,23 +1099,6 @@ s32 play_mode_change_level(void) {
         gHudDisplay.flags = HUD_DISPLAY_NONE;
         sTransitionTimer = 0;
         sTransitionUpdate = NULL;
-
-        if (sWarpDest.type != WARP_TYPE_NOT_WARPING) {
-            return sWarpDest.levelNum;
-        } else {
-            return D_80339EE0;
-        }
-    }
-
-    return 0;
-}
-
-/**
- * Unused play mode. Doesn't call transition update and doesn't reset transition at the end.
- */
-UNUSED static s32 play_mode_unused(void) {
-    if (--sTransitionTimer == -1) {
-        gHudDisplay.flags = HUD_DISPLAY_NONE;
 
         if (sWarpDest.type != WARP_TYPE_NOT_WARPING) {
             return sWarpDest.levelNum;

@@ -342,13 +342,10 @@ u8 sNumSoundsPerBank[SOUND_BANK_COUNT] = {
 #define TARGET_VOLUME_UNSET 0x00
 
 f32 gGlobalSoundSource[3] = { 0.0f, 0.0f, 0.0f };
-f32 sUnusedSoundArgs[3] = { 1.0f, 1.0f, 1.0f };
 u8 sSoundBankDisabled[16] = { 0 };
 u8 D_80332108 = 0;
 u8 sHasStartedFadeOut = FALSE;
 u16 sSoundBanksThatLowerBackgroundMusic = 0;
-u8 sUnused80332114 = 0;  // never read, set to 0
-u16 sUnused80332118 = 0; // never read, set to 0
 u8 sBackgroundMusicMaxTargetVolume = TARGET_VOLUME_UNSET;
 u8 D_80332120 = 0;
 u8 D_80332124 = 0;
@@ -358,10 +355,6 @@ u8 D_EU_80300558 = 0;
 #endif
 
 u8 sBackgroundMusicQueueSize = 0;
-
-#ifndef VERSION_JP
-u8 sUnused8033323C = 0; // never read, set to 0
-#endif
 
 
 // bss
@@ -437,81 +430,6 @@ static void fade_channel_volume_scale(u8 player, u8 channelId, u8 targetScale, u
 void process_level_music_dynamics(void);
 static u8 begin_background_music_fade(u16 fadeDuration);
 void func_80320ED8(void);
-
-#ifndef VERSION_JP
-void unused_8031E4F0(void) {
-    // This is a debug function which is almost entirely optimized away,
-    // except for loops, string literals, and a read of a volatile variable.
-    // The string literals have allowed it to be partially reconstructed.
-    s32 i;
-
-    stubbed_printf("AUTOSEQ ");
-    stubbed_printf("%2x %2x <%5x : %5x / %5x>\n", gSeqLoadedPool.temporary.entries[0].id,
-                   gSeqLoadedPool.temporary.entries[1].id, gSeqLoadedPool.temporary.entries[0].size,
-                   gSeqLoadedPool.temporary.entries[1].size, gSeqLoadedPool.temporary.pool.size);
-
-    stubbed_printf("AUTOBNK ");
-    stubbed_printf("%2x %3x <%5x : %5x / %5x>\n", gBankLoadedPool.temporary.entries[0].id,
-                   gBankLoadedPool.temporary.entries[1].id, gBankLoadedPool.temporary.entries[0].size,
-                   gBankLoadedPool.temporary.entries[1].size, gBankLoadedPool.temporary.pool.size);
-
-    stubbed_printf("STAYSEQ ");
-    stubbed_printf("[%2x] <%5x / %5x>\n", gSeqLoadedPool.persistent.numEntries,
-                   gSeqLoadedPool.persistent.pool.cur - gSeqLoadedPool.persistent.pool.start,
-                   gSeqLoadedPool.persistent.pool.size);
-    for (i = 0; (u32) i < gSeqLoadedPool.persistent.numEntries; i++) {
-        stubbed_printf("%2x ", gSeqLoadedPool.persistent.entries[i].id);
-    }
-    stubbed_printf("\n");
-
-    stubbed_printf("STAYBNK ");
-    stubbed_printf("[%2x] <%5x / %5x>\n", gBankLoadedPool.persistent.numEntries,
-                   gBankLoadedPool.persistent.pool.cur - gBankLoadedPool.persistent.pool.start,
-                   gBankLoadedPool.persistent.pool.size);
-    for (i = 0; (u32) i < gBankLoadedPool.persistent.numEntries; i++) {
-        stubbed_printf("%2x ", gBankLoadedPool.persistent.entries[i].id);
-    }
-    stubbed_printf("\n\n");
-
-    stubbed_printf("    0123456789ABCDEF0123456789ABCDEF01234567\n");
-    stubbed_printf("--------------------------------------------\n");
-
-    // gSeqLoadStatus/gBankLoadStatus, 4 entries at a time?
-    stubbed_printf("SEQ ");
-    for (i = 0; i < 40; i++) {
-        stubbed_printf("%1x", 0);
-    }
-    stubbed_printf("\n");
-
-    stubbed_printf("BNK ");
-    for (i = 0; i < 40; i += 4) {
-        stubbed_printf("%1x", 0);
-    }
-    stubbed_printf("\n");
-
-    stubbed_printf("FIXHEAP ");
-    stubbed_printf("%4x / %4x\n", 0, 0);
-    stubbed_printf("DRVHEAP ");
-    stubbed_printf("%5x / %5x\n", 0, 0);
-    stubbed_printf("DMACACHE  %4d Blocks\n", 0);
-    stubbed_printf("CHANNELS  %2d / MAX %3d \n", 0, 0);
-
-    stubbed_printf("TEMPOMAX  %d\n", gTempoInternalToExternal / TEMPO_SCALE);
-    stubbed_printf("TEMPO G0  %d\n", gSequencePlayers[SEQ_PLAYER_LEVEL].tempo / TEMPO_SCALE);
-    stubbed_printf("TEMPO G1  %d\n", gSequencePlayers[SEQ_PLAYER_ENV].tempo / TEMPO_SCALE);
-    stubbed_printf("TEMPO G2  %d\n", gSequencePlayers[SEQ_PLAYER_SFX].tempo / TEMPO_SCALE);
-    stubbed_printf("DEBUGFLAG  %8x\n", gAudioErrorFlags);
-}
-
-void unused_8031E568(void) {
-    stubbed_printf("COUNT %8d\n", gAudioFrameCount);
-}
-#endif
-
-#if defined(VERSION_EU) || defined(VERSION_SH)
-const char unusedErrorStr1[] = "Error : Queue is not empty ( %x ) \n";
-const char unusedErrorStr2[] = "specchg error\n";
-#endif
 
 /**
  * Fade out a sequence player
@@ -714,7 +632,6 @@ struct SPTask *create_next_audio_frame_task(void) {
 
     gAudioFrameCount++;
     if (gAudioLoadLock != AUDIO_LOCK_NOT_LOADING) {
-        stubbed_printf("DAC:Lost 1 Frame.\n");
         return NULL;
     }
 
@@ -743,9 +660,6 @@ struct SPTask *create_next_audio_frame_task(void) {
     // There has to be some sort of no-op if here, but it's not exactly clear
     // how it should look... It's also very unclear why gCurrAudioFrameDmaQueue
     // isn't read from here, despite gCurrAudioFrameDmaCount being reset.
-    if (oldDmaCount > AUDIO_FRAME_DMA_QUEUE_SIZE) {
-        stubbed_printf("DMA: Request queue over.( %d )\n", oldDmaCount);
-    }
     gCurrAudioFrameDmaCount = 0;
 
     gAudioTask = &gAudioTasks[gAudioTaskIndex];
@@ -1045,7 +959,6 @@ static void select_current_sounds(u8 bank) {
                     // Insert the sound at index i
                     liveSoundPriorities[i] = sSoundBanks[bank][soundIndex].priority;
                     liveSoundIndices[i] = soundIndex;
-                    liveSoundStatuses[i] = sSoundBanks[bank][soundIndex].soundStatus; // unused
                     // Break
                     i = sMaxChannelsForSoundBank[bank];
                 }
@@ -1844,7 +1757,6 @@ static void func_8031F96C(u8 player) {
 void process_level_music_dynamics(void) {
     u32 conditionBits;
     u16 tempBits;
-    UNUSED u16 pad;
     u8 musicDynIndex;
     u8 condIndex;
     u8 i;
@@ -1976,28 +1888,6 @@ void process_level_music_dynamics(void) {
         }
 
         sCurrentMusicDynamic = musicDynIndex;
-    }
-}
-
-void unused_8031FED0(u8 player, u32 bits, s8 arg2) {
-    u8 i;
-
-    if (arg2 < 0) {
-        arg2 = -arg2;
-    }
-
-    for (i = 0; i < CHANNELS_MAX; i++) {
-        if (gSequencePlayers[player].channels[i] != &gSequenceChannelNone) {
-            if ((bits & 3) == 0) {
-                gSequencePlayers[player].channels[i]->volumeScale = 1.0f;
-            } else if ((bits & 1) != 0) {
-                gSequencePlayers[player].channels[i]->volumeScale = (f32) arg2 / US_FLOAT(127.0);
-            } else {
-                gSequencePlayers[player].channels[i]->volumeScale =
-                    US_FLOAT(1.0) - (f32) arg2 / US_FLOAT(127.0);
-            }
-        }
-        bits >>= 2;
     }
 }
 
@@ -2161,11 +2051,9 @@ void sound_init(void) {
 
     sound_banks_enable(SEQ_PLAYER_SFX, SOUND_BANKS_ALL_BITS);
 
-    sUnused80332118 = 0;
     sBackgroundMusicTargetVolume = TARGET_VOLUME_UNSET;
     sLowerBackgroundMusicVolume = FALSE;
     sSoundBanksThatLowerBackgroundMusic = 0;
-    sUnused80332114 = 0;
     sCurrentBackgroundMusicSeqId = 0xff;
     gSoundMode = SOUND_MODE_STEREO;
     sBackgroundMusicQueueSize = 0;
@@ -2174,27 +2062,6 @@ void sound_init(void) {
     D_80332124 = 0;
     sNumProcessedSoundRequests = 0;
     sSoundRequestCount = 0;
-}
-
-// (unused)
-void get_currently_playing_sound(u8 bank, u8 *numPlayingSounds, u8 *numSoundsInBank, u8 *soundId) {
-    u8 i;
-    u8 count = 0;
-
-    for (i = 0; i < sMaxChannelsForSoundBank[bank]; i++) {
-        if (sCurrentSound[bank][i] != 0xff) {
-            count++;
-        }
-    }
-    *numPlayingSounds = count;
-
-    *numSoundsInBank = sNumSoundsInBank[bank];
-
-    if (sCurrentSound[bank][0] != 0xff) {
-        *soundId = (u8)(sSoundBanks[bank][sCurrentSound[bank][0]].soundBits >> SOUNDARGS_SHIFT_SOUNDID);
-    } else {
-        *soundId = 0xff;
-    }
 }
 
 /**
@@ -2520,9 +2387,6 @@ void func_80320ED8(void) {
  * Called from threads: thread5_game_loop
  */
 void play_secondary_music(u8 seqId, u8 bgMusicVolume, u8 volume, u16 fadeTimer) {
-    UNUSED u32 dummy;
-
-    sUnused80332118 = 0;
     if (sCurrentBackgroundMusicSeqId == 0xff || sCurrentBackgroundMusicSeqId == SEQ_MENU_TITLE_SCREEN) {
         return;
     }
@@ -2690,7 +2554,6 @@ void sound_reset(u8 presetId) {
 #ifndef VERSION_JP
     if (presetId >= 8) {
         presetId = 0;
-        sUnused8033323C = 0;
     }
 #endif
     sGameLoopTicked = 0;
@@ -2723,11 +2586,3 @@ void audio_set_sound_mode(u8 soundMode) {
     D_80332108 = (D_80332108 & 0xf) + (soundMode << 4);
     gSoundMode = soundMode;
 }
-
-#if defined(VERSION_JP) || defined(VERSION_US)
-void unused_80321460(UNUSED s32 arg0, UNUSED s32 arg1, UNUSED s32 arg2, UNUSED s32 arg3) {
-}
-
-void unused_80321474(UNUSED s32 arg0) {
-}
-#endif

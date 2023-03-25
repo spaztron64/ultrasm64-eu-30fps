@@ -374,7 +374,6 @@ void king_bobomb_move(void) {
 void bhv_king_bobomb_loop(void) {
     f32 sp34 = 20.0f;
     f32 sp30 = 50.0f;
-    UNUSED u8 filler[8];
 
     o->oInteractionSubtype |= INT_SUBTYPE_GRABS_MARIO;
 

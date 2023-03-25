@@ -35,20 +35,18 @@ GeoLayoutCommandProc GeoLayoutJumpTable[] = {
     geo_layout_cmd_node_object_parent,
     geo_layout_cmd_node_generated,
     geo_layout_cmd_node_background,
-    geo_layout_cmd_nop,
+    NULL,
     geo_layout_cmd_copy_view,
     geo_layout_cmd_node_held_obj,
     geo_layout_cmd_node_scale,
-    geo_layout_cmd_nop2,
-    geo_layout_cmd_nop3,
+    NULL,
+    NULL,
     geo_layout_cmd_node_culling_radius,
 };
 
 struct GraphNode gObjParentGraphNode;
 struct AllocOnlyPool *gGraphNodePool;
 struct GraphNode *gCurRootGraphNode;
-
-UNUSED s32 D_8038BCA8;
 
 /* The gGeoViews array is a mysterious one. Some background:
  *
@@ -96,11 +94,9 @@ uintptr_t gGeoLayoutStack[16];
 struct GraphNode *gCurGraphNodeList[32];
 s16 gCurGraphNodeIndex;
 s16 gGeoLayoutStackIndex; // similar to SP register in MIPS
-UNUSED s16 D_8038BD7C;
 s16 gGeoLayoutReturnIndex; // similar to RA register in MIPS
 u8 *gGeoLayoutCommand;
 
-u32 unused_8038B894[3] = { 0 };
 
 /*
   0x00: Branch and store return address
@@ -285,11 +281,6 @@ void geo_layout_cmd_node_start(void) {
     register_scene_graph_node(&graphNode->node);
 
     gGeoLayoutCommand += 0x04 << CMD_SIZE_SHIFT;
-}
-
-// 0x1F: No operation
-void geo_layout_cmd_nop3(void) {
-    gGeoLayoutCommand += 0x10 << CMD_SIZE_SHIFT;
 }
 
 /*
@@ -555,11 +546,6 @@ void geo_layout_cmd_node_scale(void) {
     gGeoLayoutCommand += 0x08 << CMD_SIZE_SHIFT;
 }
 
-// 0x1E: No operation
-void geo_layout_cmd_nop2(void) {
-    gGeoLayoutCommand += 0x08 << CMD_SIZE_SHIFT;
-}
-
 /*
   0x13: Create a scene graph node that is rotated by the object's animation.
    cmd+0x01: u8 drawingLayer
@@ -698,11 +684,6 @@ void geo_layout_cmd_node_background(void) {
 
     register_scene_graph_node(&graphNode->fnNode.node);
 
-    gGeoLayoutCommand += 0x08 << CMD_SIZE_SHIFT;
-}
-
-// 0x1A: No operation
-void geo_layout_cmd_nop(void) {
     gGeoLayoutCommand += 0x08 << CMD_SIZE_SHIFT;
 }
 

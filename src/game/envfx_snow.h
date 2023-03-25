@@ -7,11 +7,9 @@
 #define ENVFX_MODE_NONE     0  // no effects
 #define ENVFX_SNOW_NORMAL   1  // CCM, SL
 #define ENVFX_SNOW_WATER    2  // Secret Aquarium, Sunken Ship
-#define ENVFX_SNOW_BLIZZARD 3  // unused
 
 #define ENVFX_BUBBLE_START      10 // Separates snow effects and flower/bubble effects
 
-#define ENVFX_FLOWERS           11 // unused
 #define ENVFX_LAVA_BUBBLES      12 // LLL, BitFS, Bowser 2
 #define ENVFX_WHIRLPOOL_BUBBLES 13 // DDD
 #define ENVFX_JETSTREAM_BUBBLES 14 // JRB, DDD (submarine area)
@@ -28,7 +26,6 @@ struct EnvFxParticle {
 };
 
 extern s8 gEnvFxMode;
-extern UNUSED s32 D_80330644;
 
 extern struct EnvFxParticle *gEnvFxBuffer;
 extern Vec3i gSnowCylinderLastPos;

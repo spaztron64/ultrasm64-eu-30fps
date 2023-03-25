@@ -101,7 +101,6 @@ struct GraphNodeOrthoProjection {
  */
 struct GraphNodePerspective {
     /*0x00*/ struct FnGraphNode fnNode;
-    /*0x18*/ s32 unused;
     /*0x1C*/ f32 fov;   // horizontal field of view in degrees
     /*0x20*/ s16 near;  // near clipping plane
     /*0x22*/ s16 far;   // far clipping plane
@@ -155,7 +154,6 @@ struct GraphNodeLevelOfDetail {
  */
 struct GraphNodeSwitchCase {
     /*0x00*/ struct FnGraphNode fnNode;
-    /*0x18*/ s32 unused;
     /*0x1C*/ s16 numCases;
     /*0x1E*/ s16 selectedCase;
 };
@@ -303,7 +301,6 @@ struct GraphNodeGenerated {
  */
 struct GraphNodeBackground {
     /*0x00*/ struct FnGraphNode fnNode;
-    /*0x18*/ s32 unused;
     /*0x1C*/ s32 background; // background ID, or rgba5551 color if fnNode.func is null
 };
 

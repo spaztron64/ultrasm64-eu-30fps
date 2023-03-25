@@ -65,8 +65,6 @@ void bobomb_check_interactions(void) {
 }
 
 void bobomb_act_patrol(void) {
-    UNUSED u8 filler[4];
-    UNUSED s16 animFrame = o->header.gfx.animInfo.animFrame;
     s16 collisionFlags;
 
     o->oForwardVel = 5.0f;
@@ -82,7 +80,6 @@ void bobomb_act_patrol(void) {
 }
 
 void bobomb_act_chase_mario(void) {
-    UNUSED u8 filler[4];
     s16 animFrame = ++o->header.gfx.animInfo.animFrame; 
     s16 collisionFlags;
 
@@ -297,15 +294,13 @@ void bhv_bobomb_buddy_init(void) {
 }
 
 void bobomb_buddy_act_idle(void) {
-    UNUSED u8 filler[4];
     s16 animFrame = o->header.gfx.animInfo.animFrame;
-    UNUSED s16 collisionFlags = 0;
 
     o->oBobombBuddyPosXCopy = o->oPosX;
     o->oBobombBuddyPosYCopy = o->oPosY;
     o->oBobombBuddyPosZCopy = o->oPosZ;
 
-    collisionFlags = object_step();
+    object_step();
 
     if (animFrame == 5 || animFrame == 16) {
         cur_obj_play_sound_2(SOUND_OBJ_BOBOMB_WALK);

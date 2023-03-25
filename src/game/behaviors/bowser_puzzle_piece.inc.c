@@ -132,8 +132,7 @@ void bhv_lll_bowser_puzzle_loop(void) {
             if (o->oBowserPuzzleCompletionFlags == 3 && o->oDistanceToMario < 1000.0f) {
                 // Spawn 5 coins.
                 for (i = 0; i < 5; i++) {
-                    UNUSED struct Object *coin =
-                        spawn_object(o, MODEL_YELLOW_COIN, bhvSingleCoinGetsSpawned);
+                    spawn_object(o, MODEL_YELLOW_COIN, bhvSingleCoinGetsSpawned);
                 }
 
                 // Reset completion flags (even though they never get checked again).
@@ -228,11 +227,9 @@ void bhv_lll_bowser_puzzle_piece_move(f32 xOffset, f32 zOffset, s32 duration, UN
 }
 
 void bhv_lll_bowser_puzzle_piece_idle(void) {
-    UNUSED s32 unused;
 
     // For the first 24 frames, do nothing.
     if (o->oTimer < 24) {
-        unused = 0;
     } else {
         // Then advance to the next action.
         o->oBowserPuzzlePieceContinuePerformingAction = 0;

@@ -425,9 +425,6 @@ void bowser_reset_fallen_off_stage(void) {
  * Unused, makes Bowser be in idle and after it returns to default action
  */
 void bowser_act_idle(void) {
-    if (cur_obj_init_animation_and_check_if_near_end(BOWSER_ANIM_IDLE)) {
-        o->oAction = BOWSER_ACT_DEFAULT;
-    }
 }
 
 /**
@@ -472,7 +469,6 @@ void bowser_act_breath_fire(void) {
  * Makes Bowser walk towards Mario
  */
 void bowser_act_walk_to_mario(void) {
-    UNUSED s32 facing; // is Bowser facing Mario?
     s16 turnSpeed;
     s16 angleFromMario = abs_angle_diff(o->oMoveAngleYaw, o->oAngleToMario);
 
@@ -490,7 +486,7 @@ void bowser_act_walk_to_mario(void) {
         }
     }
 
-    facing = cur_obj_rotate_yaw_toward(o->oAngleToMario, turnSpeed);
+    cur_obj_rotate_yaw_toward(o->oAngleToMario, turnSpeed);
 
     if (o->oSubAction == 0) {
         o->oBowserTimer = 0;
@@ -694,7 +690,6 @@ void bowser_short_second_hop(void) {
  * Makes Bowser do a big jump
  */
 void bowser_act_big_jump(void) {
-    UNUSED u8 filler[4];
 
     if (o->oSubAction == 0) {
         // Set jump animation
@@ -960,7 +955,6 @@ s32 bowser_check_hit_mine(void) {
  * Bowser's thrown act that gets called after Mario releases him
  */
 void bowser_act_thrown(void) {
-    UNUSED u8 filler[4];
 
     // Keep Bowser's timer at 0 unless he lands
     if (o->oTimer < 2) {
@@ -1007,7 +1001,6 @@ void bowser_set_goal_invisible(void) {
  */
 void bowser_act_jump_onto_stage(void) {
     s32 onDynamicFloor;
-    UNUSED u8 filler[4];
     struct Surface *floor = o->oFloor;
 
     // Set dynamic floor check (Object platforms)
@@ -1274,7 +1267,6 @@ s32 bowser_dead_default_stage_ending(void) {
  * Returns TRUE once done
  */
 s32 bowser_dead_final_stage_ending(void) {
-    UNUSED u8 filler[4];
     s32 ret = FALSE;
     s32 dialogID;
 
@@ -1409,9 +1401,7 @@ struct BowserTiltPlatformInfo sBowsertiltPlatformData[] = {
 void bowser_act_tilt_lava_platform(void) {
     // Set platform object
     struct Object *platform = cur_obj_nearest_object_with_behavior(bhvTiltingBowserLavaPlatform);
-    UNUSED s16 angle = o->oBowserAngleToCenter + 0x8000;
     s16 angSpeed;
-    UNUSED u8 filler[4];
 
     // If there's not platform, return to default action
     if (platform == NULL) {
@@ -1553,7 +1543,6 @@ s8 sBowserHealth[] = { 1, 1, 3 };
 void bowser_free_update(void) {
     struct Surface *floor;
     struct Object *platform;
-    UNUSED f32 floorHeight;
 
     // Platform displacement check (for BitFS)
     if ((platform = o->platform) != NULL) {
@@ -1570,7 +1559,7 @@ void bowser_free_update(void) {
         o->oAction = BOWSER_ACT_JUMP_ONTO_STAGE;
     }
     // Check floor height and platform
-    floorHeight = find_floor(o->oPosX, o->oPosY, o->oPosZ, &floor);
+    find_floor(o->oPosX, o->oPosY, o->oPosZ, &floor);
     if ((floor != NULL) && (floor->object != NULL)) {
         o->platform = floor->object;
     } else {
@@ -1669,15 +1658,6 @@ void bhv_bowser_loop(void) {
     // Only the first one is used
     if (angleToMario < 0x2000) {
         o->oBowserStatus |= BOWSER_STATUS_ANGLE_MARIO;
-    }
-    if (angleToCenter < 0x3800) {
-        o->oBowserStatus |= BOWSER_STATUS_ANGLE_CENTER; // unused
-    }
-    if (o->oBowserDistToCenter < 1000.0f) {
-        o->oBowserStatus |= BOWSER_STATUS_DIST_CENTER; // unused
-    }
-    if (o->oDistanceToMario < 850.0f) {
-        o->oBowserStatus |= BOWSER_STATUS_DIST_MARIO; // unused
     }
 
     // Update Held state actions
@@ -1881,8 +1861,6 @@ void bowser_open_eye_switch(struct Object *obj, struct GraphNodeSwitchCase *swit
  * direction otherwise.
  */
 Gfx *geo_switch_bowser_eyes(s32 callContext, struct GraphNode *node, UNUSED Mat4 *mtx) {
-    UNUSED s16 eyeShut;
-    UNUSED u8 filler[4];
     struct Object *obj = (struct Object *) gCurGraphNodeObject;
     struct GraphNodeSwitchCase *switchCase = (struct GraphNodeSwitchCase *) node;
 
@@ -1891,7 +1869,7 @@ Gfx *geo_switch_bowser_eyes(s32 callContext, struct GraphNode *node, UNUSED Mat4
             obj = gCurGraphNodeHeldObject->objNode;
         }
 
-        switch (eyeShut = obj->oBowserEyesShut) {
+        switch (obj->oBowserEyesShut) {
             case FALSE: // eyes open, handle eye looking direction
                 bowser_open_eye_switch(obj, switchCase);
                 break;

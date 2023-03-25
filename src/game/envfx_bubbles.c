@@ -152,7 +152,6 @@ void envfx_rotate_around_whirlpool(s32 *x, s32 *y, s32 *z) {
  * low or close to the center.
  */
 s32 envfx_is_whirlpool_bubble_alive(s32 index) {
-    UNUSED u8 filler[4];
 
     if ((gEnvFxBuffer + index)->bubbleY < gEnvFxBubbleConfig[ENVFX_STATE_DEST_Y] - 100) {
         return FALSE;
@@ -203,7 +202,6 @@ void envfx_update_whirlpool(void) {
  * 1000 units away from the source or 1500 units above it.
  */
 s32 envfx_is_jestream_bubble_alive(s32 index) {
-    UNUSED u8 filler[4];
 
     if (!particle_is_laterally_close(index, gEnvFxBubbleConfig[ENVFX_STATE_SRC_X], gEnvFxBubbleConfig[ENVFX_STATE_SRC_Z], 1000)
         || gEnvFxBubbleConfig[ENVFX_STATE_SRC_Y] + 1500 < (gEnvFxBuffer + index)->yPos) {

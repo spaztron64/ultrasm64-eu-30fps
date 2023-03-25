@@ -6,18 +6,6 @@
 #include "synthesis.h"
 
 #ifdef VERSION_EU
-
-#if defined(ISVPRINT) || defined(UNF)
-#define stubbed_printf osSyncPrintf
-#else
-
-#ifdef __sgi
-#define stubbed_printf
-#else
-#define stubbed_printf(...)
-#endif
-#endif
-
 #define SAMPLES_TO_OVERPRODUCE 0x10
 #define EXTRA_BUFFERED_AI_SAMPLES_TARGET 0x40
 
@@ -51,7 +39,6 @@ struct SPTask *create_next_audio_frame_task(void) {
 
     gAudioFrameCount++;
     if (gAudioFrameCount % gAudioBufferParameters.presetUnk4 != 0) {
-        stubbed_printf("DAC:Lost 1 Frame.\n");
         return NULL;
     }
 
@@ -68,9 +55,6 @@ struct SPTask *create_next_audio_frame_task(void) {
     }
 
     oldDmaCount = gCurrAudioFrameDmaCount;
-    if (oldDmaCount > AUDIO_FRAME_DMA_QUEUE_SIZE) {
-        stubbed_printf("DMA: Request queue over.( %d )\n", oldDmaCount);
-    }
     gCurrAudioFrameDmaCount = 0;
 
     decrease_sample_dma_ttls();

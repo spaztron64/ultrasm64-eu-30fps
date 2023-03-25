@@ -34,7 +34,6 @@
 #include "levels/wf/tumbling_bridge_near/geo.inc.c"
 #include "levels/wf/tumbling_bridge_far/geo.inc.c"
 #include "levels/wf/areas/1/14/geo.inc.c"
-#include "levels/wf/beta_extending_platform/geo.inc.c"
 #include "levels/wf/extending_platform/geo.inc.c"
 #include "levels/wf/breakable_wall_right/geo.inc.c"
 #include "levels/wf/breakable_wall_left/geo.inc.c"

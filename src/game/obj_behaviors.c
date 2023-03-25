@@ -81,44 +81,6 @@ void set_yoshi_as_not_dead(void) {
 }
 
 /**
- * An unused geo function. Bears strong similarity to geo_bits_bowser_coloring, and relates something
- * of the opacity of an object to something else. Perhaps like, giving a parent object the same
- * opacity?
- */
-Gfx UNUSED *geo_obj_transparency_something(s32 callContext, struct GraphNode *node, UNUSED Mat4 *mtx) {
-    Gfx *gfxHead;
-    Gfx *gfx;
-    struct Object *heldObject;
-    struct Object *obj;
-    UNUSED struct Object *unusedObject;
-    UNUSED u8 filler[4];
-
-    gfxHead = NULL;
-
-    if (callContext == GEO_CONTEXT_RENDER) {
-        heldObject = (struct Object *) gCurGraphNodeObject;
-        obj = (struct Object *) node;
-        unusedObject = (struct Object *) node;
-
-
-        if (gCurGraphNodeHeldObject != NULL) {
-            heldObject = gCurGraphNodeHeldObject->objNode;
-        }
-
-        gfxHead = alloc_display_list(3 * sizeof(Gfx));
-        gfx = gfxHead;
-        obj->header.gfx.node.flags =
-            (obj->header.gfx.node.flags & 0xFF) | (GRAPH_NODE_TYPE_FUNCTIONAL | GRAPH_NODE_TYPE_400);
-
-        gDPSetEnvColor(gfx++, 255, 255, 255, heldObject->oOpacity);
-
-        gSPEndDisplayList(gfx);
-    }
-
-    return gfxHead;
-}
-
-/**
  * An absolute value function.
  */
 f32 absf_2(f32 f) {
@@ -593,7 +555,6 @@ s8 obj_check_if_facing_toward_angle(u32 base, u32 goal, s16 range) {
  */
 s8 obj_find_wall_displacement(Vec3f dist, f32 x, f32 y, f32 z, f32 radius) {
     struct WallCollisionData hitbox;
-    UNUSED u8 filler[32];
 
     hitbox.x = x;
     hitbox.y = y;
@@ -764,37 +725,6 @@ void spawn_orange_number(s8 behParam, s16 relX, s16 relY, s16 relZ) {
     orangeNumber->oPosY += 25.0f;
 }
 
-/**
- * Unused variables for debug_sequence_tracker.
- */
-s8 sDebugSequenceTracker = 0;
-s8 sDebugTimer = 0;
-
-/**
- * Unused presumably debug function that tracks for a sequence of inputs.
- */
-UNUSED s8 debug_sequence_tracker(s16 debugInputSequence[]) {
-    // If end of sequence reached, return true.
-    if (debugInputSequence[sDebugSequenceTracker] == 0) {
-        sDebugSequenceTracker = 0;
-        return TRUE;
-    }
-
-    // If the third controller button pressed is next in sequence, reset timer and progress to next value.
-    if (debugInputSequence[sDebugSequenceTracker] & gPlayer3Controller->buttonPressed) {
-        sDebugSequenceTracker++;
-        sDebugTimer = 0;
-    // If wrong input or timer reaches 10, reset sequence progress.
-    } else if (sDebugTimer == 10 || gPlayer3Controller->buttonPressed != 0) {
-        sDebugSequenceTracker = 0;
-        sDebugTimer = 0;
-        return FALSE;
-    }
-    sDebugTimer++;
-
-    return FALSE;
-}
-
 #include "behaviors/moving_coin.inc.c"
 #include "behaviors/seaweed.inc.c"
 #include "behaviors/bobomb.inc.c"
@@ -803,7 +733,6 @@ UNUSED s8 debug_sequence_tracker(s16 debugInputSequence[]) {
 #include "behaviors/amp.inc.c"
 #include "behaviors/butterfly.inc.c"
 #include "behaviors/hoot.inc.c"
-#include "behaviors/beta_holdable_object.inc.c"
 #include "behaviors/bubble.inc.c"
 #include "behaviors/water_wave.inc.c"
 #include "behaviors/explosion.inc.c"

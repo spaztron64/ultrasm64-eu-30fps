@@ -38,20 +38,6 @@ s32 is_cap_ukiki_and_mario_has_normal_cap_on_head(void) {
  * Unused copy of geo_update_projectile_pos_from_parent. Perhaps a copy paste mistake.
  */
 Gfx *geo_update_projectile_pos_from_parent_copy(s32 run,UNUSED struct GraphNode *node, Mat4 mtx) {
-    Mat4 mtx2;
-
-    if (run == TRUE) {
-        // TODO: change global type to Object pointer
-        struct Object *obj = (struct Object *) gCurGraphNodeObject;
-
-        if (obj->prevObj != NULL) {
-            create_transformation_from_matrices(mtx2, mtx, *gCurGraphNodeCamera->matrixPtr);
-            obj_update_pos_from_parent_transformation(mtx2, obj->prevObj);
-            obj_set_gfx_pos_from_pos(obj->prevObj);
-        }
-    }
-
-    return NULL;
 }
 
 /**
@@ -171,7 +157,6 @@ void ukiki_act_idle(void) {
  * Only used for the cap ukiki.
  */
 void ukiki_act_return_home(void) {
-    UNUSED u8 filler[4];
 
     cur_obj_init_animation_with_sound(UKIKI_ANIM_RUN);
     o->oMoveAngleYaw = cur_obj_angle_to_home();
@@ -203,11 +188,6 @@ void ukiki_act_wait_to_respawn(void) {
  * part of the ukiki_act_go_to_cage action.
  */
 void ukiki_act_unused_turn(void) {
-    idle_ukiki_taunt();
-
-    if (o->oSubAction == UKIKI_SUB_ACT_TAUNT_JUMP_CLAP) {
-        cur_obj_rotate_yaw_toward(o->oAngleToMario, 0x400);
-    }
 }
 
 /**
@@ -487,20 +467,6 @@ void ukiki_free_loop(void) {
 
     if (!(o->oMoveFlags & OBJ_MOVE_MASK_IN_WATER)) {
         exec_anim_sound_state(sUkikiSoundStates);
-    }
-}
-
-/**
- * Unused function for timing ukiki's blinking.
- * Image still present in Ukiki's actor graphics.
- *
- * Possibly unused so AnimState could be used for wearing a cap?
- */
-UNUSED static void ukiki_blink_timer(void) {
-    if (gGlobalTimer % 50 < 7) {
-        o->oAnimState = UKIKI_ANIM_STATE_EYE_CLOSED;
-    } else {
-        o->oAnimState = UKIKI_ANIM_STATE_DEFAULT;
     }
 }
 

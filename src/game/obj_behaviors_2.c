@@ -152,7 +152,6 @@ static void platform_on_track_update_pos_or_spawn_ball(s32 ballIndex, f32 x, f32
     struct Waypoint *initialPrevWaypoint;
     struct Waypoint *nextWaypoint;
     struct Waypoint *prevWaypoint;
-    UNUSED u8 filler[4];
     f32 amountToMove;
     f32 dx;
     f32 dy;
@@ -640,11 +639,6 @@ static void obj_die_if_health_non_positive(void) {
             obj_mark_for_deletion(o);
         }
     }
-}
-
-UNUSED static void obj_unused_die(void) {
-    o->oHealth = 0;
-    obj_die_if_health_non_positive();
 }
 
 static void obj_set_knockback_action(s32 attackType) {

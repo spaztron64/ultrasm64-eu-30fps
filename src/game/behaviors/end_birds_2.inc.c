@@ -2,7 +2,6 @@
 
 void bhv_end_birds_2_loop(void) {
     Vec3f sp3C;
-    UNUSED f32 sp38 = random_float();
     f32 sp34;
     s16 sp32, sp30;
 

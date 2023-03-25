@@ -90,7 +90,6 @@ void spawn_and_init_wf_platforms(s16 a, const BehaviorScript *bhv) {
 }
 
 void spawn_wf_platform_group(void) {
-    UNUSED s32 unused = 8;
 
     o->oPlatformSpawnerUnkF4 = 0;
     o->oPlatformSpawnerUnkF8 = 0;

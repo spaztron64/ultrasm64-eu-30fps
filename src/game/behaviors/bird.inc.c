@@ -53,7 +53,6 @@ static void bird_act_inactive(void) {
  * and the parent spawner bird if it's a spawned bird.
  */
 static void bird_act_fly(void) {
-    UNUSED u8 filler[4];
     f32 distance;
 
     // Compute forward velocity and vertical velocity from oBirdSpeed and pitch

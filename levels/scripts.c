@@ -100,7 +100,6 @@ const LevelScript level_main_scripts_entry[] = {
     LOAD_MODEL_FROM_GEO(MODEL_MARIOS_METAL_CAP,        marios_metal_cap_geo),
     LOAD_MODEL_FROM_GEO(MODEL_MARIOS_WING_CAP,         marios_wing_cap_geo),
     LOAD_MODEL_FROM_GEO(MODEL_MARIOS_CAP,              marios_cap_geo),
-    LOAD_MODEL_FROM_GEO(MODEL_MARIOS_CAP,              marios_cap_geo), // repeated
     LOAD_MODEL_FROM_GEO(MODEL_BOWSER_KEY_CUTSCENE,     bowser_key_cutscene_geo),
     LOAD_MODEL_FROM_GEO(MODEL_BOWSER_KEY,              bowser_key_geo),
     LOAD_MODEL_FROM_GEO(MODEL_RED_FLAME_SHADOW,        red_flame_shadow_geo),
@@ -205,7 +204,6 @@ const LevelScript script_func_global_2[] = {
 };
 
 const LevelScript script_func_global_3[] = {
-    LOAD_MODEL_FROM_GEO(MODEL_BLARGG,                  blargg_geo),
     LOAD_MODEL_FROM_GEO(MODEL_BULLY,                   bully_geo),
     LOAD_MODEL_FROM_GEO(MODEL_BULLY_BOSS,              bully_boss_geo),
     RETURN(),
@@ -262,7 +260,6 @@ const LevelScript script_func_global_9[] = {
 
 const LevelScript script_func_global_10[] = {
     LOAD_MODEL_FROM_GEO(MODEL_BOO,                     boo_geo),
-    LOAD_MODEL_FROM_GEO(MODEL_BETA_BOO_KEY,               small_key_geo),
     LOAD_MODEL_FROM_GEO(MODEL_HAUNTED_CHAIR,           haunted_chair_geo),
     LOAD_MODEL_FROM_GEO(MODEL_MAD_PIANO,               mad_piano_geo),
     LOAD_MODEL_FROM_GEO(MODEL_BOOKEND_PART,            bookend_part_geo),

@@ -52,7 +52,6 @@ void bhv_flamethrower_loop(void) {
     f32 flameVel;
     s32 sp34;
     s32 model;
-    UNUSED u8 filler[8];
 
     if (o->oAction == 0) {
         if ((gCurrLevelNum != LEVEL_BBH || gMarioOnMerryGoRound == TRUE)

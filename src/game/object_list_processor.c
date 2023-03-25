@@ -32,13 +32,6 @@ s32 gDebugInfoFlags;
  */
 s32 gNumFindFloorMisses;
 
-UNUSED s32 unused_8033BEF8;
-
-/**
- * An unused debug counter with the label "WALL".
- */
-s32 gUnknownWallCount;
-
 /**
  * Roughly the number of objects that have been processed this frame so far.
  * A bug in update_terrain_objects makes this count inaccurate.
@@ -487,7 +480,6 @@ void spawn_objects_from_info(UNUSED s32 unused, struct SpawnInfo *spawnInfo) {
             object->oBehParams2ndByte = ((spawnInfo->behaviorArg) >> 16) & 0xFF;
 
             object->behavior = script;
-            object->unused1 = 0;
 
             // Record death/collection in the SpawnInfo
             object->respawnInfoType = RESPAWN_INFO_TYPE_32;
@@ -567,7 +559,6 @@ void update_terrain_objects(void) {
  * the order specified by sObjectListUpdateOrder.
  */
 void update_non_terrain_objects(void) {
-    UNUSED u8 filler[4];
     s32 listIndex;
 
     s32 i = 2;
@@ -581,7 +572,6 @@ void update_non_terrain_objects(void) {
  * Unload deactivated objects in any object list.
  */
 void unload_deactivated_objects(void) {
-    UNUSED u8 filler[4];
     s32 listIndex;
 
     s32 i = 0;

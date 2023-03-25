@@ -165,7 +165,6 @@ static void apply_water_current(struct MarioState *m, Vec3f step) {
 }
 
 static u32 perform_water_step(struct MarioState *m) {
-    UNUSED u8 filler[4];
     u32 stepResult;
     Vec3f nextPos;
     Vec3f step;
@@ -438,7 +437,6 @@ static void surface_swim_bob(struct MarioState *m) {
 
 static void common_swimming_step(struct MarioState *m, s16 swimStrength) {
     s16 floorPitch;
-    UNUSED struct Object *marioObj = m->marioObj;
 
     update_swimming_yaw(m);
     update_swimming_pitch(m);
@@ -1140,7 +1138,6 @@ static void update_metal_water_walking_speed(struct MarioState *m) {
 }
 
 static s32 update_metal_water_jump_speed(struct MarioState *m) {
-    UNUSED f32 nextY = m->pos[1] + m->vel[1];
     f32 waterSurface = m->waterLevel - 100;
 
     if (m->vel[1] > 0.0f && m->pos[1] > waterSurface) {

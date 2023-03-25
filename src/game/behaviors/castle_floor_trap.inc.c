@@ -61,7 +61,6 @@ void bhv_castle_floor_trap_rotate(void) {
 }
 
 void bhv_castle_floor_trap_loop(void) {
-    UNUSED u8 filler[12];
 
     switch (o->oAction) {
         case 0:

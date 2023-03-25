@@ -1,7 +1,6 @@
 // whomp.inc.c
 
 void whomp_play_sfx_from_pound_animation(void) {
-    UNUSED s32 animFrame = o->header.gfx.animInfo.animFrame;
     s32 playSound = FALSE;
 
     if (o->oForwardVel < 5.0f) {

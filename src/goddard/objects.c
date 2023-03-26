@@ -289,9 +289,7 @@ struct GdObj *make_object(enum ObjTypeFlag objType) {
     typeName = get_obj_name_str(objType);
 
     // Allocate memory for the object
-    start_memtracker(typeName);
     newObj = gd_malloc(objSize, objPermanence);
-    stop_memtracker(typeName);
 
     // Zero out the object
     newObjBytes = (u8 *) newObj;
@@ -354,9 +352,7 @@ struct ListNode *make_link_to_obj(struct ListNode *prevNode, struct GdObj *obj) 
     struct ListNode *newNode;
 
     // Allocate link node
-    start_memtracker("links");
     newNode = gd_malloc_perm(sizeof(struct ListNode));
-    stop_memtracker("links");
 
     // Append to `prevNode` if not NULL
     if (prevNode != NULL) {

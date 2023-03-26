@@ -2345,7 +2345,6 @@ s32 setup_view_buffers(const char *name, struct ObjView *view, UNUSED s32 ulx, U
     if (view->flags & (VIEW_Z_BUF | VIEW_COLOUR_BUF) && !(view->flags & VIEW_UNK_1000)) {
         if (view->flags & VIEW_COLOUR_BUF) {
             sprintf(memtrackerName, "%s CBuf", name);
-            start_memtracker(memtrackerName);
             view->colourBufs[0] =
                 gd_malloc((u32)(2.0f * view->lowerRight.x * view->lowerRight.y + 64.0f), 0x20);
 
@@ -2358,7 +2357,6 @@ s32 setup_view_buffers(const char *name, struct ObjView *view, UNUSED s32 ulx, U
 
             view->colourBufs[0] = (void *) ALIGN((uintptr_t) view->colourBufs[0], 64);
             view->colourBufs[1] = (void *) ALIGN((uintptr_t) view->colourBufs[1], 64);
-            stop_memtracker(memtrackerName);
 
             view->parent = view;
         } else {
@@ -2367,13 +2365,11 @@ s32 setup_view_buffers(const char *name, struct ObjView *view, UNUSED s32 ulx, U
 
         if (view->flags & VIEW_Z_BUF) {
             sprintf(memtrackerName, "%s ZBuf", name);
-            start_memtracker(memtrackerName);
             if (view->flags & VIEW_ALLOC_ZBUF) {
                 view->zbuf =
                     gd_malloc((u32)(2.0f * view->lowerRight.x * view->lowerRight.y + 64.0f), 0x40);
                 view->zbuf = (void *) ALIGN((uintptr_t) view->zbuf, 64);
             }
-            stop_memtracker(memtrackerName);
         } else {
             view->zbuf = sScreenView->zbuf;
         }
@@ -2625,19 +2621,13 @@ void gd_init(void) {
     sNumLights = NUMLIGHTS_2;
     gd_set_identity_mat4(&sInitIdnMat4);
     mat4_to_mtx(&sInitIdnMat4, &sIdnMtx);
-    remove_all_memtrackers();
     null_obj_lists();
-    start_memtracker("total");
     remove_all_timers();
 
-    start_memtracker("Static DL");
     sStaticDl = new_gd_dl(0, 1900, 4000, 1, 300, 8);
-    stop_memtracker("Static DL");
 
-    start_memtracker("Dynamic DLs");
     sDynamicMainDls[0] = new_gd_dl(1, 600, 10, 200, 10, 3);
     sDynamicMainDls[1] = new_gd_dl(1, 600, 10, 200, 10, 3);
-    stop_memtracker("Dynamic DLs");
 
     sMHeadMainDls[0] = new_gd_dl(1, 100, 0, 0, 0, 0);
     sMHeadMainDls[1] = new_gd_dl(1, 100, 0, 0, 0, 0);
@@ -2781,31 +2771,6 @@ void Unknown801A5D90(struct ObjGroup *arg0) {
         d_start_group(AsDynName(groupId));
         sp244 = 20;
         sp23C = FALSE;
-
-        for (;;) {
-            trackerNum++;
-            mt = get_memtracker_by_index(trackerNum);
-
-            if (mt->name != NULL) {
-                sprintf(mtStatsFmt, "%s  %%6.2fk", mt->name);
-                mtLabel = (struct ObjLabel *) d_makeobj(D_LABEL, AsDynName(0));
-                d_set_rel_pos(10.0f, sp244, 0.0f);
-                d_set_parm_ptr(PARM_PTR_CHAR, gd_strdup(mtStatsFmt));
-                d_add_valptr(NULL, 0, OBJ_VALUE_FLOAT, (uintptr_t) &mt->total);
-                mtLabel->unk30 = 3;
-                d_add_valproc(cvrt_val_to_kb);
-                sp23C = TRUE;
-                sp244 += 14;
-                if (sp244 > 200) {
-                    break;
-                }
-            }
-
-            if (trackerNum >= GD_NUM_MEM_TRACKERS) {
-                sp240 = TRUE;
-                break;
-            }
-        }
 
         d_end_group(AsDynName(groupId));
         labelgrp = (struct ObjGroup *) d_use_obj(AsDynName(groupId));

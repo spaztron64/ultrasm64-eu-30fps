@@ -24,7 +24,6 @@ static s32 sTimerGadgetColours[7] = {
     COLOUR_YELLOW,
     COLOUR_PINK
 };
-static s32 sNumActiveMemTrackers = 0;   // @ 801A82A0
 static u32 sPrimarySeed = 0x12345678;   // @ 801A82A4
 static u32 sSecondarySeed = 0x58374895; // @ 801A82A8
 
@@ -33,119 +32,6 @@ u8 *gGdStreamBuffer;                                        // @ 801BA190
 static const char *sRoutineNames[64];                       // @ 801BA198
 static s32 sTimingActive;                                   // @ 801BA298
 static struct GdTimer sTimers[GD_NUM_TIMERS];               // @ 801BA2A0
-static struct MemTracker sMemTrackers[GD_NUM_MEM_TRACKERS]; // @ 801BA720
-static struct MemTracker *sActiveMemTrackers[16];           // @ 801BA920
-
-/*
- * Memtrackers
- *
- * These are used to monitor how much heap memory is being used by certain
- * operations.
- * To create a memtracker, call new_memtracker with a unique name.
- * To record the amount of memory used by a certain allocation, call
- * start_memtracker before allocating memory, and call stop_memtracker after
- * allocating memory.
- * The memtracker keeps track of the memory allocated between a single
- * start_memtracker/stop_memtracker pair as well as the total memory allocated
- * of all start_memtracker/stop_memtracker pairs.
- */
-
-/**
- * Creates a new memtracker with the specified name
- */
-struct MemTracker *new_memtracker(const char *name) {
-    s32 i;
-    struct MemTracker *tracker = NULL;
-
-    for (i = 0; i < ARRAY_COUNT(sMemTrackers); i++) {
-        if (sMemTrackers[i].name == NULL) {
-            sMemTrackers[i].name = name;
-            tracker = &sMemTrackers[i];
-            break;
-        }
-    }
-
-    if (tracker != NULL) {
-        tracker->total = 0.0f;
-    }
-
-    return tracker;
-}
-
-/**
- * Returns the memtracker with the specified name, or NULL if it
- * does not exist
- */
-struct MemTracker *get_memtracker(const char *name) {
-    s32 i;
-
-    for (i = 0; i < ARRAY_COUNT(sMemTrackers); i++) {
-        if (sMemTrackers[i].name != NULL) {
-            if (gd_str_not_equal(sMemTrackers[i].name, name) == FALSE) {
-                return &sMemTrackers[i];
-            }
-        }
-    }
-
-    return NULL;
-}
-
-/**
- * Records the amount of heap usage before allocating memory.
- */
-struct MemTracker *start_memtracker(const char *name) {
-    struct MemTracker *tracker = get_memtracker(name);
-
-    // Create one if it doesn't exist
-    if (tracker == NULL) {
-        tracker = new_memtracker(name);
-    }
-
-    tracker->begin = (f32) get_alloc_mem_amt();
-
-    sActiveMemTrackers[sNumActiveMemTrackers++] = tracker;
-
-    return tracker;
-}
-
-/**
- * Records the amount of heap usage after allocating memory.
- */
-u32 stop_memtracker(const char *name) {
-    struct MemTracker *tracker;
-
-    tracker = get_memtracker(name);
-
-    tracker->end = get_alloc_mem_amt();
-    tracker->total += (tracker->end - tracker->begin);
-
-    return (u32) tracker->total;
-}
-
-/**
- * Destroys all memtrackers
- */
-void remove_all_memtrackers(void) {
-    s32 i;
-
-    for (i = 0; i < ARRAY_COUNT(sMemTrackers); i++) {
-        sMemTrackers[i].name = NULL;
-        sMemTrackers[i].begin = 0.0f;
-        sMemTrackers[i].end = 0.0f;
-        sMemTrackers[i].total = 0.0f;
-    }
-
-#ifdef AVOID_UB
-    sNumActiveMemTrackers = 0;
-#endif
-}
-
-/**
- * Returns a memtracker by index rather than name
- */
-struct MemTracker *get_memtracker_by_index(s32 index) {
-    return &sMemTrackers[index];
-}
 
 /* 23AFB0 -> 23AFC8; orig name: func_8018C7E0 */
 void deactivate_timing(void) {

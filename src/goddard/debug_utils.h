@@ -9,14 +9,6 @@
 #define GD_NUM_MEM_TRACKERS 32
 #define GD_NUM_TIMERS 32
 
-// structs
-struct MemTracker {
-    /* 0x00 */ const char *name;  // name (used as an identifier)
-    /* 0x04 */ f32 begin;         // used heap space (in bytes) before allocating memory
-    /* 0x08 */ f32 end;           // used heap space (in bytes) after allocating memory
-    /* 0x0C */ f32 total;         // total memory (in bytes) allocated between all start_memtracker/stop_memtracker calls
-};
-
 struct GdTimer {
     /* 0x00 */ s32 start;   // in cycles
     /* 0x04 */ s32 end;     // in cycles
@@ -53,11 +45,6 @@ struct GdFile {
 extern u8 *gGdStreamBuffer;
 
 // functions
-extern struct MemTracker *start_memtracker(const char *);
-extern u32 stop_memtracker(const char *);
-extern void remove_all_memtrackers(void);
-extern struct MemTracker *get_memtracker_by_index(s32);
-extern void print_all_memtrackers(void);
 extern void deactivate_timing(void);
 extern void activate_timing(void);
 extern void remove_all_timers(void);

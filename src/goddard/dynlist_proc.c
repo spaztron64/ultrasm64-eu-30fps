@@ -517,13 +517,9 @@ void d_make_netfromshape_ptrptr(struct ObjShape **shapePtr) {
 void add_to_dynobj_list(struct GdObj *newobj, DynObjName name) {
     char idbuf[0x100];
 
-    start_memtracker("dynlist");
-
     if (sGdDynObjList == NULL) {
         sGdDynObjList = gd_malloc_temp(DYNOBJ_LIST_SIZE * sizeof(struct DynObjInfo));
     }
-
-    stop_memtracker("dynlist");
 
     if (sUseIntegerNames) {
         sprintf(idbuf, "N%d", DynNameAsInt(name));
@@ -790,8 +786,6 @@ void alloc_animdata(struct ObjAnimator *animator) {
     f32 allocMtxScale = 0.1f;         //+2C; scale postion/rotation of GD_ANIM_SCALE3S_POS3S_ROT3S data
     struct AnimMtxVec *curMtxVec;     //+28
 
-    start_memtracker("animdata");
-
     animgrp = animator->animdataGrp;
     curAnimSrc = (struct AnimDataInfo *) animgrp->firstMember->obj;
 
@@ -872,7 +866,6 @@ void alloc_animdata(struct ObjAnimator *animator) {
     }
 
     animgrp->firstMember->obj = (void *) animDataArr;
-    stop_memtracker("animdata");
 }
 
 /**

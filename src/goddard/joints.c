@@ -217,7 +217,6 @@ struct ObjJoint *make_joint(s32 flags, f32 x, f32 y, f32 z) {
     gd_set_identity_mat4(&j->matE8);
     gd_set_identity_mat4(&j->mat128);
     set_joint_vecs(j, x, y, z);
-    j->type = 0;
     j->id = sJointCount;
     j->flags = flags;
 
@@ -254,7 +253,6 @@ struct ObjJoint *make_grabber_joint(struct ObjShape *shape, s32 flags, f32 x, f3
 
     j = make_joint(0, x, y, z);
     j->shapePtr = shape;
-    j->type = 5;
     j->flags |= flags;
     j->colourNum = COLOUR_PINK;
     j->header.drawFlags |= OBJ_IS_GRABBABLE;

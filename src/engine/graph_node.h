@@ -202,7 +202,6 @@ struct GraphNodeTranslation {
     /*0x00*/ struct GraphNode node;
     /*0x14*/ void *displayList;
     /*0x18*/ Vec3s translation;
-    u8 filler[2];
 };
 
 /** GraphNode that rotates itself and its children.
@@ -214,7 +213,6 @@ struct GraphNodeRotation {
     /*0x00*/ struct GraphNode node;
     /*0x14*/ void *displayList;
     /*0x18*/ Vec3s rotation;
-    u8 filler[2];
 };
 
 /** GraphNode part that transforms itself and its children based on animation
@@ -321,7 +319,6 @@ struct GraphNodeHeldObject {
 struct GraphNodeCullingRadius {
     /*0x00*/ struct GraphNode node;
     /*0x14*/ s16 cullingRadius; // specifies the 'sphere radius' for purposes of frustum culling
-    u8 filler[2];
 };
 
 extern struct GraphNodeMasterList *gCurGraphNodeMasterList;

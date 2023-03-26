@@ -2788,7 +2788,6 @@ void print_save_file_scores(s8 fileIndex) {
  * Also checks if all saves exists and defines text and main menu timers.
  */
 static void print_file_select_strings(void) {
-    UNUSED u8 filler[8];
 
     create_dl_ortho_matrix();
     switch (sSelectedButtonID) {

@@ -2076,9 +2076,6 @@ void d_set_type(s32 type) {
         case OBJ_TYPE_GROUPS:
             ((struct ObjGroup *) dynobj)->debugPrint = type;
             break;
-        case OBJ_TYPE_JOINTS:
-            ((struct ObjJoint *) dynobj)->type = type;
-            break;
         case OBJ_TYPE_PARTICLES:
             ((struct ObjParticle *) dynobj)->unk60 = type;
             break;

@@ -740,7 +740,6 @@ void read_ARK_shape(struct ObjShape *shape, char *fileName) {
     union {
         s8 bytes[0x48];
         struct {
-            u8 filler[0x40];
             s32 word40;
             s32 word44;
         } data;

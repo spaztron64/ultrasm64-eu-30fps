@@ -23,11 +23,9 @@
 // structs
 struct Unk801B9E68 {
     /* 0x00 */ s32 count;
-    /* 0x04 */ u8 filler[20];
 }; /* sizeof() = 0x18 */
 
 struct Unk8017F3CC {
-    /*0x00*/ u8 filler[32];
     /*0x20*/ struct GdVec3f unk20;
 };
 
@@ -262,7 +260,7 @@ struct GdObj *make_object(enum ObjTypeFlag objType) {
             break;
         case OBJ_TYPE_GADGETS:
             objSize = sizeof(struct ObjGadget);
-            objDrawFn = (drawmethod_t) draw_gadget;
+            objDrawFn = (drawmethod_t) draw_nothing;
             break;
         case OBJ_TYPE_VIEWS:
             objSize = sizeof(struct ObjView);
@@ -270,7 +268,7 @@ struct GdObj *make_object(enum ObjTypeFlag objType) {
             break;
         case OBJ_TYPE_LABELS:
             objSize = sizeof(struct ObjLabel);
-            objDrawFn = (drawmethod_t) draw_label;
+            objDrawFn = (drawmethod_t) draw_nothing;
             break;
         case OBJ_TYPE_ANIMATORS:
             objSize = sizeof(struct ObjAnimator);

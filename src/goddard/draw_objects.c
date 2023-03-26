@@ -36,16 +36,6 @@ enum SceneType {
     FIND_PICKS = 27    ///< only check position of primitives relative to cursor click
 };
 
-/**
- * A possible remnant of an early `ObjVertex` structure that contained
- * texture S,T coordinates.
- */
-struct BetaVtx {
-    /* 0x00 */ u8 filler[68];
-    /* 0x44 */ f32 s;
-    /* 0x48 */ f32 t;
-};
-
 // data
 static struct GdColour sClrWhite = { 1.0, 1.0, 1.0 };            // @ 801A8070
 static struct GdColour sClrRed = { 1.0, 0.0, 0.0 };              // @ 801A807C
@@ -329,10 +319,8 @@ void draw_face(struct ObjFace *face) {
     f32 y;                 // 34
     f32 x;                 // 30
     s32 i;             // 20; also used to store mtl's gddl number
-    s32 hasTextCoords; // 1c
     Vtx *gbiVtx;       // 18
 
-    hasTextCoords = FALSE;
     if (sUseSelectedColor == FALSE && face->mtlId >= 0) { // -1 == colored face
         if (face->mtl != NULL) {
             if ((i = face->mtl->gddlNumber) != 0) {
@@ -361,12 +349,6 @@ void draw_face(struct ObjFace *face) {
         z = vtx->pos.z;
         if (gGdUseVtxNormal) {
             set_Vtx_norm_buf_2(&vtx->normal);
-        }
-        //! @bug This function seems to have some parts based on older versions of ObjVertex
-        //!      as the struct requests fields passed the end of an ObjVertex.
-        //!      The bad code is statically unreachable, so...
-        if (hasTextCoords) {
-            set_vtx_tc_buf(((struct BetaVtx *) vtx)->s, ((struct BetaVtx *) vtx)->t);
         }
 
         gbiVtx = gd_dl_make_vertex(x, y, z, vtx->alpha);
@@ -402,63 +384,6 @@ void draw_rect_stroke(s32 color, f32 ulx, f32 uly, f32 lrx, f32 lry) {
     gd_draw_border_rect(ulx, uly, lrx, lry);
 }
 
-/**
- * Draws a label
- */
-void draw_label(struct ObjLabel *label) {
-    struct GdVec3f position;
-    char strbuf[0x100];
-    struct ObjValPtr *valptr;
-    union ObjVarVal varval;
-    valptrproc_t valfn = label->valfn;
-
-    if ((valptr = label->valptr) != NULL) {
-        if (valptr->flag == 0x40000) {
-            // position is offset from object
-            set_cur_dynobj(valptr->obj);
-            d_get_world_pos(&position);
-        } else {
-            // position is absolute
-            position.x = position.y = position.z = 0.0f;
-        }
-
-        switch (valptr->datatype) {
-            case OBJ_VALUE_FLOAT:
-                get_objvalue(&varval, OBJ_VALUE_FLOAT, valptr->obj, valptr->offset);
-                if (valfn != NULL) {
-                    valfn(&varval, varval);
-                }
-                sprintf(strbuf, label->fmtstr, varval.f);
-                break;
-            case OBJ_VALUE_INT:
-                get_objvalue(&varval, OBJ_VALUE_INT, valptr->obj, valptr->offset);
-                if (valfn != NULL) {
-                    valfn(&varval, varval);
-                }
-                sprintf(strbuf, label->fmtstr, varval.i);
-                break;
-            default:
-                if (label->fmtstr != NULL) {
-                    gd_strcpy(strbuf, label->fmtstr);
-                } else {
-                    gd_strcpy(strbuf, "NONAME");
-                }
-                break;
-        }
-    } else {
-        position.x = position.y = position.z = 0.0f;
-        if (label->fmtstr != NULL) {
-            gd_strcpy(strbuf, label->fmtstr);
-        } else {
-            gd_strcpy(strbuf, "NONAME");
-        }
-    }
-    position.x += label->position.x;
-    position.y += label->position.y;
-    position.z += label->position.z;
-    func_801A4438(position.x, position.y, position.z);
-}
-
 /* 227DF8 -> 227F3C; orig name: Proc80179628 */
 void draw_net(struct ObjNet *self) {
     struct ObjNet *net = self;
@@ -482,32 +407,6 @@ void draw_net(struct ObjNet *self) {
     if (net->unk1C8 != NULL) {
         draw_group(net->unk1C8);
     }
-}
-
-/**
- * Draws a gadget
- */
-void draw_gadget(struct ObjGadget *gdgt) {
-    s32 colour = 0;
-
-    if (gdgt->colourNum != 0) {
-        colour = gdgt->colourNum;
-    }
-
-    draw_rect_fill(colour,
-        gdgt->worldPos.x,
-        gdgt->worldPos.y,
-        gdgt->worldPos.x + gdgt->sliderPos * gdgt->size.x,
-        gdgt->worldPos.y + gdgt->size.y);
-
-    if (gdgt->header.drawFlags & OBJ_HIGHLIGHTED) {
-        draw_rect_stroke(COLOUR_YELLOW,
-            gdgt->worldPos.x,
-            gdgt->worldPos.y,
-            gdgt->worldPos.x + gdgt->sliderPos * gdgt->size.x,
-            gdgt->worldPos.y + gdgt->size.y);
-    }
-    gdgt->header.drawFlags &= ~OBJ_HIGHLIGHTED;
 }
 
 /* 22803C -> 22829C */

@@ -19,8 +19,6 @@
 
 // structs
 struct GdControl { // gGdCtrl
-    /* 0x00 */ s32 unk00;  // set but never used
-    /* 0x04 */ u8  filler1[4];
     /* 0x08 */ s32 dleft; // Dpad-left (mask)
     /* 0x0C */ s32 dright; // Dpad-right (mask)
     /* 0x10 */ s32 dup; // Dpad-up (mask)
@@ -34,22 +32,14 @@ struct GdControl { // gGdCtrl
     /* 0x30 */ void * unk30;     // null-checked ptr? symbol not deref-ed in extant code?
     /* 0x34 */ s32 btnA; // bool A button
     /* 0x38 */ s32 btnB; // bool B button
-    /* 0x3C */ u8  filler2[8];
     /* 0x44 */ s32 trgL; // bool L trigger pressed
     /* 0x48 */ s32 trgR; // bool R trigger pressed
     /* 0x4C */ s32 unk4C;
     /* 0x50 */ s32 unk50;
     /* 0x54 */ s32 newStartPress; // toggle bit? start pressed?
-    /* 0x58 */ u8  filler3[36];
     /* 0x7C */ f32 stickXf;
     /* 0x80 */ f32 stickYf;
-    /* 0x84 */ u8  filler4[4];
-    /* 0x88 */ f32 unk88;  // set but never used
-    /* 0x8C */ u8  filler5[20];
-    /* 0xA0 */ f32 unkA0;  // set but never used
-    /* 0xA4 */ u8  filler6[8];
     /* 0xAC */ f32 unkAC;
-    /* 0xB0 */ u8  filler7[8];
     /* 0xB8 */ s32 dragStartX; // cursor x position when there was a new (A) press?
     /* 0xBC */ s32 dragStartY; // cursor y position when there was a new (A) press?
     /* 0xC0 */ s32 stickDeltaX;
@@ -65,9 +55,7 @@ struct GdControl { // gGdCtrl
         /* b04 */ u8 unkD8b04 : 1;
         /* b02 */ u8 AbtnPressWait : 1;  // bool 10 frames between (A) presses (cursor cool down?)
     /* 0xDC */ u32 dragStartFrame; // first frame of new a press
-    /* 0xE0 */ u8  filler8[8];
     /* 0xE8 */ u32 currFrame; // frame count?
-    /* 0xEC */ u8  filler9[4];
     /* 0xF0 */ struct GdControl *prevFrame; // previous frame data
 };
 

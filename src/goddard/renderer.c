@@ -58,7 +58,6 @@ struct GdDisplayList {
     /* GD DL Info */
     /*0x40*/ u32 id;     // user specified
     /*0x44*/ u32 number; // count
-    /*0x48*/ u8 filler[4];
     /*0x4C*/ struct GdDisplayList *parent; // not quite sure?
 };                                         /* sizeof = 0x50 */
 // accessor macros for gd dl
@@ -115,7 +114,6 @@ static s32 sTriangleBufCount;                  // number of triangles in sTriang
 static struct ObjView *sMSceneView;     // @ 801BB0C8; Mario scene view
 static s32 sVertexBufStartIndex;                  // Vtx start in GD Dl
 static s32 sUpdateMarioScene;           // @ 801BB0D8; update dl Vtx from ObjVertex?
-static struct GdVec3f sTextDrawPos;  // position to draw text? only set in one function, never used
 static Mtx sIdnMtx;           // @ 801BB100
 static Mat4f sInitIdnMat4;    // @ 801BB140
 static s8 sVtxCvrtNormBuf[3]; // @ 801BB180
@@ -2221,13 +2219,6 @@ void gd_init_controllers(void) {
     }
 }
 
-/* 252C08 -> 252C70 */
-void func_801A4438(f32 x, f32 y, f32 z) {
-    sTextDrawPos.x = x - (sActiveView->lowerRight.x / 2.0f);
-    sTextDrawPos.y = (sActiveView->lowerRight.y / 2.0f) - y;
-    sTextDrawPos.z = z;
-}
-
 /* 252C70 -> 252DB4 */
 s32 gd_gentexture(void *texture, s32 fmt, s32 size, UNUSED u32 arg3, UNUSED u32 arg4) {
     s32 dl; // 24
@@ -2449,10 +2440,7 @@ void gd_init(void) {
     }
 
     // 801A5868
-    gGdCtrl.unk88 = 1.0f;
-    gGdCtrl.unkA0 = -45.0f;
     gGdCtrl.unkAC = 45.0f;
-    gGdCtrl.unk00 = 2;
     gGdCtrl.newStartPress = FALSE;
     gGdCtrl.prevFrame = &gGdCtrlPrev;
     gGdCtrl.csrX = gScreenWidth / 2;

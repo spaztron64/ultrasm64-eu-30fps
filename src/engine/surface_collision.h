@@ -21,13 +21,11 @@ struct WallCollisionData {
     /*0x00*/ f32 x, y, z;
     /*0x0C*/ f32 offsetY;
     /*0x10*/ f32 radius;
-    /*0x14*/ u8 filler[2];
-    /*0x16*/ s16 numWalls;
     /*0x18*/ struct Surface *walls[4];
+    /*0x16*/ s16 numWalls;
 };
 
 struct FloorGeometry {
-    u8 filler[16]; // possibly position data?
     f32 normalX;
     f32 normalY;
     f32 normalZ;

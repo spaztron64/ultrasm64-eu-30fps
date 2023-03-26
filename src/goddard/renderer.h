@@ -99,7 +99,6 @@ void gd_init_controllers(void);
 long defpup(UNUSED const char *menufmt, ...);
 void menu_cb_control_type(u32);
 void menu_cb_recalibrate_controller(u32);
-void func_801A4438(f32 x, f32 y, f32 z);
 void set_active_view(struct ObjView *v);
 void func_801A520C(void);
 void gd_init(void);

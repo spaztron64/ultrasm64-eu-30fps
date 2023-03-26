@@ -554,9 +554,7 @@ f32 vec3f_find_ceil(Vec3f pos, f32 height, struct Surface **ceil) {
 s32 mario_facing_downhill(struct MarioState *m, s32 turnYaw) {
     s16 faceAngleYaw = m->faceAngle[1];
 
-    // This is never used in practice, as turnYaw is
-    // always passed as zero.
-    if (turnYaw && m->forwardVel < 0.0f) {
+    if (m->forwardVel < 0.0f) {
         faceAngleYaw += 0x8000;
     }
 

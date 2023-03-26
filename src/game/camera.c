@@ -416,6 +416,10 @@ s32 update_8_directions_camera(struct Camera *c, Vec3f, Vec3f);
 s32 update_slide_or_0f_camera(struct Camera *c, Vec3f, Vec3f);
 s32 update_spiral_stairs_camera(struct Camera *c, Vec3f, Vec3f);
 
+s32 null_camera(UNUSED struct Camera *c, UNUSED Vec3f focus, UNUSED Vec3f pos) {
+    return 0;
+}
+
 typedef s32 (*CameraTransition)(struct Camera *c, Vec3f, Vec3f);
 CameraTransition sModeTransitions[] = {
     NULL,
@@ -423,10 +427,10 @@ CameraTransition sModeTransitions[] = {
     update_outward_radial_camera,
     update_behind_mario_camera,
     update_mario_camera,
-    NULL,
+    null_camera,
     update_c_up,
     update_mario_camera,
-    NULL,
+    null_camera,
     update_slide_or_0f_camera,
     update_in_cannon,
     update_boss_fight_camera,

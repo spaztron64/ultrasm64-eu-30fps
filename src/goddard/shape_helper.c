@@ -1048,7 +1048,7 @@ void animate_mario_head_normal(struct ObjAnimator *self) {
             // This is hacky, but lets be real I really don't feel like figuring out the intricacies of the anim system
             // to figure out why there's a wierd jerk at this very specific point.
             // I mean if I wanted to REALLY do this properly I'd separate logic and rendering like the rest of the game.
-            if (self->frame >= 500.0f && self->frame <= 510.0f) {
+            if (self->frame >= 500.0f && self->frame <= 505.0f) {
                 self->frame = (s32)(self->frame + 1);
             } else {
                 self->frame += 1.0f * gLerpSpeed;
@@ -1086,7 +1086,12 @@ void animate_mario_head_normal(struct ObjAnimator *self) {
             } else if (self->frame > 660.0f) {
                 self->frame -= 1.0f * gLerpSpeed;
             } else if (self->frame < 660.0f) {
-                self->frame += 1.0f * gLerpSpeed;
+                
+                if (self->frame >= 500.0f && self->frame <= 505.0f) {
+                    self->frame = (s32)(self->frame + 1);
+                } else {
+                    self->frame += 1.0f * gLerpSpeed;
+                }
             }
 
             self->stillTimer = 150.0f;

@@ -14,13 +14,11 @@ struct UnkBufThing {
 }; /* sizeof = 0x44 */
 
 // data
-static s32 sNumRoutinesInStack = 0; // @ 801A8280
 static u32 sPrimarySeed = 0x12345678;   // @ 801A82A4
 static u32 sSecondarySeed = 0x58374895; // @ 801A82A8
 
 // bss
 u8 *gGdStreamBuffer;                                        // @ 801BA190
-static const char *sRoutineNames[64];                       // @ 801BA198
 
 /**
  * Returns a random floating point number between 0 and 1 (inclusive)
@@ -57,7 +55,6 @@ f32 gd_rand_float(void) {
  */
 s32 gd_atoi(const char *str) {
     char cur;
-    const char *origstr = str;
     s32 curval;
     s32 out = 0;
     s32 isNegative = FALSE;

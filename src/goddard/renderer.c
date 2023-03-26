@@ -102,7 +102,6 @@ static OSContStatus D_801BAE60[4];
 static OSContPad sGdContPads[4];    // @ 801BAE70
 static OSContPad sPrevFrameCont[4]; // @ 801BAE88
 static u8 D_801BAEA0;
-static struct ObjGadget *sTimerGadgets[GD_NUM_TIMERS]; // @ 801BAEA8
 static u32 D_801BAF28;                                 // RAM addr offset?
 static s16 sTriangleBuf[13][8];                          // [[s16; 8]; 13]? vert indices?
 static u8 *sMemBlockPoolBase; // @ 801BB00C
@@ -176,15 +175,11 @@ static f32 sTimeScaleFactor = 1.0f;   // @ D_801A8694
 static u32 sMemBlockPoolSize = 1;     // @ 801A8698
 static s32 sMemBlockPoolUsed = 0;     // @ 801A869C
 static s32 sTextureCount = 0;  // maybe?
-static struct GdTimer *D_801A86A4 = NULL; // timer for dlgen, dynamics, or rcp
-static struct GdTimer *D_801A86A8 = NULL; // timer for dlgen, dynamics, or rcp
-static struct GdTimer *D_801A86AC = NULL; // timer for dlgen, dynamics, or rcp
 s32 gGdFrameBufNum = 0;                      // @ 801A86B0
 static struct ObjShape *sHandShape = NULL; // @ 801A86B8
 static s32 D_801A86BC = 1;
 static s32 D_801A86C0 = 0; // gd_dl id for something?
 static s32 sMtxParamType = G_MTX_PROJECTION;
-static struct GdVec3f D_801A86CC = { 1.0f, 1.0f, 1.0f };
 static struct ObjView *sActiveView = NULL;  // @ 801A86D8 current view? used when drawing dl
 static struct ObjView *sScreenView = NULL; // @ 801A86DC
 static struct ObjView *D_801A86E0 = NULL;
@@ -2424,19 +2419,6 @@ void set_active_view(struct ObjView *v) {
     sActiveView = v;
 }
 
-/* 2532D4 -> 2533DC */
-void Unknown801A4B04(void) {
-    if (D_801A86AC != NULL) {
-        D_801A86AC->prevScaledTotal = 20.0f;
-    }
-    if (D_801A86A4 != NULL) {
-        D_801A86A4->prevScaledTotal = (f32)((sDLGenTime * 50.0f) + 20.0f);
-    }
-    if (D_801A86A8 != NULL) {
-        D_801A86A8->prevScaledTotal = (f32)((sDLGenTime * 50.0f) + 20.0f);
-    }
-}
-
 /* 2533DC -> 253728; orig name: func_801A4C0C */
 void update_cursor(void) {
     if (sHandView == NULL)
@@ -2715,7 +2697,6 @@ void Unknown801A5D90(struct ObjGroup *arg0) {
     s32 sp23C;                 // memtracker label made?
     char mtStatsFmt[0x100];    // 13c
     char groupId[0x100];       // 3c
-    struct MemTracker *mt;     // 38
 
     sp240 = FALSE;
     trackerNum = -1;

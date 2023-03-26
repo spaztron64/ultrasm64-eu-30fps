@@ -118,13 +118,6 @@ void get_some_bounding_box(struct GdBoundingBox *a0) {
     a0->maxZ = gSomeBoundingBox.maxZ;
 }
 
-/* @ 22A6A0 for 0x24 */
-void stub_objects_1(UNUSED struct ObjGroup *a0, UNUSED struct GdObj *a1) {
-    UNUSED u8 sp00[8];
-    /* Debug stub? */
-    return;
-}
-
 /**
  * Returns a string containing the name of the the object type
  */
@@ -434,7 +427,6 @@ void reset_plane(struct ObjPlane *plane) {
     struct ObjFace *sp4C;
     f32 sp48;
     f32 sp44;
-    UNUSED u8 filler[12];
     s32 i;
     s32 sp30;
     register f32 sp28;
@@ -511,7 +503,6 @@ void reset_plane(struct ObjPlane *plane) {
 
 /* @ 22B60C for 0x94; orig name: func_8017CE3C */
 struct ObjPlane *make_plane(s32 inZone, struct ObjFace *a1) {
-    UNUSED u8 filler[4];
     struct ObjPlane *newPlane = (struct ObjPlane *) make_object(OBJ_TYPE_PLANES);
 
     gGdPlaneCount++;
@@ -752,9 +743,7 @@ void format_object_id(char *str, struct GdObj *obj) {
 struct ObjGroup *make_group(s32 count, ...) {
     va_list args;
     s32 i;
-    UNUSED u8 filler1[4];
     struct GdObj *curObj;
-    UNUSED u8 filler2[12];
     struct ObjGroup *newGroup;
     struct ObjGroup *oldGroupListHead;
     struct GdObj *vargObj;
@@ -814,7 +803,6 @@ struct ObjGroup *make_group(s32 count, ...) {
  */
 void addto_group(struct ObjGroup *group, struct GdObj *obj) {
     char strbuf[0x20];
-    UNUSED u8 filler[8];
 
     imin("addto_group");
 
@@ -878,12 +866,6 @@ s32 group_contains_obj(struct ObjGroup *group, struct GdObj *obj) {
     return FALSE;
 }
 
-/* @ 22C9B8 for 0x24 */
-s32 stub_objects_2(void) {
-    s32 sp4 = 0;
-    return sp4;
-}
-
 /* @ 22CA00 for 0x88 */
 static void reset_joint_or_net(struct GdObj *obj) {
     struct GdObj *localObjPtr = obj;
@@ -918,7 +900,6 @@ s32 apply_to_obj_types_in_group(s32 types, applyproc_t func, struct ObjGroup *gr
     struct GdObj *linkedObj;
     enum ObjTypeFlag linkedObjType;
     applyproc_t objFn;
-    UNUSED u8 filler[32];
     s32 fnAppliedCount;
 
     fnAppliedCount = 0;
@@ -969,9 +950,7 @@ void func_8017E584(struct ObjNet *a0, struct GdVec3f *a1, struct GdVec3f *a2) {
     struct GdVec3f sp88;
     struct GdVec3f sp7C;
     struct GdVec3f sp70;
-    UNUSED u8 filler1[64]; // unused MyMatrix4x4? f32[4][4]
     f32 sp2C;
-    UNUSED u8 filler2[4];
     struct GdVec3f sp1C;
 
     sp70.x = a2->x;
@@ -1021,10 +1000,8 @@ void func_8017E584(struct ObjNet *a0, struct GdVec3f *a1, struct GdVec3f *a2) {
 
 /* @ 22D008 for 0x1B4 */
 void func_8017E838(struct ObjNet *a0, struct GdVec3f *a1, struct GdVec3f *a2) {
-    UNUSED u8 filler1[12];
     struct GdVec3f sp70;
     struct GdVec3f sp64;
-    UNUSED u8 filler2[64];
     struct GdVec3f sp18;
 
     sp64.x = a1->x;
@@ -1073,13 +1050,11 @@ void func_8017E9EC(struct ObjNet *net) {
 s32 transform_child_objects_recursive(struct GdObj *obj, struct GdObj *parentObj) {
     struct ListNode *curLink;
     struct ObjGroup *curGroup;
-    UNUSED u8 filler1[4];
     Mat4f *parentUnkMtx;
     Mat4f *iMtx;
     Mat4f *unkMtx;
     Mat4f *rotMtx;
     Mat4f *rotMtx2;
-    UNUSED u8 filler2[24];
     struct GdVec3f scale;
 
     if (parentObj != NULL) {
@@ -1127,13 +1102,9 @@ s32 transform_child_objects_recursive(struct GdObj *obj, struct GdObj *parentObj
 s32 func_8017F210(struct GdObj *a0, struct GdObj *a1) {
     struct ListNode *sp6C;
     struct ObjGroup *sp68;
-    UNUSED u8 filler1[4];
-    UNUSED Mat4f *sp60;
     Mat4f *sp5C;
-    UNUSED Mat4f *sp58;
     Mat4f *sp54;
     Mat4f *sp50;
-    UNUSED u8 filler2[24];
     struct GdVec3f sp2C;
     s32 count = 0;
 
@@ -1141,7 +1112,6 @@ s32 func_8017F210(struct GdObj *a0, struct GdObj *a1) {
 
     if (a1 != NULL) {
         set_cur_dynobj(a1);
-        sp60 = d_get_matrix_ptr();
         sp54 = (Mat4f *) d_get_rot_mtx_ptr();
 
         set_cur_dynobj(a0);
@@ -1153,7 +1123,6 @@ s32 func_8017F210(struct GdObj *a0, struct GdObj *a1) {
         gd_scale_mat4f_by_vec3f(sp50, &sp2C);
     } else {
         set_cur_dynobj(a0);
-        sp58 = d_get_matrix_ptr();
         sp5C = d_get_i_mtx_ptr();
         sp54 = (Mat4f *) d_get_rot_mtx_ptr();
 
@@ -1178,11 +1147,6 @@ s32 func_8017F210(struct GdObj *a0, struct GdObj *a1) {
 /* @ 22DB9C for 0x38; a0 might be ObjUnk200000* */
 void func_8017F3CC(struct Unk8017F3CC *a0) {
     gd_rotate_and_translate_vec3f(&a0->unk20, D_801B9E48);
-}
-
-/* @ 22DBD4 for 0x20 */
-void stub_objects_3(UNUSED f32 a0, UNUSED struct GdObj *a1, UNUSED struct GdObj *a2) {
-    UNUSED u8 filler[48];
 }
 
 /**
@@ -1235,8 +1199,6 @@ void move_animator(struct ObjAnimator *animObj) {
     s16(*animDataCam)[6];         // camera GdPlaneH[]?
     struct GdObj *stubObj1 = NULL; // used only for call to stubbed function
     struct GdObj *stubObj2 = NULL; // used only for call to stubbed function
-    UNUSED u8 filler[12];
-    UNUSED struct GdVec3f unusedVec;
     s32 currKeyFrame;
     s32 nextKeyFrame;
     f32 dt;
@@ -1264,10 +1226,6 @@ void move_animator(struct ObjAnimator *animObj) {
     if (animData->type == 0) {
         return;
     }
-
-    unusedVec.x = 4.0f;
-    unusedVec.y = 1.0f;
-    unusedVec.z = 1.0f;
 
     if (animObj->frame > (f32) animData->count) {
         animObj->frame = 1.0f;
@@ -1453,7 +1411,6 @@ void move_animator(struct ObjAnimator *animObj) {
                 } else {
                     if (stubObj2 == NULL) {
                         stubObj2 = linkedObj;
-                        stub_objects_3(animObj->frame, stubObj1, stubObj2);
                     } else {
                         fatal_printf("Too many objects to morph");
                     }
@@ -1468,15 +1425,12 @@ void move_animator(struct ObjAnimator *animObj) {
 
 /* @ 22EDF4 for 0x300; orig name: func_80180624 */
 void drag_picked_object(struct GdObj *inputObj) {
-    UNUSED u8 filler1[12];
     struct GdVec3f displacement;
     struct GdVec3f spC4;
     struct GdControl *ctrl;
     Mat4f sp80;
     Mat4f sp40;
-    UNUSED u8 filler2[12];
     struct GdObj *obj;
-    UNUSED u8 filler3[4];
     f32 dispMag;
 
     ctrl = &gGdCtrl;
@@ -1547,10 +1501,8 @@ void move_camera(struct ObjCamera *cam) {
     struct GdVec3f spE0;
     struct GdVec3f spD4;
     struct GdVec3f spC8;
-    UNUSED u8 filler1[12];
     struct GdVec3f spB0;
     Mat4f sp70;
-    UNUSED u8 filler2[64];
     Mat4f *sp2C;
     struct GdControl *ctrl;
 
@@ -1670,10 +1622,9 @@ void move_cameras_in_grp(struct ObjGroup *group) {
 /* @ 22F7DC for 0x36C*/
 void func_8018100C(struct ObjLight *light) {
     Mat4f mtx;
-    UNUSED u8 filler[12];
 
     if (light->unk40 == 3) {
-        if (light->unk30 > 0.0) { //? 0.0f
+        if (light->unk30 > 0.0f) { //? 0.0f
             light->unk30 -= 0.2f;  //? 0.2f
         }
 

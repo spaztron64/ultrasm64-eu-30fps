@@ -819,6 +819,7 @@ void thread9_graphics(UNUSED void *arg) {
                 gMoveSpeed = 0;
             }
             lastRenderedFrame = gGlobalTimer;
+
             swap_screen();
             select_gfx_pool();
             init_rcp();

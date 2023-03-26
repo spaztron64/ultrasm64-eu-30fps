@@ -80,11 +80,9 @@ void reset_net(struct ObjNet *net) {
 
 /* 240A64 -> 240ACC */
 void func_80192294(struct ObjNet *net) {
-    UNUSED s32 sp1C = 0;
-
     if (net->attachedToObj == NULL) {
         restart_timer("childpos");
-        sp1C = transform_child_objects_recursive(&net->header, NULL);
+        transform_child_objects_recursive(&net->header, NULL);
         split_timer("childpos");
     }
 }
@@ -92,7 +90,6 @@ void func_80192294(struct ObjNet *net) {
 /* 240ACC -> 240B84 */
 void func_801922FC(struct ObjNet *net) {
     struct ObjGroup *group; // 24
-    UNUSED u8 filler[8];
 
     gGdSkinNet = net;
     // TODO: netype constants?
@@ -134,11 +131,8 @@ struct ObjNet *make_net(UNUSED s32 a0, struct ObjShape *shapedata, struct ObjGro
 
 /* 240CF8 -> 240E74 */
 void func_80192528(struct ObjNet *net) {
-    net->unusedForce.x = net->unusedForce.y = net->unusedForce.z = 0.0f;
     net->collDisp.x = net->collDisp.y = net->collDisp.z = 0.0f;
     net->collTorque.x = net->collTorque.y = net->collTorque.z = 0.0f;
-    net->unusedCollDispOff.x = net->unusedCollDispOff.y = net->unusedCollDispOff.z = 0.0f;
-    net->unusedCollMaxD = 0.0f;
 
     gGdCounter.ctr0 = 0;
     gGdCounter.ctr1 = 0;
@@ -200,9 +194,7 @@ void collision_something_801926A4(struct ObjNet *net) {
 
 /* 2412A0 -> 24142C; not called */
 void func_80192AD0(struct ObjNet *net) {
-    UNUSED u8 filler1[4];
     struct ObjGroup *sp60;
-    UNUSED u8 filler2[68];
     struct ObjNet *sp18;
 
     if ((sp60 = net->unk1C8) == NULL) {
@@ -231,7 +223,6 @@ void func_80192AD0(struct ObjNet *net) {
 /* 24142C -> 24149C; orig name: func_80192C5C */
 void move_bonesnet(struct ObjNet *net) {
     struct ObjGroup *sp24;
-    UNUSED u8 filler[12];
 
     imin("move_bonesnet");
     gd_set_identity_mat4(&D_801B9DC8);
@@ -244,11 +235,9 @@ void move_bonesnet(struct ObjNet *net) {
 /* 24149C -> 241768 */
 void func_80192CCC(struct ObjNet *net) {
     Mat4f sp38;
-    UNUSED struct GdControl *ctrl; // 34
     struct ObjGroup *group;        // 30
     struct GdVec3f sp24;
 
-    ctrl = &gGdCtrl;
     if (gGdCtrl.unk2C != NULL) {
         menu_cb_reset_positions();
     }
@@ -285,7 +274,6 @@ void func_80192CCC(struct ObjNet *net) {
     if ((group = net->unk1C8) != NULL) {
         apply_to_obj_types_in_group(OBJ_TYPE_JOINTS, (applyproc_t) func_80191220, group);
         apply_to_obj_types_in_group(OBJ_TYPE_JOINTS, (applyproc_t) func_801913F0, group);
-        apply_to_obj_types_in_group(OBJ_TYPE_JOINTS, (applyproc_t) stub_joints_2, group);
         apply_to_obj_types_in_group(OBJ_TYPE_JOINTS, (applyproc_t) func_801911A8, group);
     }
 
@@ -299,10 +287,8 @@ void func_80192CCC(struct ObjNet *net) {
 
 /* 241768 -> 241AB4; orig name: func_80192F98 */
 void convert_gd_verts_to_Vn(struct ObjGroup *grp) {
-    UNUSED u8 filler1[20];
     Vtx *vn;       // 28
     u8 nx, ny, nz; // 24, 25, 26
-    UNUSED u8 filler2[4];
     register struct VtxLink *vtxlink; // a1
 #ifndef GBI_FLOATS
     register s16 *vnPos;              // a2
@@ -347,11 +333,8 @@ void convert_gd_verts_to_Vn(struct ObjGroup *grp) {
 
 /* 241AB4 -> 241BCC; orig name: func_801932E4 */
 void convert_gd_verts_to_Vtx(struct ObjGroup *grp) {
-    UNUSED u8 filler[24];
     register struct VtxLink *vtxlink; // a1
-#ifndef GBI_FLOATS
     register s16 *vtxcoords;          // a2
-#endif
     register s16 x;                   // a3
     register s16 y;                   // t0
     register s16 z;                   // t1
@@ -367,16 +350,10 @@ void convert_gd_verts_to_Vtx(struct ObjGroup *grp) {
         z = (s16) vtx->pos.z;
 
         for (vtxlink = vtx->gbiVerts; vtxlink != NULL; vtxlink = vtxlink->prev) {
-#ifndef GBI_FLOATS
             vtxcoords = vtxlink->data->v.ob;
             vtxcoords[0] = x;
             vtxcoords[1] = y;
             vtxcoords[2] = z;
-#else
-            vtxlink->data->v.ob[0] = x;
-            vtxlink->data->v.ob[1] = y;
-            vtxlink->data->v.ob[2] = z;
-#endif
         }
     }
 }
@@ -488,37 +465,6 @@ void func_80193848(struct ObjGroup *group) {
     apply_to_obj_types_in_group(OBJ_TYPE_NETS, (applyproc_t) func_80192294, group);
     apply_to_obj_types_in_group(OBJ_TYPE_NETS, (applyproc_t) func_801922FC, group);
     apply_to_obj_types_in_group(OBJ_TYPE_NETS, (applyproc_t) func_8019373C, group);
-}
-
-/* 24208C -> 2422E0; not called; orig name: func_801938BC */
-void gd_print_net(struct ObjNet *net) {
-    gd_printf("Flags:%x\n", net->flags);
-    gd_print_vec("World:", &net->worldPos);
-    gd_print_vec("Force:", &net->unusedForce);
-    gd_print_vec("Vel:", &net->velocity);
-    gd_print_vec("Rot:", &net->rotation);
-    gd_print_vec("CollDisp:", &net->collDisp);
-    gd_print_vec("CollTorque:", &net->collTorque);
-    gd_print_vec("CollTorqueL:", &net->unusedCollTorqueL);
-    gd_print_vec("CollTorqueD:", &net->unusedCollTorqueD);
-    gd_print_vec("Torque:", &net->torque);
-    gd_print_vec("CofG:", &net->centerOfGravity);
-    gd_print_bounding_box("BoundBox:", &net->boundingBox);
-    gd_print_vec("CollDispOff:", &net->unusedCollDispOff);
-    gd_printf("CollMaxD: %f\n", net->unusedCollMaxD);
-    gd_printf("MaxRadius: %f\n", net->maxRadius);
-    gd_print_mtx("Matrix:", &net->mat128);
-    if (net->shapePtr != NULL) {
-        gd_printf("ShapePtr: %x (%s)\n", (u32) (uintptr_t) net->shapePtr, net->shapePtr->name);
-    } else {
-        gd_printf("ShapePtr: NULL\n");
-    }
-    gd_print_vec("Scale:", &net->scale);
-    gd_printf("Mass: %f\n", net->unusedMass);
-    gd_printf("NumModes: %d\n", net->numModes);
-    gd_printf("NodeGroup: %x\n", (u32) (uintptr_t) net->unk1C8);
-    gd_printf("PlaneGroup: %x\n", (u32) (uintptr_t) net->unk1CC);
-    gd_printf("VertexGroup: %x\n", (u32) (uintptr_t) net->unk1D0);
 }
 
 /* 2422E0 -> 2422F8; orig name: func_80193B10 */

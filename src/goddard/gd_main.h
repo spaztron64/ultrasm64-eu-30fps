@@ -60,8 +60,6 @@ struct GdControl { // gGdCtrl
     /* 0xD4 */ s32 csrY; // bounded by screen view
     /* 0xD8 */ /* hand/cursor state bitfield? */
         /* b80 */ u8 dragging : 1;  // bool (A) pressed
-        /* b40 */ u8 unkD8b40 : 1; // set to FALSE and unused
-        /* b20 */ u8 unkD8b20 : 1; // set to FALSE and unused
         /* b10 */ u8 startedDragging : 1;  // bool new (A) press
         /* b08 */ u8 unkD8b08 : 1;
         /* b04 */ u8 unkD8b04 : 1;

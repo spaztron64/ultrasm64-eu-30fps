@@ -173,7 +173,7 @@ static void tkClockDisable(void)
  ***********************************************************************/
 static void tkClockStart(void)
 {
-  samples_played = 0;
+  samples_played = 0; 
   last_time = osGetTime();
   clock_alive = 1;
 }

@@ -136,7 +136,6 @@ void gd_rot_mat_about_vec(Mat4f *mtx, struct GdVec3f *vec) {
  * translation column of a mat4f matrix.
  */
 void gd_add_vec3f_to_mat4f_offset(Mat4f *mtx, struct GdVec3f *vec) {
-    UNUSED Mat4f temp;
     f32 z, y, x;
 
     x = vec->x;
@@ -273,21 +272,6 @@ void gd_rot_2d_vec(f32 deg, f32 *x, f32 *y) {
 }
 
 /**
- * Rotates a matrix about one of its rows.
- */
-void UNUSED gd_rot_mat_about_row(Mat4f *mat, s32 row, f32 ang) {
-    Mat4f rot;
-    struct GdVec3f vec;
-
-    vec.x = (*mat)[row][0];
-    vec.y = (*mat)[row][1];
-    vec.z = (*mat)[row][2];
-
-    gd_create_rot_mat_angular(&rot, &vec, ang / 2.0);
-    gd_mult_mat4f(mat, &rot, mat);
-}
-
-/**
  * Rotates a mat4f matrix about a given axis
  * by a set angle in degrees.
  */
@@ -369,20 +353,6 @@ void gd_cross_vec3f(struct GdVec3f *a, struct GdVec3f *b, struct GdVec3f *dst) {
  */
 f32 gd_dot_vec3f(struct GdVec3f *a, struct GdVec3f *b) {
     return (a->x * b->x) + (a->y * b->y) + (a->z * b->z);
-}
-
-/**
- * Inverts each element of src into dst.
- */
-void UNUSED gd_invert_elements_mat4f(Mat4f *src, Mat4f *dst) {
-    s32 i;
-    s32 j;
-
-    for (i = 0; i < 4; i++) {
-        for (j = 0; j < 4; j++) {
-            (*dst)[i][j] = 1.0f / (*src)[i][j];
-        }
-    }
 }
 
 /**
@@ -535,91 +505,6 @@ f32 gd_2x2_det(f32 a, f32 b, f32 c, f32 d) {
 }
 
 /**
- * Creates a vector negative to what was passed in. Also sets the first row of a mat4f
- * to 1 0 0 0. Perhaps meant to be used at the end of gd_create_quat_rot_mat? Not
- * sure of the purpose of the vector portion, though.
- */
-void UNUSED gd_create_neg_vec_zero_first_mat_row(Mat4f *mtx, struct GdVec3f *vec, f32 x, f32 y, f32 z) {
-    s32 i;
-
-    vec->x = -x;
-    vec->y = -y;
-    vec->z = -z;
-
-    (*mtx)[0][0] = 1.0f;
-
-    for (i = 1; i < 4; i++) {
-        (*mtx)[0][i] = 0.0f;
-    }
-}
-
-/**
- * This function quite literally does nothing.
- * Seems to have been meant to create a vector from a quaternion?
- */
-void UNUSED gd_broken_quat_to_vec3f(f32 quat[4], struct GdVec3f *vec, f32 zHalf, s32 i, s32 run) {
-    s32 j;
-    s32 k;
-    UNUSED f32 jVal;
-    UNUSED f32 kVal;
-    UNUSED struct GdVec3f uVec;
-    struct GdVec3f tVec;
-
-    tVec.x = vec->x;
-    tVec.y = vec->y;
-    tVec.z = vec->z;
-
-    if (run < 0) {
-        goto end;
-    }
-
-    if ((j = i + 1) >= 4) {
-        j = 1;
-    }
-
-    if ((k = j + 1) >= 4) {
-        k = 1;
-    }
-
-    jVal = quat[j];
-    kVal = quat[k];
-    uVec.x = quat[0];
-    uVec.y = quat[i];
-    uVec.z = zHalf + zHalf;
-
-end:
-    vec->x = tVec.x;
-    vec->y = tVec.y;
-    vec->z = tVec.z;
-}
-
-/**
- * This function is a pitch rotation of a quaternion, with the sign allowing both regular
- * and inverse multiplication.
- */
-void UNUSED gd_quat_rotation(f32 quat[4], UNUSED s32 unused, f32 c, f32 s, s32 i, s32 sign) {
-    s32 j;
-    s32 k;
-    f32 quatVal;
-    UNUSED u8 filler[8];
-
-    if ((j = i + 1) >= 4) {
-        j = 1;
-    }
-    if ((k = j + 1) >= 4) {
-        k = 1;
-    }
-
-    quatVal = quat[i];
-    quat[i] = sign * s * quat[0] + quatVal * c;
-    quat[0] = quat[0] * c - sign * s * quatVal;
-
-    quatVal = quat[j];
-    quat[j] = quat[k] * s + quatVal * c;
-    quat[k] = quat[k] * c - s * quatVal;
-}
-
-/**
  * Shifts a matrix up by one row, putting the top row on bottom.
  */
 void gd_shift_mat_up(Mat4f *mtx) {
@@ -643,48 +528,6 @@ void gd_shift_mat_up(Mat4f *mtx) {
 
     for (i = 0; i < 3; i++) {
         (*mtx)[3][i] = temp[i];
-    }
-}
-
-/**
- * Creates a rotation matrix from a quaternion.
- *
- * Has form-
- * | 1        -               -               -        |
- * | 0 w^2+i^2-j^2-k^2     2ij+2wk         2ik+2wj     |
- * | 0     2ij-2wk     w^2+j^2-i^2-k^2     2jk+2wi     |
- * | 0     2ik+2wj         2jk-2wi     w^2+k^2-i^2-j^2 |
- * 
- * Potentially broken if 'mtx' is not an identity matrix/zero'ed.
- */
-void UNUSED gd_create_quat_rot_mat(f32 quat[4], UNUSED s32 unused, Mat4f *mtx) {
-    f32 twoIJ;
-    f32 two0K;
-    f32 sqQuat[4];
-    s32 i;
-    s32 j;
-    s32 k;
-
-    for (i = 0; i < 4; i++) {
-        sqQuat[i] = SQ(quat[i]);
-    }
-
-    for (i = 1; i < 4; i++) {
-        if ((j = i + 1) >= 4) {
-            j = 1;
-        }
-
-        if ((k = j + 1) >= 4) {
-            k = 1;
-        }
-
-        twoIJ = 2.0 * quat[i] * quat[j];
-        two0K = 2.0 * quat[k] * quat[0];
-
-        (*mtx)[j][i] = twoIJ - two0K;
-        (*mtx)[i][j] = twoIJ + two0K;
-        (*mtx)[i][i] = sqQuat[i] + sqQuat[0] - sqQuat[j] - sqQuat[k];
-        (*mtx)[i][0] = 0.0f;
     }
 
     //! The first row only ever has the first value set to 1, but the
@@ -875,7 +718,6 @@ void gd_mult_mat4f(const Mat4f *mA, const Mat4f *mB, Mat4f *dst) {
  * Printed the prefix at some point, as shown by how the function is used.
  */
 void gd_print_vec(UNUSED const char *prefix, const struct GdVec3f *vec) {
-    UNUSED u8 filler[8];
 
     printf("%f,%f,%f\n", vec->x, vec->y, vec->z);
     printf("\n");
@@ -887,7 +729,6 @@ void gd_print_vec(UNUSED const char *prefix, const struct GdVec3f *vec) {
  * Printed a prefix at some point, as shone by how the function is used.
  */
 void gd_print_bounding_box(UNUSED const char *prefix, UNUSED const struct GdBoundingBox *p) {
-    UNUSED u8 filler[8];
 
     printf("Min X = %f, Max X = %f \n", p->minX, p->maxX);
     printf("Min Y = %f, Max Y = %f \n", p->minY, p->maxY);
@@ -910,56 +751,5 @@ void gd_print_mtx(UNUSED const char *prefix, const Mat4f *mtx) {
             gd_printf("%f ", (*mtx)[i][j]);
         }
         gd_printf("\n");
-    }
-}
-
-/**
- * Prints a quaternion along with a prefix.
- */
-void UNUSED gd_print_quat(const char *prefix, const f32 f[4]) {
-    s32 i;
-
-    gd_printf(prefix);
-    for (i = 0; i < 4; i++) {
-        gd_printf("%f ", f[i]);
-    }
-    gd_printf("\n");
-}
-
-/**
- * Rotates a matrix or creates a rotation matrix about a vector made from an offset
- * of 100 and the passed in x, y, and z values.
- */
-void UNUSED gd_rot_mat_offset(Mat4f *dst, f32 x, f32 y, f32 z, s32 copy) {
-    f32 adj = 100.0f;
-    Mat4f rot;
-    f32 c;
-    f32 s;
-    f32 opp;
-    f32 mag;
-    struct GdVec3f vec;
-
-    opp = gd_sqrt_f(SQ(x) + SQ(y) + SQ(z));
-
-    if (opp == 0.0f) {
-        if (copy) {
-            gd_set_identity_mat4(dst);
-        }
-        return;
-    }
-
-    mag = gd_sqrt_f(SQ(adj) + SQ(opp));
-    c = adj / mag;
-    s = opp / mag;
-
-    vec.x = -y / opp;
-    vec.y = -x / opp;
-    vec.z = -z / opp;
-
-    gd_create_rot_matrix(&rot, &vec, s, c);
-    if (!copy) {
-        gd_mult_mat4f(dst, &rot, dst);
-    } else {
-        gd_copy_mat4f(&rot, dst);
     }
 }

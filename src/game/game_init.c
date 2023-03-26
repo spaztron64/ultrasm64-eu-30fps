@@ -675,6 +675,18 @@ void setup_game_memory(void) {
 extern u32 gGameTime;
 #define SECONDS_PER_CYCLE 0.00000002133f
 
+void load_config(void) {
+    save_file_get_config();
+    if (gDedither == 0) {
+        osViSetSpecialFeatures(OS_VI_DITHER_FILTER_OFF);
+        osViSetSpecialFeatures(OS_VI_DIVOT_OFF);
+    } else {
+        osViSetSpecialFeatures(OS_VI_DITHER_FILTER_ON);
+        osViSetSpecialFeatures(OS_VI_DIVOT_ON);
+    }
+    gScreenSwapTimer = 1;
+}
+
 
 /**
  * Main game loop thread. Runs forever as long as the game continues.
@@ -702,6 +714,7 @@ void thread5_game_loop(UNUSED void *arg) {
 
     play_music(SEQ_PLAYER_SFX, SEQUENCE_ARGS(0, SEQ_SOUND_PLAYER), 0);
     set_sound_mode(save_file_get_sound_mode());
+    load_config();
 
     while (TRUE) {
         u32 first = osGetTime();

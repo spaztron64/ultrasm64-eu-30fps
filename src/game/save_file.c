@@ -11,6 +11,7 @@
 #include "level_table.h"
 #include "course_table.h"
 #include "rumble_init.h"
+#include "rendering_graph_node.h"
 #ifdef SRAM
 #include "sram.h"
 #endif
@@ -608,6 +609,22 @@ void save_file_set_sound_mode(u16 mode) {
 
     gMainMenuDataModified = TRUE;
     save_main_menu_data();
+}
+
+void save_file_set_config(void) {
+    gSaveBuffer.menuData[0].antiAliasing = gAntiAliasing;
+    gSaveBuffer.menuData[0].dedither = gDedither;
+    gSaveBuffer.menuData[0].screenMode = gScreenMode;
+    gSaveBuffer.menuData[0].frameCap = gFrameCap;
+    gMainMenuDataModified = TRUE;
+    save_main_menu_data();
+}
+
+void save_file_get_config(void) {
+    gAntiAliasing = gSaveBuffer.menuData[0].antiAliasing;
+    gDedither = gSaveBuffer.menuData[0].dedither;
+    gScreenMode = gSaveBuffer.menuData[0].screenMode;
+    gFrameCap = gSaveBuffer.menuData[0].frameCap;
 }
 
 u16 save_file_get_sound_mode(void) {

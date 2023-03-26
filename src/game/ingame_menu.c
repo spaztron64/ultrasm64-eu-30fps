@@ -3217,6 +3217,7 @@ u8 sOptX = 0;
 s32 options_page_logic(void) {
     if (gPlayer1Controller->buttonPressed & (L_TRIG | R_TRIG | Z_TRIG)) {
         play_sound(SOUND_MENU_CHANGE_SELECT, gGlobalSoundSource);
+        save_file_set_config();
         gOptionsPage = FALSE;
     }
     s32 settingSwap = 0;

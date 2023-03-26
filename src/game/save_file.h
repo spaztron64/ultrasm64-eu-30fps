@@ -56,16 +56,11 @@ struct MainMenuSaveData {
     // on the high score screen.
     u32 coinScoreAges[NUM_SAVE_FILES];
     u8 soundMode: 2;
-
-#ifdef VERSION_EU
     u8 language: 2;
-#define SUBTRAHEND 8
-#else
-#define SUBTRAHEND 6
-#endif
-
-    // Pad to match the EEPROM size of 0x200 (10 bytes on JP/US, 8 bytes on EU)
-    //u8 filler[EEPROM_SIZE / 2 - SUBTRAHEND - NUM_SAVE_FILES * (4 + sizeof(struct SaveFile))];
+    u8 antiAliasing : 2;
+    u8 screenMode : 2;
+    u8 dedither : 1;
+    u8 frameCap : 1;
 
     struct SaveBlockSignature signature;
 };
@@ -156,6 +151,8 @@ s32 save_file_get_cap_pos(Vec3s capPos);
 void save_file_set_sound_mode(u16 mode);
 u16 save_file_get_sound_mode(void);
 void save_file_move_cap_to_default_location(void);
+void save_file_get_config(void);
+void save_file_set_config(void);
 
 void disable_warp_checkpoint(void);
 void check_if_should_set_warp_checkpoint(struct WarpNode *warpNode);

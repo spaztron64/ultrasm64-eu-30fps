@@ -201,8 +201,6 @@ struct GdObj *make_object(enum ObjTypeFlag objType) {
     u8 *newObjBytes;
     s32 objPermanence = 0x10;
 
-    imin("make_object");
-
     switch (objType) {
         case OBJ_TYPE_JOINTS:
             objSize = sizeof(struct ObjJoint);
@@ -286,8 +284,6 @@ struct GdObj *make_object(enum ObjTypeFlag objType) {
             objSize = sizeof(struct ObjZone);
             objDrawFn = (drawmethod_t) draw_nothing;
             break;
-        default:
-            fatal_print("make_object() : Unkown object!");
     }
 
     typeName = get_obj_name_str(objType);
@@ -295,9 +291,6 @@ struct GdObj *make_object(enum ObjTypeFlag objType) {
     // Allocate memory for the object
     start_memtracker(typeName);
     newObj = gd_malloc(objSize, objPermanence);
-    if (newObj == NULL) {
-        fatal_printf("Cant allocate object '%s' memory!", typeName);
-    }
     stop_memtracker(typeName);
 
     // Zero out the object
@@ -321,8 +314,6 @@ struct GdObj *make_object(enum ObjTypeFlag objType) {
     newObj->type = objType;
     newObj->objDrawFn = objDrawFn;
     newObj->drawFlags = 0;
-
-    imout();
     return newObj;
 }
 
@@ -365,9 +356,6 @@ struct ListNode *make_link_to_obj(struct ListNode *prevNode, struct GdObj *obj) 
     // Allocate link node
     start_memtracker("links");
     newNode = gd_malloc_perm(sizeof(struct ListNode));
-    if (newNode == NULL) {
-        fatal_print("Cant allocate link memory!");
-    }
     stop_memtracker("links");
 
     // Append to `prevNode` if not NULL
@@ -389,9 +377,6 @@ struct VtxLink *make_vtx_link(struct VtxLink *prevNode, Vtx *data) {
     struct VtxLink *newNode;
 
     newNode = gd_malloc_perm(sizeof(struct VtxLink));
-    if (newNode == NULL) {
-        fatal_print("Cant allocate link memory!");
-    }
 
     // Append to `prevNode` if not NULL
     if (prevNode != NULL) {
@@ -401,11 +386,6 @@ struct VtxLink *make_vtx_link(struct VtxLink *prevNode, Vtx *data) {
     newNode->prev = prevNode;
     newNode->next = NULL;
     newNode->data = data;
-
-    // WTF? Not sure what this is supposed to check
-    if (((uintptr_t)(newNode)) == 0x3F800000) {
-        fatal_printf("bad3\n");
-    }
 
     return newNode;
 }
@@ -430,8 +410,6 @@ void reset_plane(struct ObjPlane *plane) {
     s32 i;
     s32 sp30;
     register f32 sp28;
-
-    imin("reset_plane");
 
     sp4C = plane->unk40;
     calc_face_normal(sp4C);
@@ -498,7 +476,6 @@ void reset_plane(struct ObjPlane *plane) {
         plane->boundingBox.maxZ += 50.0f;
         plane->boundingBox.minZ -= 50.0f;
     }
-    imout();
 }
 
 /* @ 22B60C for 0x94; orig name: func_8017CE3C */
@@ -775,10 +752,6 @@ struct ObjGroup *make_group(s32 count, ...) {
         // get the next pointer in the struct.
         vargObj = va_arg(args, struct GdObj *);
 
-        if (vargObj == NULL) { // one of our pointers was NULL. raise an error.
-            fatal_printf("make_group() NULL group ptr");
-        }
-
         curObj = vargObj;
         newGroup->memberTypes |= curObj->type;
         addto_group(newGroup, vargObj);
@@ -804,8 +777,6 @@ struct ObjGroup *make_group(s32 count, ...) {
 void addto_group(struct ObjGroup *group, struct GdObj *obj) {
     char strbuf[0x20];
 
-    imin("addto_group");
-
     // Add object to the end of group's member list
     if (group->firstMember == NULL) {
         group->firstMember = make_link_to_obj(NULL, obj);
@@ -824,15 +795,12 @@ void addto_group(struct ObjGroup *group, struct GdObj *obj) {
     format_object_id(strbuf, &group->header);
     printf("%s", strbuf);
     printf("\n");
-
-    imout();
 }
 
 /**
  * Adds the object as a member of the group, placing it at the beginning of the group's list.
  */
 void addto_groupfirst(struct ObjGroup *group, struct GdObj *obj) {
-    imin("addto_groupfirst");
 
     // Add object to the beginning of group's member list
     if (group->firstMember == NULL) {
@@ -847,8 +815,6 @@ void addto_groupfirst(struct ObjGroup *group, struct GdObj *obj) {
 
     group->memberTypes |= obj->type;
     group->memberCount++;
-
-    imout();
 }
 
 /**
@@ -1405,19 +1371,6 @@ void move_animator(struct ObjAnimator *animObj) {
                 gd_add_vec3f_to_mat4f_offset(&localMtx, &triPtr->pos);
                 d_set_i_matrix(&localMtx);
                 break;
-            case GD_ANIM_STUB:
-                if (stubObj1 == NULL) {
-                    stubObj1 = linkedObj;
-                } else {
-                    if (stubObj2 == NULL) {
-                        stubObj2 = linkedObj;
-                    } else {
-                        fatal_printf("Too many objects to morph");
-                    }
-                }
-                break;
-            default:
-                fatal_printf("move_animator(): Unkown animation data type");
         }
         link = link->next;
     }
@@ -1657,25 +1610,6 @@ void func_8018100C(struct ObjLight *light) {
     if (light->position.z > 500.0f || light->position.z < -500.0f) {
         light->unk80.z = -light->unk80.z;
     }
-
-    return;
-    // more unreachable
-    D_801A81C0 += 1.0f; //? 1.0f
-    D_801A81C4 += 0.6f; //? 0.6f
-
-    gd_set_identity_mat4(&mtx);
-    gd_absrot_mat4(&mtx, GD_Y_AXIS, light->unk68.y);
-    gd_absrot_mat4(&mtx, GD_X_AXIS, light->unk68.x);
-    gd_absrot_mat4(&mtx, GD_Z_AXIS, light->unk68.z);
-    gd_mat4f_mult_vec3f(&light->unk8C, &mtx);
-
-    light->position.x = light->unk8C.x;
-    light->position.y = light->unk8C.y;
-    light->position.z = light->unk8C.z;
-    return;
-    // even more unreachable
-    gd_mat4f_mult_vec3f(&light->unk80, &mtx);
-    imout(); // this call would cause an issue if it was reachable
 }
 
 /* @ 22FB48 for 0x38; orig name: func_80181378 */
@@ -1703,7 +1637,6 @@ void move_group_members(void) {
 
 /* @ 22FC2C for 0x98; orig name: func_8018145C */
 void proc_view_movement(struct ObjView *view) {
-    imin("movement");
     sCurrentMoveCamera = view->activeCam;
     sCurrentMoveView = view;
     if ((sCurrentMoveGrp = view->components) != NULL) {
@@ -1712,7 +1645,6 @@ void proc_view_movement(struct ObjView *view) {
     if ((sCurrentMoveGrp = view->lights) != NULL) {
         move_group_members();
     }
-    imout();
 }
 
 /* @ 22FCC4 for 0x44; orig name: func_801814F4 */

@@ -50,7 +50,6 @@ struct Connection *make_connection(struct ObjVertex *, struct ObjVertex *);
 int func_80182778(struct ObjParticle *);
 void func_80182A08(struct ObjParticle *, struct GdVec3f *b);
 void func_801838D0(struct ObjParticle *);
-void Unknown801835C8(struct ObjParticle *ptc);
 
 static void connect_vertices(struct ObjVertex *vtx1, struct ObjVertex *vtx2) {
     struct Connection *newConn;
@@ -225,9 +224,6 @@ struct Connection *make_connection(struct ObjVertex *vtx1, struct ObjVertex *vtx
     struct GdVec3f sp28;
     struct GdVec3f sp1C;
 
-    if (conn == NULL) {
-        fatal_print("Cant allocate connection memory!");
-    }
     conn->node1.vtx = vtx1;
     conn->node2.vtx = vtx2;
     d_stash_dynobj();
@@ -458,33 +454,6 @@ void move_particles_in_grp(struct ObjGroup *group) {
 
 #define ABS(x) ((x) < 0.0f ? -(x) : (x))
 /* 231D98 -> 232040 */
-void Unknown801835C8(struct ObjParticle *ptc) {
-    struct GdVec3f sp54;
-    f32 sp50;
-    register struct ListNode *link;
-
-    gd_printf("p(%d)=", ptc->attachedObjsGrp->memberCount);
-    link = ptc->attachedObjsGrp->firstMember;
-    while (link != NULL) {
-        // FIXME: types
-        struct ObjParticle *sp48 = (struct ObjParticle *) link->obj;
-
-        sp54.x = sp48->pos.x - ptc->pos.x;
-        sp54.y = sp48->pos.y - ptc->pos.y;
-        sp54.z = sp48->pos.z - ptc->pos.z;
-        sp50 = 150.0f - (ABS(sp54.x) + ABS(sp54.y) + ABS(sp54.z));
-        gd_printf(",%f ", sp50);
-        sp50 *= 0.00000005;
-        ptc->pos.x += sp50 * sp54.x;
-        ptc->pos.y += sp50 * sp54.y;
-        ptc->pos.z += sp50 * sp54.z;
-        sp48->pos.x -= sp50 * sp54.x;
-        sp48->pos.y -= sp50 * sp54.y;
-        sp48->pos.z -= sp50 * sp54.z;
-        link = link->next;
-    }
-    gd_printf("\n");
-}
 
 /* 2320A0 -> 2320D4; pad to 2320E0 */
 void func_801838D0(struct ObjParticle *ptc) {

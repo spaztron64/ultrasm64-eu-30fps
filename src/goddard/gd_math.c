@@ -295,8 +295,6 @@ void gd_absrot_mat4(Mat4f *mtx, s32 axisnum, f32 ang) {
             rot.y = 0.0f;
             rot.z = 1.0f;
             break;
-        default:
-            fatal_printf("absrot_matrix4(): Bad axis num");
     }
 
     gd_create_rot_mat_angular(&rMat, &rot, ang / 2.0); //? 2.0f
@@ -366,10 +364,6 @@ void gd_inverse_mat4f(Mat4f *src, Mat4f *dst) {
 
     gd_adjunct_mat4f(src, dst);
     determinant = gd_mat4f_det(dst);
-
-    if (ABS(determinant) < 1e-5) { //? 1e-5f
-        fatal_print("Non-singular matrix, no inverse!\n");
-    }
 
     for (i = 0; i < 4; i++) {
         for (j = 0; j < 4; j++) {
@@ -711,45 +705,3 @@ void gd_mult_mat4f(const Mat4f *mA, const Mat4f *mB, Mat4f *dst) {
 
 #undef MAT4_MULTIPLY
 #undef MAT4_DOT_PROD
-
-/**
- * Prints a vec3f vector.
- *
- * Printed the prefix at some point, as shown by how the function is used.
- */
-void gd_print_vec(UNUSED const char *prefix, const struct GdVec3f *vec) {
-
-    printf("%f,%f,%f\n", vec->x, vec->y, vec->z);
-    printf("\n");
-}
-
-/**
- * Prints a plane's boundaries.
- *
- * Printed a prefix at some point, as shone by how the function is used.
- */
-void gd_print_bounding_box(UNUSED const char *prefix, UNUSED const struct GdBoundingBox *p) {
-
-    printf("Min X = %f, Max X = %f \n", p->minX, p->maxX);
-    printf("Min Y = %f, Max Y = %f \n", p->minY, p->maxY);
-    printf("Min Z = %f, Max Z = %f \n", p->minZ, p->maxZ);
-    printf("\n");
-}
-
-/**
- * Prints a Mat4f.
- *
- * Although the prefix input is unused, the one usage of this function
- * does have a "Matrix:" prefix, so it was definitely used at one point.
- */
-void gd_print_mtx(UNUSED const char *prefix, const Mat4f *mtx) {
-    s32 i;
-    s32 j;
-
-    for (i = 0; i < 4; i++) {
-        for (j = 0; j < 4; j++) {
-            gd_printf("%f ", (*mtx)[i][j]);
-        }
-        gd_printf("\n");
-    }
-}

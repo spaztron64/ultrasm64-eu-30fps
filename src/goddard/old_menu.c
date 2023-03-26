@@ -39,8 +39,6 @@ void get_objvalue(union ObjVarVal *dst, enum ValPtrType type, void *base, size_t
         case OBJ_VALUE_FLOAT:
             dst->f = objAddr->f;
             break;
-        default:
-            fatal_printf("%s: Undefined ValueType", "get_objvalue");
     }
 }
 
@@ -98,8 +96,6 @@ void set_objvalue(union ObjVarVal *src, enum ValPtrType type, void *base, size_t
         case OBJ_VALUE_FLOAT:
             dst->f = src->f;
             break;
-        default:
-            fatal_printf("%s: Undefined ValueType", "set_objvalue");
     }
 }
 
@@ -152,8 +148,6 @@ void adjust_gadget(struct ObjGadget *gdgt, s32 a1, s32 a2) {
             case OBJ_VALUE_INT:
                 gdgt->varval.i = ((s32)(gdgt->sliderPos * range)) + gdgt->rangeMin;
                 break;
-            default:
-                fatal_printf("%s: Undefined ValueType", "adjust_gadget");
         }
     }
 
@@ -164,10 +158,6 @@ void adjust_gadget(struct ObjGadget *gdgt, s32 a1, s32 a2) {
 void reset_gadget(struct ObjGadget *gdgt) {
     f32 range;
     struct ObjValPtr *vp;
-
-    if (gdgt->rangeMax - gdgt->rangeMin == 0.0f) {
-        fatal_printf("gadget has zero range (%f -> %f)\n", gdgt->rangeMin, gdgt->rangeMax);
-    }
 
     range = (f32)(1.0 / (gdgt->rangeMax - gdgt->rangeMin));
 
@@ -183,8 +173,6 @@ void reset_gadget(struct ObjGadget *gdgt) {
                 get_objvalue(&gdgt->varval, OBJ_VALUE_INT, vp->obj, vp->offset);
                 gdgt->sliderPos = (gdgt->varval.i - gdgt->rangeMin) * range;
                 break;
-            default:
-                fatal_printf("%s: Undefined ValueType", "reset_gadget");
         }
     }
 }

@@ -693,22 +693,10 @@ f32 get_time_scale(void) {
     return sTimeScaleFactor;
 }
 
-void dump_disp_list(void) {
-    gd_printf("%d\n", sCurrentGdDl->id);
-    gd_printf("Vtx=%d/%d, Mtx=%d/%d, Light=%d/%d, Gfx=%d/%d\n", sCurrentGdDl->curVtxIdx,
-              sCurrentGdDl->totalVtx, sCurrentGdDl->curMtxIdx, sCurrentGdDl->totalMtx,
-              sCurrentGdDl->curLightIdx, sCurrentGdDl->totalLights, sCurrentGdDl->curGfxIdx,
-              sCurrentGdDl->totalGfx);
-}
-
 /**
  * Increments the current display list's Gfx index list and returns a pointer to the next Gfx element
  */
 static Gfx *next_gfx(void) {
-    if (sCurrentGdDl->curGfxIdx >= sCurrentGdDl->totalGfx) {
-        dump_disp_list();
-        fatal_printf("Gfx list overflow");
-    }
 
     return &sCurrentGdDl->gfx[sCurrentGdDl->curGfxIdx++];
 }
@@ -717,10 +705,6 @@ static Gfx *next_gfx(void) {
  * Increments the current display list's Light index list and returns a pointer to the next Light element
  */
 static Lights4 *next_light(void) {
-    if (sCurrentGdDl->curLightIdx >= sCurrentGdDl->totalLights) {
-        dump_disp_list();
-        fatal_printf("Light list overflow");
-    }
 
     return &sCurrentGdDl->light[sCurrentGdDl->curLightIdx++];
 }
@@ -729,10 +713,6 @@ static Lights4 *next_light(void) {
  * Increments the current display list's matrix index list and returns a pointer to the next matrix element
  */
 static Mtx *next_mtx(void) {
-    if (sCurrentGdDl->curMtxIdx >= sCurrentGdDl->totalMtx) {
-        dump_disp_list();
-        fatal_printf("Mtx list overflow");
-    }
 
     return &sCurrentGdDl->mtx[sCurrentGdDl->curMtxIdx++];
 }
@@ -741,10 +721,6 @@ static Mtx *next_mtx(void) {
  * Increments the current display list's vertex index list and returns a pointer to the next vertex element
  */
 static Vtx *next_vtx(void) {
-    if (sCurrentGdDl->curVtxIdx >= sCurrentGdDl->totalVtx) {
-        dump_disp_list();
-        fatal_printf("Vtx list overflow");
-    }
 
     return &sCurrentGdDl->vtx[sCurrentGdDl->curVtxIdx++];
 }
@@ -753,10 +729,6 @@ static Vtx *next_vtx(void) {
  * Increments the current display list's viewport list and returns a pointer to the next viewport element
  */
 static Vp *next_vp(void) {
-    if (sCurrentGdDl->curVpIdx >= sCurrentGdDl->totalVp) {
-        dump_disp_list();
-        fatal_printf("Vp list overflow");
-    }
 
     return &sCurrentGdDl->vp[sCurrentGdDl->curVpIdx++];
 }
@@ -779,13 +751,6 @@ f64 gd_sqrt_d(f64 x) {
     return sqrtf(x);
 }
 
-/* 24A19C -> 24A1D4 */
-void gd_exit(UNUSED s32 code) {
-    gd_printf("exit\n");
-    while (TRUE) {
-    }
-}
-
 /* 24A1D4 -> 24A220; orig name: func_8019BA04 */
 void gd_free(void *ptr) {
     sAllocMemory -= gd_free_mem(ptr);
@@ -796,14 +761,6 @@ void *gd_allocblock(u32 size) {
     void *block; // 1c
 
     size = ALIGN(size, 8);
-    if ((sMemBlockPoolUsed + size) > sMemBlockPoolSize) {
-        gd_printf("gd_allocblock(): Failed request: %dk (%d bytes)\n", size / 1024, size);
-        gd_printf("gd_allocblock(): Heap usage: %dk (%d bytes) \n", sMemBlockPoolUsed / 1024,
-                  sMemBlockPoolUsed);
-        print_all_memtrackers();
-        mem_stats();
-        fatal_printf("exit");
-    }
 
     block = sMemBlockPoolBase + sMemBlockPoolUsed;
     sMemBlockPoolUsed += size;
@@ -817,10 +774,6 @@ void *gd_malloc(u32 size, u8 perm) {
     ptr = gd_request_mem(size, perm);
 
     if (ptr == NULL) {
-        gd_printf("gd_malloc(): Failed request: %dk (%d bytes)\n", size / 1024, size);
-        gd_printf("gd_malloc(): Heap usage: %dk (%d bytes) \n", sAllocMemory / 1024, sAllocMemory);
-        print_all_memtrackers();
-        mem_stats();
         return NULL;
     }
 
@@ -956,7 +909,6 @@ void gd_add_to_heap(void *addr, u32 size) {
 /* 24AAE0 -> 24AB7C */
 void gdm_init(void *blockpool, u32 size) {
 
-    imin("gdm_init");
     // Align downwards?
     size = (size - 8) & ~7;
     // Align to next double word boundry?
@@ -967,7 +919,6 @@ void gdm_init(void *blockpool, u32 size) {
     sAllocMemory = 0;
     init_mem_block_lists();
     gd_reset_sfx();
-    imout();
 }
 
 /**
@@ -975,7 +926,6 @@ void gdm_init(void *blockpool, u32 size) {
  */
 void gdm_setup(void) {
 
-    imin("gdm_setup");
     sYoshiSceneGrp = NULL;
     sMarioSceneGrp = NULL;
     sUpdateYoshiScene = FALSE;
@@ -987,16 +937,6 @@ void gdm_setup(void) {
     load_shapes2();
     reset_cur_dl_indices();
     setup_stars();
-    imout();
-}
-
-/* 24AC2C -> 24AC80; not called; orig name: Unknown8019C45C */
-void print_gdm_stats(void) {
-    stop_memtracker("total");
-    gd_printf("\ngdm stats:\n");
-    print_all_memtrackers();
-    mem_stats();
-    start_memtracker("total");
 }
 
 /* 24AC80 -> 24AD14; orig name: func_8019C4B0 */
@@ -1010,7 +950,6 @@ struct ObjView *make_view_withgrp(char *name, struct ObjGroup *grp) {
 /* 24AD14 -> 24AEB8 */
 void gdm_maketestdl(s32 id) {
 
-    imin("gdm_maketestdl");
     switch (id) {
         case 0:
             sYoshiSceneView = make_view_withgrp("yoshi_scene", sYoshiSceneGrp);
@@ -1040,21 +979,12 @@ void gdm_maketestdl(s32 id) {
         case 5:
             reset_nets_and_gadgets(sCarSceneGrp);
             break;
-        default:
-            fatal_printf("gdm_maketestdl(): unknown dl");
     }
-    imout();
 }
 
 /* 24AEB8 -> 24AED0 */
 void set_time_scale(f32 factor) {
     sTimeScaleFactor = factor;
-}
-
-/* 24AED0 -> 24AF04 */
-void Unknown8019C840(void) {
-    gd_printf("\n");
-    print_all_timers();
 }
 
 /**
@@ -1087,10 +1017,6 @@ void gd_copy_p1_contpad(OSContPad *p1cont) {
     for (i = 0; i < sizeof(OSContPad); i++) {
         dest[i] = src[i];
     }
-
-    if (p1cont->button & Z_TRIG) {
-        print_all_timers();
-    }
 }
 
 /* 24B058 -> 24B088; orig name: gd_sfx_to_play */
@@ -1110,9 +1036,6 @@ Gfx *gdm_gettestdl(s32 id) {
 
     switch (id) {
         case 0:
-            if (sYoshiSceneView == NULL) {
-                fatal_printf("gdm_gettestdl(): DL number %d undefined", id);
-            }
             //! @bug Code treats `sYoshiSceneView` as group; not called in game though
             apply_to_obj_types_in_group(OBJ_TYPE_VIEWS, (applyproc_t) update_view,
                                         (struct ObjGroup *) sYoshiSceneView);
@@ -1121,9 +1044,6 @@ Gfx *gdm_gettestdl(s32 id) {
             sUpdateYoshiScene = TRUE;
             break;
         case 1:
-            if (sYoshiSceneGrp == NULL) {
-                fatal_printf("gdm_gettestdl(): DL number %d undefined", id);
-            }
             dobj = d_use_obj("yoshi_sh_l1");
             gddl = sGdDLArray[((struct ObjShape *) dobj)->dlNums[gGdFrameBufNum]];
             sUpdateYoshiScene = TRUE;
@@ -1141,9 +1061,6 @@ Gfx *gdm_gettestdl(s32 id) {
             sUpdateMarioScene = TRUE;
             break;
         case 4:
-            if (sCarSceneView == NULL) {
-                fatal_printf("gdm_gettestdl(): DL number %d undefined", id);
-            }
             //! @bug Code treats `sCarSceneView` as group; not called in game though
             apply_to_obj_types_in_group(OBJ_TYPE_VIEWS, (applyproc_t) update_view,
                                         (struct ObjGroup *) sCarSceneView);
@@ -1157,22 +1074,13 @@ Gfx *gdm_gettestdl(s32 id) {
             dobj = d_use_obj("testnet2");
             sCarGdDlNum = gd_startdisplist(8);
 
-            if (sCarGdDlNum == 0) {
-                fatal_printf("no memory for car DL\n");
-            }
             apply_obj_draw_fn(dobj);
             gd_enddlsplist_parent();
             gddl = sGdDLArray[sCarGdDlNum];
             sUpdateCarScene = TRUE;
             break;
-        default:
-            fatal_printf("gdm_gettestdl(): %d out of range", id);
     }
 
-    if (gddl == NULL) {
-        fatal_printf("no display list");
-    }
-    stop_timer("dlgen");
     return (void *) osVirtualToPhysical(gddl->gfx);
 }
 
@@ -1187,8 +1095,6 @@ void gdm_getpos(s32 id, struct GdVec3f *dst) {
             dst->y = ((struct ObjNet *) dobj)->worldPos.y;
             dst->z = ((struct ObjNet *) dobj)->worldPos.z;
             break;
-        default:
-            fatal_printf("gdm_getpos(): %d out of range", id);
     }
     return;
 }
@@ -1212,25 +1118,13 @@ static void clamp_coords_to_active_view(f32 *x, f32 *y) {
     }
 }
 
-/* 24B5A8 -> 24B5D4; orig name: func_8019CDD8 */
-void fatal_no_dl_mem(void) {
-    fatal_printf("Out of DL mem\n");
-}
-
 /* 24B5D4 -> 24B6AC */
 struct GdDisplayList *alloc_displaylist(u32 id) {
     struct GdDisplayList *gdDl;
 
     gdDl = gd_malloc_perm(sizeof(struct GdDisplayList));
-    if (gdDl == NULL) {
-        fatal_no_dl_mem();
-    }
 
     gdDl->number = sGdDlCount++;
-    if (sGdDlCount >= MAX_GD_DLS) {
-        fatal_printf("alloc_displaylist() too many display lists %d (MAX %d)", sGdDlCount + 1,
-                     MAX_GD_DLS);
-    }
     sGdDLArray[gdDl->number] = gdDl;
     gdDl->id = id;
     return gdDl;
@@ -1281,45 +1175,35 @@ struct GdDisplayList *new_gd_dl(s32 id, s32 gfxs, s32 verts, s32 mtxs, s32 light
     }
     dl->curVtxIdx = 0;
     dl->totalVtx = verts;
-    if ((dl->vtx = gd_malloc_perm(verts * sizeof(Vtx))) == NULL) {
-        fatal_no_dl_mem();
-    }
+    dl->vtx = gd_malloc_perm(verts * sizeof(Vtx));
 
     if (mtxs == 0) {
         mtxs = 1;
     }
     dl->curMtxIdx = 0;
     dl->totalMtx = mtxs;
-    if ((dl->mtx = gd_malloc_perm(mtxs * sizeof(Mtx))) == NULL) {
-        fatal_no_dl_mem();
-    }
+    dl->mtx = gd_malloc_perm(mtxs * sizeof(Mtx));
 
     if (lights == 0) {
         lights = 1;
     }
     dl->curLightIdx = 0;
     dl->totalLights = lights;
-    if ((dl->light = gd_malloc_perm(lights * sizeof(Lights4))) == NULL) {
-        fatal_no_dl_mem();
-    }
+    dl->light = gd_malloc_perm(lights * sizeof(Lights4));
 
     if (gfxs == 0) {
         gfxs = 1;
     }
     dl->curGfxIdx = 0;
     dl->totalGfx = gfxs;
-    if ((dl->gfx = gd_malloc_perm(gfxs * sizeof(Gfx))) == NULL) {
-        fatal_no_dl_mem();
-    }
+    dl->gfx = gd_malloc_perm(gfxs * sizeof(Gfx));
 
     if (vps == 0) {
         vps = 1;
     }
     dl->curVpIdx = 0;
     dl->totalVp = vps;
-    if ((dl->vp = gd_malloc_perm(vps * sizeof(Vp))) == NULL) {
-        fatal_no_dl_mem();
-    }
+    dl->vp = gd_malloc_perm(vps * sizeof(Vp));
 
     dl->dlptr = NULL;
     return dl;
@@ -1444,15 +1328,9 @@ s32 gd_startdisplist(s32 memarea) {
             sCurrentGdDl = create_child_gdl(0, sStaticDl);
             break;
         case 8:  // Use the active view's display list
-            if (sActiveView->id > 2) {
-                fatal_printf("gd_startdisplist(): Too many views to display");
-            }
 
             sCurrentGdDl = sViewDls[sActiveView->id][gGdFrameBufNum];
             cpy_remaining_gddl(sCurrentGdDl, sCurrentGdDl->parent);
-            break;
-        default:
-            fatal_printf("gd_startdisplist(): Unknown memory area");
             break;
     }
     gDPPipeSync(next_gfx());
@@ -1697,12 +1575,6 @@ void gd_dl_lookat(struct ObjCamera *cam, f32 arg1, f32 arg2, f32 arg3, f32 arg4,
 void check_tri_display(s32 vtxcount) {
     D_801A86C0 = sCurrentGdDl->curVtxIdx;
     D_801BB0B4 = 0;
-    if (vtxcount != 3) {
-        fatal_printf("cant display no tris\n");
-    }
-    if (D_801BB018 != 0 || D_801BB01C != 0) {
-        ;
-    }
 }
 
 /**
@@ -1854,9 +1726,6 @@ void gd_dl_hilite(s32 idx, // material GdDl number; offsets into hilite array
 
     sp38 = 32.0f; // x scale factor?
     sp34 = 32.0f; // y scale factor?
-    if (idx >= 0xc8) {
-        fatal_printf("too many hilites");
-    }
     hilite = &sHilites[idx];
 
     gDPSetPrimColor(next_gfx(), 0, 0, (s32)(colour->r * 255.0f), (s32)(colour->g * 255.0f),
@@ -1914,9 +1783,6 @@ s32 gd_dl_material_lighting(s32 id, struct GdColour *colour, s32 material) {
             break;
         case GD_MTL_SHINE_DL:
             gddl_is_loading_shine_dl(TRUE);
-            if (id >= 200) {
-                fatal_printf("too many hilites");
-            }
             gDPSetHilite1Tile(next_gfx(), G_TX_RENDERTILE, &sHilites[id], 32, 32);
             break;
         case GD_MTL_BREAK:
@@ -2337,8 +2203,6 @@ void gd_shading(s32 model) {
             break;
         case 10:
             break;
-        default:
-            fatal_printf("gd_shading(): Unknown shading model");
     }
 }
 
@@ -2350,8 +2214,6 @@ s32 gd_getproperty(s32 prop, UNUSED void *arg1) {
         case 3:
             got = TRUE;
             break;
-        default:
-            fatal_printf("gd_getproperty(): Unkown property");
     }
 
     return got;
@@ -2406,8 +2268,6 @@ void gd_setproperty(enum GdProperty prop, f32 f1, f32 f2, f32 f3) {
                     break;
                 case 0:
                     break;
-                default:
-                    fatal_printf("Bad GD_OVERLAY parm");
             }
             break;
         case GD_PROP_ZBUF_FN:
@@ -2419,8 +2279,6 @@ void gd_setproperty(enum GdProperty prop, f32 f1, f32 f2, f32 f3) {
                     break;
                 case 25:
                     break;
-                default:
-                    fatal_printf("Bad zbuf function");
             }
             //? no break?
         case GD_PROP_STUB17:
@@ -2433,8 +2291,6 @@ void gd_setproperty(enum GdProperty prop, f32 f1, f32 f2, f32 f3) {
             break;
         case GD_PROP_STUB21:
             break;
-        default:
-            fatal_printf("gd_setproperty(): Unkown property");
     }
 }
 
@@ -2504,9 +2360,6 @@ s32 setup_view_buffers(const char *name, struct ObjView *view, UNUSED s32 ulx, U
             view->colourBufs[1] = (void *) ALIGN((uintptr_t) view->colourBufs[1], 64);
             stop_memtracker(memtrackerName);
 
-            if (view->colourBufs[0] == NULL || view->colourBufs[1] == NULL) {
-                fatal_printf("Not enough DRAM for colour buffers\n");
-            }
             view->parent = view;
         } else {
             view->parent = sScreenView;
@@ -2518,9 +2371,6 @@ s32 setup_view_buffers(const char *name, struct ObjView *view, UNUSED s32 ulx, U
             if (view->flags & VIEW_ALLOC_ZBUF) {
                 view->zbuf =
                     gd_malloc((u32)(2.0f * view->lowerRight.x * view->lowerRight.y + 64.0f), 0x40);
-                if (view->zbuf == NULL) {
-                    fatal_printf("Not enough DRAM for Z buffer\n");
-                }
                 view->zbuf = (void *) ALIGN((uintptr_t) view->zbuf, 64);
             }
             stop_memtracker(memtrackerName);
@@ -2581,24 +2431,17 @@ s32 gd_gentexture(void *texture, s32 fmt, s32 size, UNUSED u32 arg3, UNUSED u32 
         case 31:
             fmt = 3;
             break;
-        default:
-            fatal_printf("gd_gentexture(): bad format");
     }
 
     switch (size) {
         case 33:
             size = 2;
             break;
-        default:
-            fatal_printf("gd_gentexture(): bad size");
     }
 
     sLoadedTextures[++sTextureCount] = texture;
     dl = gd_startdisplist(7);
 
-    if (dl == 0) {
-        fatal_printf("Cant generate DL for texture");
-    }
     gd_enddlsplist_parent();
     sTextureDisplayLists[sTextureCount] = dl;
 
@@ -2751,7 +2594,6 @@ void gd_init(void) {
     s32 i; // 34
     s8 *data; // 2c
 
-    imin("gd_init");
     i = (u32)(sMemBlockPoolSize - DOUBLE_SIZE_ON_64_BIT(0x3E800));
     data = gd_allocblock(i);
     gd_add_mem_to_heap(i, data, 0x10);
@@ -2831,7 +2673,6 @@ void gd_init(void) {
     gGdCtrl.csrX = gScreenWidth / 2;
     gGdCtrl.csrY = SCREEN_HEIGHT / 2;
     gGdCtrl.dragStartFrame = -1000;
-    imout();
 }
 
 /**
@@ -3096,8 +2937,6 @@ void view_proc_print_timers(struct ObjView *self) {
     if (self->flags & VIEW_WAS_UPDATED) {
         return;
     }
-
-    print_all_timers();
 }
 
 /* 254FE4 -> 255600; not called; orig name: Unknown801A6814 */
@@ -3260,27 +3099,18 @@ struct GdObj *load_dynlist(struct DynList *dynlist) {
             break;
         }
     }
-    if (sDynLists[i].list == NULL) {
-        fatal_printf("load_dynlist() ptr not found in any banks");
-    }
 
     switch (sDynLists[i].flag) {
         case STD_LIST_BANK:
             dynlistSegStart = (uintptr_t) _gd_dynlistsSegmentRomStart;
             dynlistSegEnd = (uintptr_t) _gd_dynlistsSegmentRomEnd;
             break;
-        default:
-            fatal_printf("load_dynlist() unkown bank");
     }
 
 #define PAGE_SIZE 65536  // size of a 64K TLB page 
 
     segSize = dynlistSegEnd - dynlistSegStart;
     allocSegSpace = gd_malloc_temp(segSize + PAGE_SIZE);
-
-    if ((allocPtr = (void *) allocSegSpace) == NULL) {
-        fatal_printf("Not enough DRAM for DATA segment \n");
-    }
 
     allocSegSpace = (u8 *) (((uintptr_t) allocSegSpace + PAGE_SIZE) & 0xFFFF0000);
 
@@ -3290,9 +3120,6 @@ struct GdObj *load_dynlist(struct DynList *dynlist) {
     osUnmapTLBAll();
 
     tlbEntries = (segSize / PAGE_SIZE) / 2 + 1;
-    if (tlbEntries >= 31) {
-        fatal_printf("load_dynlist() too many TLBs");
-    }
 
     // Map virtual address 0x04000000 to `allocSegSpace`
     for (i = 0; i < tlbEntries; i++) {

@@ -72,8 +72,6 @@ void calc_face_normal(struct ObjFace *face) {
     struct ObjVertex *vtx3;
     f32 mul = 1000.0f;
 
-    imin("calc_facenormal");
-
     if (face->vtxCount >= 3) {  // need at least three points to compute a normal
         vtx1 = face->vertices[0];
         p1.x = vtx1->pos.x;
@@ -102,7 +100,6 @@ void calc_face_normal(struct ObjFace *face) {
         face->normal.y = normal.y;
         face->normal.z = normal.z;
     }
-    imout();
 }
 
 /* @ 245CDC for 0x118 */
@@ -135,7 +132,6 @@ struct ObjVertex *gd_make_vertex(f32 x, f32 y, f32 z) {
 struct ObjFace *make_face_with_colour(f32 r, f32 g, f32 b) {
     struct ObjFace *newFace;
 
-    imin("make_face");
     newFace = (struct ObjFace *) make_object(OBJ_TYPE_FACES);
 
     newFace->colour.r = r;
@@ -146,7 +142,6 @@ struct ObjFace *make_face_with_colour(f32 r, f32 g, f32 b) {
     newFace->mtlId = -1;
     newFace->mtl = NULL;
 
-    imout();
     return newFace;
 }
 
@@ -331,12 +326,6 @@ s32 getfloat(f32 *floatPtr) {
     u32 sp34;
     f64 parsedDouble;
 
-    imin("getfloat");
-
-    if (is_line_end(get_current_buf_char())) {
-        fatal_printf("getfloat(): Unexpected EOL");
-    }
-
     while (is_white_space(get_current_buf_char())) {
         get_and_advance_buf();
     }
@@ -357,7 +346,6 @@ s32 getfloat(f32 *floatPtr) {
     parsedDouble = gd_lazy_atof(charBuf, &sp34);
     *floatPtr = (f32) parsedDouble;
 
-    imout();
     return !!bufCsr;
 }
 
@@ -366,12 +354,6 @@ s32 getint(s32 *intPtr) {
     char charBuf[0x100];
     u32 bufCsr;
     char curChar;
-
-    imin("getint");
-
-    if (is_line_end(get_current_buf_char())) {
-        fatal_printf("getint(): Unexpected EOL");
-    }
 
     while (is_white_space(get_current_buf_char())) {
         get_and_advance_buf();
@@ -390,7 +372,6 @@ s32 getint(s32 *intPtr) {
     charBuf[bufCsr] = '\0';
     *intPtr = gd_atoi(charBuf);
 
-    imout();
     return !!bufCsr;
 }
 
@@ -516,8 +497,6 @@ void Unknown801985E8(struct ObjShape *shape) {
     sShapeCenter.y = (f32)((bbox.minY + bbox.maxY) / 2.0); //? 2.0f
     sShapeCenter.z = (f32)((bbox.minZ + bbox.maxZ) / 2.0); //? 2.0f
 
-    gd_print_vec("c=", &sShapeCenter);
-
     apply_to_obj_types_in_group(OBJ_TYPE_VERTICES, (applyproc_t) Unknown80198524, shape->vtxGroup);
 }
 
@@ -539,7 +518,6 @@ void get_3DG1_shape(struct ObjShape *shape) {
     struct ObjMaterial *mtl;
 
     shape->mtlGroup = make_group(0);
-    imin("get_3DG1_shape");
 
     vtxPtrArr = gd_malloc_perm(72000 * sizeof(struct ObjVertex *)); // 288,000 = 72,000 * 4
     facePtrArr = gd_malloc_perm(76000 * sizeof(struct ObjFace *));  // 304,000 = 76,000 * 4
@@ -549,9 +527,6 @@ void get_3DG1_shape(struct ObjShape *shape) {
     tempNormal.z = 1.0f;
 
     load_next_line_into_buf();
-    if (!getint(&totalVtx)) {
-        fatal_printf("Missing number of points");
-    }
 
     load_next_line_into_buf();
     while (scan_to_next_non_whitespace()) {
@@ -567,10 +542,6 @@ void get_3DG1_shape(struct ObjShape *shape) {
         func_8019807C(vtxPtrArr[vtxCount]);
         vtxCount++;
 
-        if (vtxCount >= 4000) {
-            fatal_printf("Too many vertices in shape data");
-        }
-
         shape->vtxCount++;
         clear_buf_to_cr();
 
@@ -580,9 +551,6 @@ void get_3DG1_shape(struct ObjShape *shape) {
     }
 
     while (scan_to_next_non_whitespace()) {
-        if (!getint(&totalFacePoints)) {
-            fatal_printf("Missing number of points in face");
-        }
 
         mtl = find_or_add_new_mtl(shape->mtlGroup, 0, tempNormal.x, tempNormal.y, tempNormal.z);
         newFace = make_face_with_material(mtl);
@@ -593,17 +561,10 @@ void get_3DG1_shape(struct ObjShape *shape) {
 
         facePtrArr[faceCount] = newFace;
         faceCount++;
-        if (faceCount >= 4000) {
-            fatal_printf("Too many faces in shape data");
-        }
 
         curFaceVtx = 0;
         while (get_current_buf_char() != '\0') {
             getint(&faceVtxID);
-
-            if (curFaceVtx > 3) {
-                fatal_printf("Too many points in a face(%d)", curFaceVtx);
-            }
 
             newFace->vertices[curFaceVtx] = vtxPtrArr[faceVtxID];
             curFaceVtx++;
@@ -614,10 +575,6 @@ void get_3DG1_shape(struct ObjShape *shape) {
         }
 
         newFace->vtxCount = curFaceVtx;
-
-        if (newFace->vtxCount > 3) {
-            fatal_printf("Too many points in a face(%d)", newFace->vtxCount);
-        }
 
         calc_face_normal(newFace);
 
@@ -636,7 +593,6 @@ void get_3DG1_shape(struct ObjShape *shape) {
     shape->vtxGroup = make_group_of_type(OBJ_TYPE_VERTICES, (struct GdObj *) vtxHead, NULL);
     shape->faceGroup = make_group_of_type(OBJ_TYPE_FACES, (struct GdObj *) faceHead, NULL);
 
-    imout();
 }
 
 /* @ 2473D0 for 0x390; orig name: func_80198C00 */
@@ -668,10 +624,6 @@ void get_OBJ_shape(struct ObjShape *shape) {
                 func_8019807C(vtxArr[vtxCount]);
                 vtxCount++;
 
-                if (vtxCount >= 4000) {
-                    fatal_printf("Too many vertices in shape data");
-                }
-
                 shape->vtxCount++;
                 break;
 
@@ -680,17 +632,9 @@ void get_OBJ_shape(struct ObjShape *shape) {
                 faceArr[faceCount] = newFace;
                 faceCount++;
 
-                if (faceCount >= 4000) {
-                    fatal_printf("Too many faces in shape data");
-                }
-
                 curFaceVtx = 0;
                 while (get_current_buf_char() != '\0') {
                     getint(&faceVtxIndex);
-
-                    if (curFaceVtx > 3) {
-                        fatal_printf("Too many points in a face(%d)", curFaceVtx);
-                    }
 
                     /* .obj vertex list is 1-indexed */
                     newFace->vertices[curFaceVtx] = vtxArr[faceVtxIndex - 1];
@@ -707,10 +651,6 @@ void get_OBJ_shape(struct ObjShape *shape) {
                 newFace->colour.b = faceClr.b;
 
                 newFace->vtxCount = curFaceVtx;
-
-                if (newFace->vtxCount > 3) {
-                    fatal_printf("Too many points in a face(%d)", newFace->vtxCount);
-                }
 
                 calc_face_normal(newFace);
 
@@ -843,10 +783,6 @@ void read_ARK_shape(struct ObjShape *shape, char *fileName) {
 
     sGdShapeFile = gd_fopen(fileName, "rb");
 
-    if (sGdShapeFile == NULL) {
-        fatal_printf("Cant load shape '%s'", fileName);
-    }
-
     gd_fread(fileInfo.bytes, 0x48, 1, sGdShapeFile);
 
     while (fileInfo.data.word40-- > 0) {
@@ -882,10 +818,6 @@ void read_ARK_shape(struct ObjShape *shape, char *fileName) {
                 func_801980E8(vtx.data.v);
                 sp3C = gd_make_vertex(vtx.data.v[0], vtx.data.v[1], vtx.data.v[2]);
 
-                if (sp44->vtxCount > 3) {
-                    fatal_printf("Too many points in a face(%d)", sp44->vtxCount);
-                }
-
                 sp44->vertices[sp44->vtxCount] = sp3C;
                 sp44->vtxCount++;
 
@@ -915,10 +847,6 @@ struct GdFile *get_shape_from_file(struct ObjShape *shape, char *fileName) {
         read_ARK_shape(shape, fileName);
     } else {
         sGdShapeFile = gd_fopen(fileName, "r");
-
-        if (sGdShapeFile == NULL) {
-            fatal_printf("Cant open shape '%s'", fileName);
-        }
 
         sGdLineBufCsr = 0;
         sGdLineBuf[sGdLineBufCsr] = '\0';
@@ -1067,10 +995,6 @@ void Unknown80199E88(struct ObjFace *face) {
 /* @ 2486B4 for 0xbc; orig name: func_80199EE4 */
 struct ObjNet *make_netfromshape(struct ObjShape *shape) {
     struct ObjNet *newNet;
-
-    if (shape == NULL) {
-        fatal_printf("make_netfromshape(): null shape ptr");
-    }
 
     D_801BAC78 = NULL;
     apply_to_obj_types_in_group(OBJ_TYPE_FACES, (applyproc_t) Unknown80199E88, shape->faceGroup);
@@ -1327,11 +1251,8 @@ s32 load_mario_head(void (*aniFn)(struct ObjAnimator *)) {
 
 /* @ 249288 for 0xe0 */
 void load_shapes2(void) {
-    imin("load_shapes2()");
     reset_dynlist();
     func_80197280();
-
-    imout();
 }
 
 /* @ 249368 -> 249594 */

@@ -99,24 +99,13 @@ struct MemTracker *start_memtracker(const char *name) {
     // Create one if it doesn't exist
     if (tracker == NULL) {
         tracker = new_memtracker(name);
-        if (tracker == NULL) {
-            fatal_printf("Unable to make memtracker '%s'", name);
-        }
     }
 
     tracker->begin = (f32) get_alloc_mem_amt();
-    if (sNumActiveMemTrackers >= ARRAY_COUNT(sActiveMemTrackers)) {
-        fatal_printf("too many memtracker calls");
-    }
 
     sActiveMemTrackers[sNumActiveMemTrackers++] = tracker;
 
     return tracker;
-}
-
-/* @ 23ABE0 -> 23AC28; not called; orig name: Unknown8018C410 */
-void print_most_recent_memtracker_name(void) {
-    gd_printf("%s\n", sActiveMemTrackers[sNumActiveMemTrackers - 1]->name);
 }
 
 /**
@@ -125,14 +114,7 @@ void print_most_recent_memtracker_name(void) {
 u32 stop_memtracker(const char *name) {
     struct MemTracker *tracker;
 
-    if (sNumActiveMemTrackers-- < 0) {
-        fatal_printf("bad mem tracker count");
-    }
-
     tracker = get_memtracker(name);
-    if (tracker == NULL) {
-        fatal_printf("memtracker '%s' not found", name);
-    }
 
     tracker->end = get_alloc_mem_amt();
     tracker->total += (tracker->end - tracker->begin);
@@ -163,42 +145,6 @@ void remove_all_memtrackers(void) {
  */
 struct MemTracker *get_memtracker_by_index(s32 index) {
     return &sMemTrackers[index];
-}
-
-/**
- * Prints the total memory allocated for each memtracker
- */
-void print_all_memtrackers(void) {
-    s32 i;
-
-    for (i = 0; i < ARRAY_COUNT(sMemTrackers); i++) {
-        if (sMemTrackers[i].name != NULL) {
-            gd_printf("'%s' = %dk\n", sMemTrackers[i].name, (s32)(sMemTrackers[i].total / 1024.0f));
-        }
-    }
-}
-
-/*
- * Timers
- *
- * These are used to profile the code by measuring the time it takes to perform
- * operations.
- * To record elapsed time, call start_timer, perform some operations, then call stop_timer.
- * You can also use restart_timer/split_timer instead of start_timer/stop_timer
- * to keep a running total.
- */
-
-/* 23AEFC -> 23AFB0; orig name: func_8018C72C */
-void print_all_timers(void) {
-    s32 i;
-
-    gd_printf("\nTimers:\n");
-    for (i = 0; i < ARRAY_COUNT(sTimers); i++) {
-        if (sTimers[i].name != NULL) {
-            gd_printf("'%s' = %f (%d)\n", sTimers[i].name, sTimers[i].scaledTotal,
-                      sTimers[i].resetCount);
-        }
-    }
 }
 
 /* 23AFB0 -> 23AFC8; orig name: func_8018C7E0 */
@@ -272,9 +218,6 @@ static struct GdTimer *get_timer_checked(const char *timerName) {
     struct GdTimer *timer;
 
     timer = get_timer(timerName);
-    if (timer == NULL) {
-        fatal_printf("Timer '%s' not found", timerName);
-    }
 
     return timer;
 }
@@ -283,9 +226,6 @@ static struct GdTimer *get_timer_checked(const char *timerName) {
  * Returns a timer by index rather than name
  */
 struct GdTimer *get_timernum(s32 index) {
-    if (index >= ARRAY_COUNT(sTimers)) {
-        fatal_printf("get_timernum(): Timer number %d out of range (MAX %d)", index, ARRAY_COUNT(sTimers));
-    }
 
     return &sTimers[index];
 }
@@ -334,9 +274,6 @@ void start_timer(const char *name) {
     timer = get_timer(name);
     if (timer == NULL) {
         timer = new_timer(name);
-        if (timer == NULL) {
-            fatal_printf("start_timer(): Unable to make timer '%s'", name);
-        }
     }
 
     timer->prevScaledTotal = timer->scaledTotal;
@@ -359,9 +296,6 @@ void restart_timer(const char *name) {
     timer = get_timer(name);
     if (timer == NULL) {
         timer = new_timer(name);
-        if (timer == NULL) {
-            fatal_printf("restart_timer(): Unable to make timer '%s'", name);
-        }
     }
 
     timer->start = gd_get_ostime();
@@ -412,117 +346,6 @@ f32 get_scaled_timer_total(const char *name) {
     return timer->scaledTotal;
 }
 
-
-/*
- * Miscellaneous debug functions
- */
-
-
-/**
- * Prints the given string, prints the stack trace, and exits the program
- */
-void fatal_print(const char *str) {
-    fatal_printf(str);
-}
-
-/**
- * Prints the stack trace registered by callng imin()/imout()
- */
-void print_stack_trace(void) {
-    s32 i;
-
-    for (i = 0; i < sNumRoutinesInStack; i++) {
-        gd_printf("\tIn: '%s'\n", sRoutineNames[i]);
-    }
-}
-
-/**
- * Prints the formatted string, prints the stack trace, and exits the program
- */
-void fatal_printf(const char *fmt, ...) {
-    char cur;
-    UNUSED u8 filler[4];
-    va_list vl;
-
-    va_start(vl, fmt);
-    while ((cur = *fmt++)) {
-        switch (cur) {
-            case '%':
-                switch (cur = *fmt++) {
-                    case 'd':
-                        gd_printf("%d", va_arg(vl, s32));
-                        break;
-                    case 'f':
-                        gd_printf("%f", va_arg(vl, double));
-                        break;
-                    case 's':
-                        gd_printf("%s", va_arg(vl, char *));
-                        break;
-                    case 'c':
-#ifdef AVOID_UB
-                        gd_printf("%c", (char)va_arg(vl, int));
-#else
-                        gd_printf("%c", va_arg(vl, char));
-#endif
-                        break;
-                    case 'x':
-                        gd_printf("%x", va_arg(vl, s32));
-                        break;
-                    default:
-                        gd_printf("%c", cur);
-                }
-                break;
-            case '\\':
-                gd_printf("\\");
-                break;
-            case '\n':
-                gd_printf("\n");
-                break;
-            default:
-                gd_printf("%c", cur);
-        }
-    }
-    va_end(vl);
-
-    gd_printf("\n");
-    print_stack_trace();
-    gd_printf("\n");
-    gd_exit(-1);
-}
-
-/**
- * "I'm in"
- * Adds the function name to the stack trace
- */
-void imin(const char *routine) {
-    sRoutineNames[sNumRoutinesInStack++] = routine;
-    sRoutineNames[sNumRoutinesInStack] = NULL;  //! array bounds is checked after writing this.
-
-    if (sNumRoutinesInStack >= ARRAY_COUNT(sRoutineNames)) {
-        fatal_printf("You're in too many routines");
-    }
-}
-
-/**
- * "I'm out"
- * Removes the function name from the stack trace
- */
-void imout(void) {
-    s32 i;
-
-    if (--sNumRoutinesInStack < 0) {
-        for (i = 0; i < ARRAY_COUNT(sRoutineNames); i++) {
-            if (sRoutineNames[i] != NULL) {
-                gd_printf(" - %s\n", sRoutineNames[i]);
-            } else {
-                break;
-            }
-        }
-
-        fatal_printf("imout() - imout() called too many times");
-    }
-}
-
 /**
  * Returns a random floating point number between 0 and 1 (inclusive)
  * TODO: figure out type of rng generator?
@@ -565,10 +388,6 @@ s32 gd_atoi(const char *str) {
 
     while (TRUE) {
         cur = *str++;
-
-        // Each character must be either a digit or a minus sign
-        if ((cur < '0' || cur > '9') && (cur != '-'))
-            fatal_printf("gd_atoi() bad number '%s'", origstr);
 
         if (cur == '-') {
             isNegative = TRUE;
@@ -736,9 +555,6 @@ char *gd_strdup(const char *src) {
 
     dst = gd_malloc_perm((gd_strlen(src) + 1) * sizeof(char));
 
-    if (dst == NULL) {
-        fatal_printf("gd_strdup(): out of memory");
-    }
     gd_strcpy(dst, src);
 
     return dst;
@@ -837,16 +653,7 @@ struct GdFile *gd_fopen(const char *filename, const char *mode) {
         }
     }
 
-    if (buf.size == 0) {
-        fatal_printf("gd_fopen() File not found '%s'", filename);
-        return NULL;
-    }
-
     f = gd_malloc_perm(sizeof(struct GdFile));
-    if (f == NULL) {
-        fatal_printf("gd_fopen() Out of memory loading '%s'", filename);
-        return NULL;
-    }
 
     f->stream = (s8 *) fileposptr;
     f->size = buf.size;

@@ -460,9 +460,6 @@ void func_8018FB58(struct ObjBone *b) {
 
 /* 23E474 -> 23E56C */
 void add_joint2bone(struct ObjBone *b, struct ObjJoint *j) {
-    if (j->header.type != OBJ_TYPE_JOINTS) {
-        fatal_printf("add_joint2bone(): Can only add Joints to Bones");
-    }
 
     if (b->unk10C == NULL) {
         b->unk10C = make_group(0);
@@ -658,10 +655,6 @@ void func_80190574(s32 a0, struct ObjJoint *a1, struct ObjJoint *a2, f32 x, f32 
 
     for (sp230 = 1; sp230 < a0; sp230 *= 2) {
         sp22C = sp22C * 2 + 1;
-    }
-
-    if (a0 & 0x8000) {
-        fatal_print("Too many nestings!\n");
     }
 
     printf("\n");

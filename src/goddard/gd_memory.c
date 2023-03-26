@@ -104,10 +104,6 @@ struct GMemBlock *make_mem_block(u32 blockType, u8 permFlag) {
     if (sEmptyBlockListHead == NULL) {
         sEmptyBlockListHead = (struct GMemBlock *) gd_allocblock(sizeof(struct GMemBlock));
 
-        if (sEmptyBlockListHead == NULL) {
-            fatal_printf("MakeMemBlock() unable to allocate");
-        }
-
         sEmptyBlockListHead->next = NULL;
         sEmptyBlockListHead->prev = NULL;
     }
@@ -132,8 +128,6 @@ struct GMemBlock *make_mem_block(u32 blockType, u8 permFlag) {
             }
             sUsedBlockListHead = newMemBlock;
             break;
-        default:
-            fatal_printf("unkown memblock type");
     }
     newMemBlock->prev = NULL;
     newMemBlock->blockType = (u8) blockType;
@@ -162,7 +156,6 @@ u32 gd_free_mem(void *ptr) {
         }
     }
 
-    fatal_printf("Free() Not a valid memory block");
     return 0;
 }
 
@@ -264,51 +257,10 @@ u32 print_list_stats(struct GMemBlock *block, s32 printBlockInfo, s32 permanence
     while (block != NULL) {
         if (block->permFlag & permanence) {
             entries++;
-            if (printBlockInfo) {
-                gd_printf("     %6.2fk (%d bytes)\n",
-                          (f32) block->size / 1024.0, //? 1024.0f
-                          block->size);
-            }
             totalSize += block->size;
         }
         block = block->next;
     }
 
-    gd_printf("Total %6.2fk (%d bytes) in %d entries\n",
-              (f32) totalSize / 1024.0, //? 1024.0f
-              totalSize, entries);
-
     return entries;
-}
-
-/**
- * Print summary information about all used, free, and empty
- * `GMemBlock`s.
- */
-void mem_stats(void) {
-    struct GMemBlock *list;
-
-    gd_printf("Perm Used blocks:\n");
-    list = sUsedBlockListHead;
-    print_list_stats(list, FALSE, PERM_G_MEM_BLOCK);
-    gd_printf("\n");
-
-    gd_printf("Perm Free blocks:\n");
-    list = sFreeBlockListHead;
-    print_list_stats(list, FALSE, PERM_G_MEM_BLOCK);
-    gd_printf("\n");
-
-    gd_printf("Temp Used blocks:\n");
-    list = sUsedBlockListHead;
-    print_list_stats(list, FALSE, TEMP_G_MEM_BLOCK);
-    gd_printf("\n");
-
-    gd_printf("Temp Free blocks:\n");
-    list = sFreeBlockListHead;
-    print_list_stats(list, FALSE, TEMP_G_MEM_BLOCK);
-    gd_printf("\n");
-
-    gd_printf("Empty blocks:\n");
-    list = sEmptyBlockListHead;
-    print_list_stats(list, FALSE, PERM_G_MEM_BLOCK | TEMP_G_MEM_BLOCK);
 }

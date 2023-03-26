@@ -195,8 +195,6 @@ void draw_shape(struct ObjShape *shape, s32 flag, f32 c, f32 d, f32 e, // "sweep
         sSelectedColour = gd_get_colour(colorIdx);
         if (sSelectedColour != NULL) {
             gd_dl_material_lighting(-1, sSelectedColour, GD_MTL_LIGHTS);
-        } else {
-            fatal_print("Draw_shape(): Bad colour");
         }
     } else {
         sUseSelectedColor = FALSE;
@@ -292,8 +290,6 @@ void draw_material(struct ObjMaterial *mtl) {
             if (gViewUpdateCamera != NULL) {
                 gd_dl_hilite(mtl->gddlNumber, gViewUpdateCamera, &sPhongLight->position,
                               &sLightPositionOffset, &sPhongLightPosition, &sPhongLight->colour);
-            } else {
-                fatal_printf("draw_material() no active camera for phong");
             }
         } else {
             mtlType = GD_MTL_BREAK;
@@ -329,11 +325,7 @@ void check_face_bad_vtx(struct ObjFace *face) {
         vtx = face->vertices[i];
         // These seem to be checks against bad conversions, or an outdated vertex structure..?
         if ((uintptr_t) vtx == 39) {
-            gd_printf("bad1\n");
             return;
-        }
-        if ((uintptr_t) vtx->gbiVerts == 0x3F800000) {
-            fatal_printf("bad2 %x,%d,%d,%d\n", (u32) (uintptr_t) vtx, vtx->scaleFactor, vtx->id, vtx->header.type);
         }
     }
 }
@@ -419,7 +411,6 @@ void draw_face(struct ObjFace *face) {
     s32 hasTextCoords; // 1c
     Vtx *gbiVtx;       // 18
 
-    imin("draw_face");
     hasTextCoords = FALSE;
     if (sUseSelectedColor == FALSE && face->mtlId >= 0) { // -1 == colored face
         if (face->mtl != NULL) {
@@ -464,7 +455,6 @@ void draw_face(struct ObjFace *face) {
         }
     }
     func_8019FEF0();
-    imout();
 }
 
 /**
@@ -633,13 +623,7 @@ void draw_camera(struct ObjCamera *cam) {
         sp44.z = cam->lookAt.z;
     }
 
-    if (0) {
-        // dead code
-        gd_printf("%f,%f,%f\n", cam->worldPos.x, cam->worldPos.y, cam->worldPos.z);
-    }
-
     if (ABS(cam->worldPos.x - sp44.x) + ABS(cam->worldPos.z - sp44.z) == 0.0f) {
-        gd_printf("Draw_Camera(): Zero view distance\n");
         return;
     }
     gd_dl_lookat(cam, cam->worldPos.x, cam->worldPos.y, cam->worldPos.z, sp44.x, sp44.y, sp44.z, cam->unkA4);
@@ -742,10 +726,6 @@ void check_grabbable_click(struct GdObj *input) {
  * @param lightgrp lights of `ObjView
  */
 void drawscene(enum SceneType process, struct ObjGroup *interactables, struct ObjGroup *lightgrp) {
-
-    restart_timer("drawscene");
-    imin("draw_scene()");
-    restart_timer("draw1");
     set_gd_mtx_parameters(G_MTX_PROJECTION | G_MTX_MUL | G_MTX_PUSH);
     if (sUpdateViewState.view->projectionType == 1) {
         gd_create_perspective_matrix(sUpdateViewState.view->clipping.z,
@@ -782,9 +762,6 @@ void drawscene(enum SceneType process, struct ObjGroup *interactables, struct Ob
 
     sNumActiveLights = 1;
     apply_to_obj_types_in_group(OBJ_TYPE_LIGHTS, (applyproc_t) register_light, gGdLightGroup);
-    split_timer("draw1");
-    restart_timer("drawobj");
-    imin("process_group");
     if (sSceneProcessType == FIND_PICKS) {
         apply_to_obj_types_in_group(OBJ_TYPE_ALL, (applyproc_t) check_grabbable_click, interactables);
     } else {
@@ -792,14 +769,10 @@ void drawscene(enum SceneType process, struct ObjGroup *interactables, struct Ob
                                         | OBJ_TYPE_PARTICLES,
                                     (applyproc_t) apply_obj_draw_fn, interactables);
     }
-    imout();
-    split_timer("drawobj");
     gd_setproperty(GD_PROP_LIGHTING, 0.0f, 0.0f, 0.0f);
     apply_to_obj_types_in_group(OBJ_TYPE_LABELS, (applyproc_t) apply_obj_draw_fn, interactables);
     gd_setproperty(GD_PROP_LIGHTING, 1.0f, 0.0f, 0.0f);
     gd_dl_pop_matrix();
-    imout();
-    split_timer("drawscene");
     return;
 }
 
@@ -924,9 +897,6 @@ void draw_joint(struct GdObj *obj) {
  * @return void
  */
 void draw_group(struct ObjGroup *grp) {
-    if (grp == NULL) {
-        fatal_print("Draw_Group: Bad group definition!");
-    }
 
     apply_to_obj_types_in_group(OBJ_TYPE_ALL, (applyproc_t) apply_obj_draw_fn, grp);
 }
@@ -953,9 +923,6 @@ void draw_plane(struct GdObj *obj) {
  * @return void
  */
 void apply_obj_draw_fn(struct GdObj *obj) {
-    if (obj == NULL) {
-        fatal_print("Bad object!");
-    }
     if (obj->drawFlags & OBJ_INVISIBLE) {
         return;
     }
@@ -1213,9 +1180,6 @@ static void find_thisface_verts(struct ObjFace *face, struct ObjGroup *vertexGrp
             }
             node = node->next;
         }
-        if (node == NULL) {
-            fatal_printf("find_thisface_verts(): Vertex not found");
-        }
 
         // set the vertex to point to the resolved `ObjVertex`
         face->vertices[i] = (struct ObjVertex *) node->obj;
@@ -1243,8 +1207,6 @@ void map_vertices(struct ObjGroup *facegrp, struct ObjGroup *vtxgrp) {
     register struct ListNode *vtxNode;
     struct ObjVertex *vtx;
 
-    imin("map_vertices");
-
     // resolve vertex indices to actual vertices
     faceNode = facegrp->firstMember;
     while (faceNode != NULL) {
@@ -1260,8 +1222,6 @@ void map_vertices(struct ObjGroup *facegrp, struct ObjGroup *vtxgrp) {
         calc_vtx_normal(vtx, facegrp);
         vtxNode = vtxNode->next;
     }
-
-    imout();
 }
 
 /**
@@ -1349,7 +1309,6 @@ void update_view(struct ObjView *view) {
         return;
     }
 
-    imin("UpdateView()");
     if (view->proc != NULL) {
         view->proc(view);
     }
@@ -1379,7 +1338,6 @@ void update_view(struct ObjView *view) {
     }
 
     if (!(view->flags & VIEW_DRAW)) {
-        imout();
         return;
     }
 
@@ -1403,9 +1361,7 @@ void update_view(struct ObjView *view) {
                 sPickedObject = NULL;
                 sPickObjDistance = 10000000.0f;
 
-                if (pickOffset < 0) {
-                    fatal_printf("UpdateView(): Pick buffer too small");
-                } else if (pickOffset > 0) {
+                if (pickOffset > 0) {
                     pickDataIdx = 0;
                     for (i = 0; i < pickOffset; i++) {
                         pickDataSize = sPickBuffer[pickDataIdx++];
@@ -1460,7 +1416,6 @@ void update_view(struct ObjView *view) {
 
     border_active_view();
     gd_enddlsplist_parent();
-    imout();
     return;
 }
 /**

@@ -931,7 +931,7 @@ BAD_RETURN(s16) cur_obj_reverse_animation(void) {
     }
 }
 
-BAD_RETURN(s32) cur_obj_extend_animation_if_at_end(void) {
+void cur_obj_extend_animation_if_at_end(void) {
     s32 sp4 = o->header.gfx.animInfo.animFrame;
     s32 sp0 = o->header.gfx.animInfo.curAnim->loopEnd - 2;
 

@@ -268,6 +268,9 @@ static const Vtx bobomb_seg8_vertex_08023190[] = {
 const Gfx bobomb_seg8_dl_08023270[] = {
     gsSPLightColor(LIGHT_1, 0xff9912ff),
     gsSPLightColor(LIGHT_2, 0x3f2604ff),
+    gsSPSetGeometryMode(G_LIGHTING),
+    gsDPPipeSync(),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPVertex(bobomb_seg8_vertex_08022E30, 16, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  4,  5, 0x0),
     gsSP2Triangles( 3,  5,  6, 0x0,  7,  8,  9, 0x0),

@@ -1,0 +1,4 @@
+bowser crashes
+king bomb omb crashes when picked up, probably throwmatrix related
+mirror mario be missing, my guess is throwmatrix, though it's possible matstack is also involved
+goddard crash when coming back from a demo

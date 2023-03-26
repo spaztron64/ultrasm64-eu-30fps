@@ -1754,8 +1754,8 @@ u32 gGoddardRenderTable[] = {
     G_RM_AA_ZB_XLU_SURF,
     G_RM_AA_ZB_XLU_SURF,
     G_RM_ZB_OPA_SURF,
-    G_RM_RA_ZB_OPA_SURF,
-    G_RM_AA_ZB_OPA_SURF,
+    G_RM_RA_ZB_OPA_INTER,
+    G_RM_AA_ZB_OPA_INTER,
     G_RM_ZB_XLU_SURF2,
     G_RM_AA_ZB_XLU_SURF2,
     G_RM_AA_ZB_XLU_SURF2,
@@ -1765,9 +1765,6 @@ u32 gGoddardRenderTable[] = {
     G_RM_XLU_SURF2,
     G_RM_AA_XLU_SURF2,
     G_RM_AA_XLU_SURF2,
-    G_RM_ZB_OPA_SURF,
-    G_RM_RA_ZB_OPA_SURF,
-    G_RM_AA_ZB_OPA_SURF,
 };
 
 /* 2501D0 -> 250300 */
@@ -1782,7 +1779,7 @@ static void update_render_mode(void) {
         if (sAlpha != 0xff) {
             gDPSetRenderMode(next_gfx(), gGoddardRenderTable[9 + gAntiAliasing], gGoddardRenderTable[12 + gAntiAliasing]);
         } else {
-            gDPSetRenderMode(next_gfx(), gGoddardRenderTable[15 + gAntiAliasing], G_RM_NOOP2);
+            gDPSetRenderMode(next_gfx(), gGoddardRenderTable[3 + gAntiAliasing], G_RM_NOOP2);
         }
     }
 }

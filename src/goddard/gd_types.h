@@ -247,7 +247,7 @@ struct ObjParticle {
     /* 0x5C */ s32 timeout;  // when this reaches zero, the particle disappears
     /* 0x60 */ s32 unk60;   //type?
     /* 0x64 */ s32 unk64;   //type? (1 = has 50 sub-particles, 2,3 = has 30 sub-particles
-    /* 0x68 */ u8 filler5[4];
+               u32 spawnTimer;
     /* 0x6C */ struct ObjGroup *subParticlesGrp;   // group of other Particles ?
     /* 0x70 */ u8 filler6[4];
     /* 0x74 */ s32 unk74;
@@ -281,7 +281,6 @@ struct ObjShape {
     /* 0x44 */ s32 flag; // what are the flag values? only from dynlists?
     /* 0x48 */ s32 dlNums[2];  // gd dl number for each frame buffer (??) [0, 1]
                s32 unk50;      // frame number (index into dlNums)?
-    /* 0x54 */ u8  filler2[4]; // part of above array??
     /* 0x58 */ f32 alpha;       // paramF? opacitiy? something with rendertype
     /* 0x5C */ char name[0x40];
 }; /* sizeof = 0x9C */

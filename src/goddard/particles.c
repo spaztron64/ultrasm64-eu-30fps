@@ -10,6 +10,7 @@
 #include "particles.h"
 #include "renderer.h"
 #include "skin.h"
+#include "game/game_init.h"
 
 // static types
 typedef union {
@@ -289,6 +290,7 @@ void func_80182A08(struct ObjParticle *ptc, struct GdVec3f *b) {
                 sp20->pos.x = ptc->pos.x;
                 sp20->pos.y = ptc->pos.y;
                 sp20->pos.z = ptc->pos.z;
+                sp20->spawnTimer = gGlobalTimer;
                 sp20->timeout = 12.0f - gd_rand_float() * 5.0f;
                 do {
                     sp20->unk38.x = gd_rand_float() * 50.0 - 25.0f;

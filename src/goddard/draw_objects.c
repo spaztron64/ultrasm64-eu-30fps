@@ -13,6 +13,7 @@
 #include "renderer.h"
 #include "shape_helper.h"
 #include "draw_objects.h"
+#include "game/game_init.h"
 
 /**
  * @file draw_objects.c
@@ -67,7 +68,7 @@ struct GdColour *sWhiteBlack[2] = {
     &sClrWhite,
     &sClrBlack,
 };
-static s32 sLightDlCounter = 1; // @ 801A81A0
+static f32 sLightDlCounter = 1.0f; // @ 801A81A0
 
 // bss
 struct ObjGroup *gGdLightGroup; // @ 801B9BB8; is this the main light group? only light group?
@@ -221,8 +222,9 @@ void draw_light(struct ObjLight *light) {
         shape = gSpotShape;
     } else {
         shape = light->unk9C;
-        if (++sLightDlCounter >= 17) {
-            sLightDlCounter = 1;
+        sLightDlCounter += gLerpSpeed;
+        if (sLightDlCounter >= 17.0f) {
+            sLightDlCounter = 1.0f;
         }
         shape->unk50 = sLightDlCounter;
     }
@@ -688,7 +690,7 @@ void draw_particle(struct GdObj *obj) {
     if (ptc->timeout > 0) {
         white = sColourPalette[0];
         black = sWhiteBlack[1];
-        brightness = ptc->timeout / 10.0f;
+        brightness = (gGlobalTimer - ptc->spawnTimer) / 10.0f;
         sLightColours[0].r = (white->r - black->r) * brightness + black->r;
         sLightColours[0].g = (white->g - black->g) * brightness + black->g;
         sLightColours[0].b = (white->b - black->b) * brightness + black->b;
@@ -700,7 +702,7 @@ void draw_particle(struct GdObj *obj) {
     }
 
     if (ptc->timeout > 0) {
-        ptc->shapePtr->unk50 = ptc->timeout;
+        ptc->shapePtr->unk50 = MAX(gGlobalTimer - ptc->spawnTimer, 1);
         draw_shape_2d(ptc->shapePtr, 2, 1.0f, 1.0f, 1.0f, ptc->pos.x, ptc->pos.y, ptc->pos.z, 0.0f,
                       0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1, 0);
     }

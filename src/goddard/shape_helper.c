@@ -1033,26 +1033,32 @@ void animate_mario_head_gameover(struct ObjAnimator *self) {
 void animate_mario_head_normal(struct ObjAnimator *self) {
     s32 state = 0; // TODO: label these states
     s32 aBtnPressed = gGdCtrl.dragging;
-
     switch (self->state) {
         case 0:
             // initialize?
             self->frame = 1.0f;
             self->animSeqNum = 0;  // normal anim sequence
             state = 2;
-            self->nods = 5;
+            self->nods = 5 * 1024;
             break;
         case 2:
             if (aBtnPressed) {
                 state = 5;
             }
-
-            self->frame += 1.0f * gLerpSpeed;
+            // This is hacky, but lets be real I really don't feel like figuring out the intricacies of the anim system
+            // to figure out why there's a wierd jerk at this very specific point.
+            // I mean if I wanted to REALLY do this properly I'd separate logic and rendering like the rest of the game.
+            if (self->frame >= 500.0f && self->frame <= 510.0f) {
+                self->frame = (s32)(self->frame + 1);
+            } else {
+                self->frame += 1.0f * gLerpSpeed;
+            }
 
             if (self->frame >= 810.0f) {
                 self->frame = 750.0f;
-                self->nods--;
-                if (self->nods == 0) {
+                self->nods -= (gGlobalTimer * 1024);
+                if (self->nods <= 0) {
+                    self->nods = 0;
                     state = 3;
                 }
             }
@@ -1071,7 +1077,7 @@ void animate_mario_head_normal(struct ObjAnimator *self) {
             if (self->frame >= 660.0f) {
                 self->frame = 661.0f;
                 state = 2;
-                self->nods = 5;
+                self->nods = 5 * 1024;
             }
             break;
         case 5:
@@ -1098,7 +1104,7 @@ void animate_mario_head_normal(struct ObjAnimator *self) {
             break;
         case 6:
             state = 2;
-            self->nods = 5;
+            self->nods = 5 * 1024;
             break;
     }
 

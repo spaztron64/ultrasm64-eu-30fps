@@ -196,13 +196,10 @@ const Gfx moneybag_seg6_dl_06005750[] = {
     gsSPEndDisplayList(),
 };
 
-// Unreferenced light group
 
-// Unreferenced light group
 
 // 0x060057F0
 
-// Unreferenced light group
 
 // 0x06005820
 static const Vtx moneybag_seg6_vertex_06005820[] = {

@@ -643,17 +643,13 @@ const Gfx lakitu_seg6_dl_06005360[] = {
     gsSPEndDisplayList(),
 };
 
-// Unreferenced light group
 
 // 0x060053F0
 
-// Unreferenced light group
 
-// Unreferenced light group
 
 // 0x06005438
 
-// Unreferenced light group
 
 // 0x06005468
 static const Vtx lakitu_seg6_vertex_06005468[] = {

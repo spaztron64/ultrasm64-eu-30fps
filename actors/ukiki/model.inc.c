@@ -1,8 +1,6 @@
 // Ukiki
 
-// Unreferenced light group
 
-// Unreferenced light group
 
 // 0x05007BA0
 

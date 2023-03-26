@@ -1,13 +1,9 @@
 // Snowman
 
 
-// Unreferenced light group
 
-// Unreferenced light group
 
-// Unreferenced light group
 
-// Unreferenced light group
 
 // 0x05008C70
 ALIGNED8 static const Texture snowman_seg5_texture_05008C70[] = {

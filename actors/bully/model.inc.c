@@ -63,7 +63,6 @@ const Gfx bully_seg5_dl_05000398[] = {
 
 // 0x05000420
 
-// Unreferenced light group
 
 // 0x05000450
 

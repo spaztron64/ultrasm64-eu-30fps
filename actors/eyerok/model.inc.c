@@ -1,6 +1,5 @@
 // Eyerok
 
-// Unreferenced light group
 
 // 0x05008D40
 ALIGNED8 static const Texture eyerok_seg5_texture_05008D40[] = {

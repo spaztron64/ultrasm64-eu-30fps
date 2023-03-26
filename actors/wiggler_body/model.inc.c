@@ -39,7 +39,6 @@ ALIGNED8 static const Texture wiggler_seg5_texture_0500A230[] = {
 
 // 0x0500B248
 
-// Unreferenced light group
 
 // 0x0500B278
 static const Vtx wiggler_seg5_vertex_0500B278[] = {

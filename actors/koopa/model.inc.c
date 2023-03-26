@@ -1,7 +1,6 @@
 // Koopa (Small Koopa, Big Koopa [Koopa the Quick])
 
 
-// Unreferenced light group
 
 // 0x060025A0
 
@@ -9,7 +8,6 @@
 
 // 0x060025D0
 
-// Unreferenced light group
 
 // 0x06002600
 

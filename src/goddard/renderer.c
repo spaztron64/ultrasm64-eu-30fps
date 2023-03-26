@@ -86,9 +86,6 @@ static OSMesg D_801BE848[10];
 u8 EUpad1[0x40];
 static OSMesgQueue D_801BE8B0;
 static OSMesgQueue sGdDMAQueue; // @ 801BE8C8
-// static u32 unref_801be870[16];
-// static u32 unref_801be8e0[25];
-// static u32 unref_801be948[13];
 u8 EUpad2[0x64];
 static OSMesg sGdMesgBuf[1]; // @ 801BE944
 u8 EUpad3[0x34];

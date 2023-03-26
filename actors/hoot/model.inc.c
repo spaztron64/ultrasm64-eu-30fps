@@ -2,7 +2,6 @@
 
 // 0x05000900
 
-// Unreferenced light group
 
 // 0x05000930
 
@@ -12,11 +11,8 @@
 
 // 0x05000978
 
-// Unreferenced light group
 
-// Unreferenced light group
 
-// Unreferenced light group
 
 // 0x050009D8
 

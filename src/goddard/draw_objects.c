@@ -70,7 +70,6 @@ struct GdColour *sWhiteBlack[2] = {
 static s32 sLightDlCounter = 1; // @ 801A81A0
 
 // bss
-u8 gUnref_801B9B30[0x88];
 struct ObjGroup *gGdLightGroup; // @ 801B9BB8; is this the main light group? only light group?
 static enum SceneType sSceneProcessType; // @ 801B9C00
 static s32 sUseSelectedColor;            // @ 801B9C04

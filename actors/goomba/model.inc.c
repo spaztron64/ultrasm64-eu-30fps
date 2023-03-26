@@ -1,8 +1,6 @@
 // Goomba
 
-// Unreferenced light group
 
-// Unreferenced light group
 
 // 0x080194D0
 

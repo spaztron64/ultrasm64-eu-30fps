@@ -1,6 +1,5 @@
 // Chair
 
-// Unreferenced light group
 
 // 0x05003060
 ALIGNED8 static const Texture chair_seg5_texture_05003060[] = {

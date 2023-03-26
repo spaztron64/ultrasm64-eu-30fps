@@ -137,9 +137,7 @@ ALIGNED8 static const Texture bowser_seg6_texture_06037C38[] = {
 
 // 0x06038C38
 
-// Unreferenced light group
 
-// Unreferenced light group
 
 // 0x06038C80
 static const Vtx bowser_seg6_vertex_06038C80[] = {

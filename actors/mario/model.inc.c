@@ -2171,9 +2171,7 @@ const Gfx mario_metal_cap_on_shared_dl[] = {
     gsSPEndDisplayList(),
 };
 
-// Unreferenced light group
 
-// Unreferenced light group
 
 // 0x04012190
 static const Vtx mario_eyes_cap_off_dl_vertex[] = {

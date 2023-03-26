@@ -1,8 +1,6 @@
 // Clam Shell
 
-// Unreferenced light group
 
-// Unreferenced light group
 
 // 0x05000030
 ALIGNED8 static const Texture clam_shell_seg5_texture_05000030[] = {

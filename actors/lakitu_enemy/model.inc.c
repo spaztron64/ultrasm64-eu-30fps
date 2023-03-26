@@ -1,10 +1,8 @@
 // Lakitu Enemy
 
-// Unreferenced light group
 
 // 0x0500ECB0
 
-// Unreferenced light group
 
 // Unreferenced texture
 

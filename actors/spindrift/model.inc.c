@@ -1,20 +1,16 @@
 // Spindrift
 
-// Unreferenced light group
 
-// Unreferenced light group
 
 // 0x05000030
 
 // 0x05000048
 
-// Unreferenced light group
 
 // 0x05000078
 
 // 0x05000090
 
-// Unreferenced light group
 
 // 0x050000C0
 static const Vtx spindrift_seg5_vertex_050000C0[] = {

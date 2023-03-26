@@ -6,7 +6,6 @@
 
 // 0x06000030
 
-// Unreferenced light group
 
 // 0x06000060
 ALIGNED8 static const Texture chilly_chief_seg6_texture_06000060[] = {

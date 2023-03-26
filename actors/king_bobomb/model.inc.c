@@ -1,14 +1,9 @@
 // King Bobomb
 
-// Unreferenced light group
 
-// Unreferenced light group
 
-// Unreferenced light group
 
-// Unreferenced light group
 
-// Unreferenced light group
 
 // 0x05002078
 ALIGNED8 static const Texture king_bobomb_seg5_texture_05002078[] = {

@@ -1,16 +1,10 @@
 // Monty Mole
 
-// Unreferenced light group
 
-// Unreferenced light group
 
-// Unreferenced light group
 
-// Unreferenced light group
 
-// Unreferenced light group
 
-// Unreferenced light group
 
 // 0x05000970
 ALIGNED8 static const Texture monty_mole_seg5_texture_05000970[] = {

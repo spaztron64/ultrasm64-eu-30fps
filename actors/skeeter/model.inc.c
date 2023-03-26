@@ -1,16 +1,10 @@
 // Skeeter
 
-// Unreferenced light group
 
-// Unreferenced light group
 
-// Unreferenced light group
 
-// Unreferenced light group
 
-// Unreferenced light group
 
-// Unreferenced light group
 
 // 0x06000090
 ALIGNED8 static const Texture skeeter_seg6_texture_06000090[] = {

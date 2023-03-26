@@ -1,18 +1,11 @@
 // Chuckya
 
-// Unreferenced light group
 
-// Unreferenced light group
 
-// Unreferenced light group
 
-// Unreferenced light group
 
-// Unreferenced light group
 
-// Unreferenced light group
 
-// Unreferenced light group
 
 // 0x08006778
 ALIGNED8 static const Texture chuckya_seg8_texture_08006778[] = {

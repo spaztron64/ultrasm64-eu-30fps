@@ -1,20 +1,12 @@
 // Unagi (Eel)
 
-// Unreferenced light group
 
-// Unreferenced light group
 
-// Unreferenced light group
 
-// Unreferenced light group
 
-// Unreferenced light group
 
-// Unreferenced light group
 
-// Unreferenced light group
 
-// Unreferenced light group
 
 // 0x0500AF20
 ALIGNED8 static const Texture unagi_seg5_texture_0500AF20[] = {

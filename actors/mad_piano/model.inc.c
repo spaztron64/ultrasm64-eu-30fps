@@ -1,12 +1,8 @@
 // Mad Piano
 
-// Unreferenced light group
 
-// Unreferenced light group
 
-// Unreferenced light group
 
-// Unreferenced light group
 
 // 0x05006AF0
 ALIGNED8 static const Texture mad_piano_seg5_texture_05006AF0[] = {

@@ -2480,7 +2480,6 @@ const Texture texture_waterbox_lava[] = {
 #include "textures/segment2/segment2.13C58.rgba16.inc.c"
 };
 
-// Unreferenced light group
 
 // 0x02014470 - 0x020144B0
 static const Mtx matrix_identity = {

@@ -171,7 +171,6 @@ const Gfx bobomb_seg8_dl_08022D78[] = {
 
 // 0x08022E00
 
-// Unreferenced light group
 
 // 0x08022E30
 static const Vtx bobomb_seg8_vertex_08022E30[] = {

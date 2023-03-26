@@ -378,9 +378,7 @@ const Gfx yoshi_seg5_dl_0501D998[] = {
 
 // 0x0501D9F0
 
-// Unreferenced light group
 
-// Unreferenced light group
 
 // 0x0501DA38
 

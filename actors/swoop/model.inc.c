@@ -1,8 +1,6 @@
 // Swoop
 
-// Unreferenced light group
 
-// Unreferenced light group
 
 // 0x06004270
 ALIGNED8 static const Texture swoop_seg6_texture_06004270[] = {

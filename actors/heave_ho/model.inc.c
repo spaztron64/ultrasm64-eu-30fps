@@ -1,18 +1,13 @@
 // Heave Ho
 
-// Unreferenced light group
 
-// Unreferenced light group
 
-// Unreferenced light group
 
 // 0x0500E968
 
 // 0x0500E980
 
-// Unreferenced light group
 
-// Unreferenced light group
 
 // 0x0500E9C8
 ALIGNED8 static const Texture heave_ho_seg5_texture_0500E9C8[] = {

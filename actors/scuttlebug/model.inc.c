@@ -1,8 +1,6 @@
 // Scuttlebug
 
-// Unreferenced light group
 
-// Unreferenced light group
 
 // 0x06010108
 ALIGNED8 static const Texture scuttlebug_seg6_texture_06010108[] = {

@@ -15,19 +15,14 @@ ALIGNED8 static const Texture flyguy_seg8_texture_0800F888[] = {
 #include "actors/flyguy/flyguy_propeller.ia16.inc.c"
 };
 
-// Unreferenced light group
 
 // 0x080100A0
 
 // 0x080100B8
 
-// Unreferenced light group
 
-// Unreferenced light group
 
-// Unreferenced light group
 
-// Unreferenced light group
 
 // 0x08010130
 static const Vtx flyguy_seg8_vertex_08010130[] = {

@@ -1,6 +1,5 @@
 // Blargg (Unused)
 
-// Unreferenced light group
 
 // 0x05004740
 

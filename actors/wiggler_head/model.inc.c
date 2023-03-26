@@ -4,9 +4,7 @@
 
 // 0x0500C890
 
-// Unreferenced light group
 
-// Unreferenced light group
 
 // 0x0500C8D8
 static const Vtx wiggler_seg5_vertex_0500C8D8[] = {

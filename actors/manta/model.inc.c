@@ -4,7 +4,6 @@
 
 // 0x05001770
 
-// Unreferenced light group
 
 // 0x050017A0
 ALIGNED8 static const Texture manta_seg5_texture_050017A0[] = {

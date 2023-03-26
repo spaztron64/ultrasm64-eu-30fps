@@ -2854,7 +2854,7 @@ void render_course_complete_screen(void) {
             shade_screen();
             render_course_complete_lvl_info_and_hud_str();
 #ifdef VERSION_EU
-            render_save_confirmation((gScreenWidth / 2) - 74, &gDialogLineNum, 20);
+            render_save_confirmation(86, &gDialogLineNum, 20);
 #else
             render_save_confirmation((gScreenWidth / 2) - 60, 86, &gDialogLineNum, 20);
 #endif

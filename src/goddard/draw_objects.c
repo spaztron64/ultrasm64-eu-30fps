@@ -100,12 +100,6 @@ void setup_lights(void) {
     gd_setproperty(GD_PROP_AMB_COLOUR, 0.5f, 0.5f, 0.5f);
     gd_setproperty(GD_PROP_CULLING, 1.0f, 0.0f, 0.0f); // set G_CULL_BACK
     return;
-
-    // dead code
-    gd_setproperty(GD_PROP_STUB17, 2.0f, 0.0f, 0.0f);
-    gd_setproperty(GD_PROP_ZBUF_FN, 24.0f, 0.0f, 0.0f);
-    gd_setproperty(GD_PROP_CULLING, 1.0f, 0.0f, 0.0f);
-    return;
 }
 
 /**
@@ -478,20 +472,6 @@ void draw_rect_stroke(s32 color, f32 ulx, f32 uly, f32 lrx, f32 lry) {
 }
 
 /**
- * Uncalled function that calls other orphan stub functions.
- * @note Not called
- */
-void Unknown801792F0(struct GdObj *obj) {
-    char objId[32];
-    struct GdVec3f objPos;
-
-    format_object_id(objId, obj);
-    set_cur_dynobj(obj);
-    d_get_world_pos(&objPos);
-    func_801A4438(objPos.x, objPos.y, objPos.z);
-}
-
-/**
  * Draws a label
  */
 void draw_label(struct ObjLabel *label) {
@@ -786,7 +766,6 @@ void draw_nothing(UNUSED struct GdObj *nop) {
  */
 void draw_shape_faces(struct ObjShape *shape) {
     sUpdateViewState.mtlDlNum = 0;
-    gddl_is_loading_stub_dl(FALSE);
     set_render_alpha(shape->alpha);
     if (shape->dlNums[gGdFrameBufNum] != 0) {
         draw_indexed_dl(shape->dlNums[gGdFrameBufNum], shape->unk50);
@@ -1407,10 +1386,4 @@ void update_view(struct ObjView *view) {
     border_active_view();
     gd_enddlsplist_parent();
     return;
-}
-/**
- * Stub function.
- * @note Not Called
- */
-void stub_draw_objects_1(void) {
 }

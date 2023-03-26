@@ -1159,8 +1159,6 @@ void move_animator(struct ObjAnimator *animObj) {
     s16(*animData3s16)[3];             // MyVec3h[]?
     s16(*animData6s16)[6];            // GdPlaneH[]?
     s16(*animDataCam)[6];         // camera GdPlaneH[]?
-    struct GdObj *stubObj1 = NULL; // used only for call to stubbed function
-    struct GdObj *stubObj2 = NULL; // used only for call to stubbed function
     s32 currKeyFrame;
     s32 nextKeyFrame;
     f32 dt;

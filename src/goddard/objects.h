@@ -73,7 +73,6 @@ void addto_group(struct ObjGroup *group, struct GdObj *obj);
 void addto_groupfirst(struct ObjGroup *group, struct GdObj *obj);
 s32 group_contains_obj(struct ObjGroup *group, struct GdObj *obj);
 void show_details(enum ObjTypeFlag type);
-s32 stub_objects_2(void);
 s32 make_scene(void);
 void menu_cb_reset_positions(void);
 s32 apply_to_obj_types_in_group(s32 types, applyproc_t fn, struct ObjGroup *group);

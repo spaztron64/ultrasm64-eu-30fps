@@ -111,20 +111,13 @@ static s32 D_801BB01C;
 static void *sLoadedTextures[0x10];          // texture pointers
 static s32 sTextureDisplayLists[0x10];            // gd_dl indices
 static s16 sVtxCvrtTCBuf[2];            // @ 801BB0A0
-static s32 sCarGdDlNum;                 // @ 801BB0A4
-static struct ObjGroup *sYoshiSceneGrp; // @ 801BB0A8
 static struct ObjGroup *sMarioSceneGrp; // @ 801BB0B0
 static s32 D_801BB0B4;                  // second offset into sTriangleBuf
-static struct ObjGroup *sCarSceneGrp;   // @ 801BB0B8
 static s32 sVertexBufCount; // vtx's to load into RPD? Vtx len in GD Dl and in the lower bank (AF30)
-static struct ObjView *sYoshiSceneView; // @ 801BB0C0
 static s32 sTriangleBufCount;                  // number of triangles in sTriangleBuf
 static struct ObjView *sMSceneView;     // @ 801BB0C8; Mario scene view
 static s32 sVertexBufStartIndex;                  // Vtx start in GD Dl
-static struct ObjView *sCarSceneView;   // @ 801BB0D0
-static s32 sUpdateYoshiScene;           // @ 801BB0D4; update dl Vtx from ObjVertex?
 static s32 sUpdateMarioScene;           // @ 801BB0D8; update dl Vtx from ObjVertex?
-static s32 sUpdateCarScene; // @ 801BB0E0; guess, not really used
 static struct GdVec3f sTextDrawPos;  // position to draw text? only set in one function, never used
 static Mtx sIdnMtx;           // @ 801BB100
 static Mat4f sInitIdnMat4;    // @ 801BB140
@@ -887,11 +880,8 @@ void gdm_init(void *blockpool, u32 size) {
  */
 void gdm_setup(void) {
 
-    sYoshiSceneGrp = NULL;
     sMarioSceneGrp = NULL;
-    sUpdateYoshiScene = FALSE;
     sUpdateMarioScene = FALSE;
-    sCarGdDlNum = 0;
     osViSetSpecialFeatures(OS_VI_GAMMA_OFF);
     osCreateMesgQueue(&sGdDMAQueue, sGdMesgBuf, ARRAY_COUNT(sGdMesgBuf));
     gd_init();
@@ -912,12 +902,6 @@ struct ObjView *make_view_withgrp(char *name, struct ObjGroup *grp) {
 void gdm_maketestdl(s32 id) {
 
     switch (id) {
-        case 0:
-            sYoshiSceneView = make_view_withgrp("yoshi_scene", sYoshiSceneGrp);
-            break;
-        case 1:
-            reset_nets_and_gadgets(sYoshiSceneGrp);
-            break;
         case 2: // normal Mario head
             if (sMarioSceneGrp == NULL) {
                 load_mario_head(animate_mario_head_normal);
@@ -934,12 +918,6 @@ void gdm_maketestdl(s32 id) {
             }
             sMSceneView = make_view_withgrp("mscene", sMarioSceneGrp);
             break;
-        case 4:
-            sCarSceneView = make_view_withgrp("car_scene", sCarSceneGrp);
-            break;
-        case 5:
-            reset_nets_and_gadgets(sCarSceneGrp);
-            break;
     }
 }
 
@@ -953,13 +931,9 @@ void set_time_scale(f32 factor) {
  */
 void gd_vblank(void) {
     gd_sfx_update();
-    if (sUpdateYoshiScene) {
-        apply_to_obj_types_in_group(OBJ_TYPE_NETS, (applyproc_t) convert_net_verts, sYoshiSceneGrp);
-    }
     if (sUpdateMarioScene) {
         apply_to_obj_types_in_group(OBJ_TYPE_NETS, (applyproc_t) convert_net_verts, sMarioSceneGrp);
     }
-    sUpdateYoshiScene = FALSE;
     sUpdateMarioScene = FALSE;
     gGdFrameBufNum ^= 1;
     reset_cur_dl_indices();
@@ -994,51 +968,14 @@ Gfx *gdm_gettestdl(s32 id) {
     vec.x = vec.y = vec.z = 0.0f;
     gddl = NULL;
 
-    switch (id) {
-        case 0:
-            //! @bug Code treats `sYoshiSceneView` as group; not called in game though
-            apply_to_obj_types_in_group(OBJ_TYPE_VIEWS, (applyproc_t) update_view,
-                                        (struct ObjGroup *) sYoshiSceneView);
-            dobj = d_use_obj("yoshi_scene");
-            gddl = sGdDLArray[((struct ObjView *) dobj)->gdDlNum];
-            sUpdateYoshiScene = TRUE;
-            break;
-        case 1:
-            dobj = d_use_obj("yoshi_sh_l1");
-            gddl = sGdDLArray[((struct ObjShape *) dobj)->dlNums[gGdFrameBufNum]];
-            sUpdateYoshiScene = TRUE;
-            break;
-        case GD_SCENE_REGULAR_MARIO:
-        case GD_SCENE_DIZZY_MARIO:
-            update_view_and_dl(sMSceneView);
-            if (sHandView != NULL) {
-                update_view_and_dl(sHandView);
-            }
-            sCurrentGdDl = sMHeadMainDls[gGdFrameBufNum];
-            gSPEndDisplayList(next_gfx());
-            gddl = sCurrentGdDl;
-            sUpdateMarioScene = TRUE;
-            break;
-        case 4:
-            //! @bug Code treats `sCarSceneView` as group; not called in game though
-            apply_to_obj_types_in_group(OBJ_TYPE_VIEWS, (applyproc_t) update_view,
-                                        (struct ObjGroup *) sCarSceneView);
-            dobj = d_use_obj("car_scene");
-            gddl = sGdDLArray[((struct ObjView *) dobj)->gdDlNum];
-            sUpdateCarScene = TRUE;
-            break;
-        case 5:
-            sActiveView = sScreenView;
-            set_gd_mtx_parameters(G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_PUSH);
-            dobj = d_use_obj("testnet2");
-            sCarGdDlNum = gd_startdisplist(8);
-
-            apply_obj_draw_fn(dobj);
-            gd_enddlsplist_parent();
-            gddl = sGdDLArray[sCarGdDlNum];
-            sUpdateCarScene = TRUE;
-            break;
+    update_view_and_dl(sMSceneView);
+    if (sHandView != NULL) {
+        update_view_and_dl(sHandView);
     }
+    sCurrentGdDl = sMHeadMainDls[gGdFrameBufNum];
+    gSPEndDisplayList(next_gfx());
+    gddl = sCurrentGdDl;
+    sUpdateMarioScene = TRUE;
 
     return (void *) osVirtualToPhysical(gddl->gfx);
 }
@@ -1727,18 +1664,11 @@ s32 gd_dl_material_lighting(s32 id, struct GdColour *colour, s32 material) {
     }
     switch (material) {
         case GD_MTL_TEX_OFF:
-            gddl_is_loading_stub_dl(FALSE);
-            gddl_is_loading_stub_dl(FALSE);
-            gddl_is_loading_stub_dl(FALSE);
-            gddl_is_loading_stub_dl(FALSE);
             gddl_is_loading_shine_dl(FALSE);
             gddl_is_loading_shine_dl(FALSE);
             gddl_is_loading_shine_dl(FALSE);
             gddl_is_loading_shine_dl(FALSE);
             numLights = NUMLIGHTS_2;
-            break;
-        case GD_MTL_STUB_DL:
-            gddl_is_loading_stub_dl(TRUE);
             break;
         case GD_MTL_SHINE_DL:
             gddl_is_loading_shine_dl(TRUE);
@@ -1747,7 +1677,6 @@ s32 gd_dl_material_lighting(s32 id, struct GdColour *colour, s32 material) {
         case GD_MTL_BREAK:
             break;
         default:
-            gddl_is_loading_stub_dl(FALSE);
             gddl_is_loading_shine_dl(FALSE);
 
             DL_CURRENT_LIGHT(sCurrentGdDl).a.l.col[0] = colour->r * 255.0f;
@@ -1832,10 +1761,7 @@ void set_Vtx_norm_buf_2(struct GdVec3f *norm) {
     sVtxCvrtNormBuf[0] = (s8)(norm->x * 127.0f);
     sVtxCvrtNormBuf[1] = (s8)(norm->y * 127.0f);
     sVtxCvrtNormBuf[2] = (s8)(norm->z * 127.0f);
-
-    //? are these stub functions?
     return; // @ 801A17A0
-    return; // @ 801A17A8
 }
 
 /* 24FF80 -> 24FFDC; orig name: func_801A17B0 */
@@ -1941,10 +1867,6 @@ void Unknown801A1E70(void) {
 void gd_set_one_cycle(void) {
     gDPSetCycleType(next_gfx(), G_CYC_1CYCLE);
     update_render_mode();
-}
-
-/* 250B44 -> 250B58 */
-void gddl_is_loading_stub_dl(UNUSED s32 dlLoad) {
 }
 
 /* 250B58 -> 250C18 */
@@ -2233,17 +2155,6 @@ void gd_setproperty(enum GdProperty prop, f32 f1, f32 f2, f32 f3) {
                 case 25:
                     break;
             }
-            //? no break?
-        case GD_PROP_STUB17:
-            break;
-        case GD_PROP_STUB18:
-            break;
-        case GD_PROP_STUB19:
-            break;
-        case GD_PROP_STUB20:
-            break;
-        case GD_PROP_STUB21:
-            break;
     }
 }
 

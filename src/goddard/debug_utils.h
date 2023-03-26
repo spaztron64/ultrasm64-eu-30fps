@@ -30,7 +30,6 @@ extern u8 *gGdStreamBuffer;
 // functions
 extern f32 gd_rand_float(void);
 extern s32 gd_atoi(const char *);
-extern f64 gd_lazy_atof(const char *, u32 *);
 extern char *sprint_val_withspecifiers(char *, union PrintVal, char *);
 extern void gd_strcpy(char *, const char *);
 extern char *gd_strdup(const char *);

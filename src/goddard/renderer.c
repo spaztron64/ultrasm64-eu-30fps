@@ -718,24 +718,6 @@ static Vp *next_vp(void) {
     return &sCurrentGdDl->vp[sCurrentGdDl->curVpIdx++];
 }
 
-/* 249AAC -> 249AEC */
-f64 gd_sin_d(f64 x) {
-    return sinf(x);
-}
-
-/* 249AEC -> 249B2C */
-f64 gd_cos_d(f64 x) {
-    return cosf(x);
-}
-
-/* 249B2C -> 249BA4 */
-f64 gd_sqrt_d(f64 x) {
-    if (x < 1.0e-7) {
-        return 0.0f;
-    }
-    return sqrtf(x);
-}
-
 /* 24A1D4 -> 24A220; orig name: func_8019BA04 */
 void gd_free(void *ptr) {
     sAllocMemory -= gd_free_mem(ptr);
@@ -1367,8 +1349,7 @@ void gd_dl_lookat(struct ObjCamera *cam, f32 arg1, f32 arg2, f32 arg3, f32 arg4,
 
     arg7 *= RAD_PER_DEG;
 
-    gd_mat4f_lookat(&cam->unkE8, arg1, arg2, arg3, arg4, arg5, arg6, gd_sin_d(arg7), gd_cos_d(arg7),
-                  0.0f);
+    gd_mat4f_lookat(&cam->unkE8, arg1, arg2, arg3, arg4, arg5, arg6, sinf(arg7), cosf(arg7), 0.0f);
 
     mat4_to_mtx(&cam->unkE8, &DL_CURRENT_MTX(sCurrentGdDl));
     gSPMatrix(next_gfx(), osVirtualToPhysical(&DL_CURRENT_MTX(sCurrentGdDl)),
@@ -1989,10 +1970,10 @@ void parse_p1_controller(void) {
 
     // deadzone checks
     if (ABS(gdctrl->stickX) >= 6) {
-        gdctrl->csrX += gdctrl->stickX * 0.1f;
+        gdctrl->csrX += (gdctrl->stickX * 0.1f) * gLerpSpeed;
     }
     if (ABS(gdctrl->stickY) >= 6) {
-        gdctrl->csrY -= gdctrl->stickY * 0.1f;
+        gdctrl->csrY -= (gdctrl->stickY * 0.1f) * gLerpSpeed;
     }
 
     // clamp cursor position within screen view bounds

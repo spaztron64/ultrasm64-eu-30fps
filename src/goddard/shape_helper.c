@@ -19,6 +19,7 @@
 #include "renderer.h"
 #include "shape_helper.h"
 #include "skin.h"
+#include "game/game_init.h"
 
 // data
 struct ObjGroup *gMarioFaceGrp = NULL;     // @ 801A82E0; returned by load_dynlist
@@ -323,8 +324,7 @@ s32 getfloat(f32 *floatPtr) {
     char charBuf[0x100];
     u32 bufCsr;
     char curChar;
-    u32 sp34;
-    f64 parsedDouble;
+    f32 parsedDouble;
 
     while (is_white_space(get_current_buf_char())) {
         get_and_advance_buf();
@@ -343,7 +343,7 @@ s32 getfloat(f32 *floatPtr) {
 
     charBuf[bufCsr] = '\0';
 
-    parsedDouble = gd_lazy_atof(charBuf, &sp34);
+    parsedDouble = gd_atoi(charBuf);
     *floatPtr = (f32) parsedDouble;
 
     return !!bufCsr;
@@ -412,9 +412,9 @@ void scale_obj_position(struct GdObj *obj) {
     set_cur_dynobj(obj);
     d_get_rel_pos(&pos);
 
-    pos.x *= sVertexScaleFactor.x;
-    pos.y *= sVertexScaleFactor.y;
-    pos.z *= sVertexScaleFactor.z;
+    pos.x *= sVertexScaleFactor.x * gLerpSpeed;
+    pos.y *= sVertexScaleFactor.y * gLerpSpeed;
+    pos.z *= sVertexScaleFactor.z * gLerpSpeed;
 
     d_set_rel_pos(pos.x, pos.y, pos.z);
     d_set_init_pos(pos.x, pos.y, pos.z);
@@ -427,9 +427,9 @@ void translate_obj_position(struct GdObj *obj) {
     set_cur_dynobj(obj);
     d_get_rel_pos(&pos);
 
-    pos.x += sVertexTranslateOffset.x;
-    pos.y += sVertexTranslateOffset.y;
-    pos.z += sVertexTranslateOffset.z;
+    pos.x += sVertexTranslateOffset.x * gLerpSpeed;
+    pos.y += sVertexTranslateOffset.y * gLerpSpeed;
+    pos.z += sVertexTranslateOffset.z * gLerpSpeed;
 
     d_set_rel_pos(pos.x, pos.y, pos.z);
 }
@@ -457,14 +457,14 @@ void translate_verts_in_shape(struct ObjShape *shape, f32 x, f32 y, f32 z) {
 
 /* @ 246C14 for 0xe0 */
 void Unknown80198444(struct ObjVertex *vtx) {
-    f64 distance;
+    f32 distance;
 
     add_obj_pos_to_bounding_box(&vtx->header);
 
     distance = vtx->pos.x * vtx->pos.x + vtx->pos.y * vtx->pos.y + vtx->pos.z * vtx->pos.z;
 
-    if (distance != 0.0) {
-        distance = gd_sqrt_d(distance); // sqrtd?
+    if (distance != 0.0f) {
+        distance = sqrtf(distance); // sqrtd?
 
         if (distance > D_801A8668) {
             D_801A8668 = distance;
@@ -595,6 +595,10 @@ void get_3DG1_shape(struct ObjShape *shape) {
 
 }
 
+// Bro why were these temps, leave the poor stack alone :((
+struct ObjVertex *vtxArr[4000];
+struct ObjFace *faceArr[4000];
+
 /* @ 2473D0 for 0x390; orig name: func_80198C00 */
 void get_OBJ_shape(struct ObjShape *shape) {
     struct GdColour faceClr;
@@ -602,8 +606,6 @@ void get_OBJ_shape(struct ObjShape *shape) {
     s32 faceVtxIndex;
     struct GdVec3f tempVec;
     struct ObjFace *newFace;
-    struct ObjVertex *vtxArr[4000];
-    struct ObjFace *faceArr[4000];
     s32 faceCount = 0;
     s32 vtxCount = 0;
 
@@ -1013,9 +1015,9 @@ void animate_mario_head_gameover(struct ObjAnimator *self) {
             self->state = 1;
             break;
         case 1:
-            self->frame += 1.0f;
+            self->frame += 1.0f * gLerpSpeed;
             // After the gameover animation ends, switch to the normal animation
-            if (self->frame == 166.0f) {
+            if (self->frame >= 166.0f) {
                 self->frame = 69.0f;
                 self->state = 4;
                 self->controlFunc = animate_mario_head_normal;
@@ -1045,9 +1047,9 @@ void animate_mario_head_normal(struct ObjAnimator *self) {
                 state = 5;
             }
 
-            self->frame += 1.0f;
+            self->frame += 1.0f * gLerpSpeed;
 
-            if (self->frame == 810.0f) {
+            if (self->frame >= 810.0f) {
                 self->frame = 750.0f;
                 self->nods--;
                 if (self->nods == 0) {
@@ -1056,39 +1058,39 @@ void animate_mario_head_normal(struct ObjAnimator *self) {
             }
             break;
         case 3:
-            self->frame += 1.0f;
+            self->frame += 1.0f * gLerpSpeed;
 
-            if (self->frame == 820.0f) {
+            if (self->frame >= 820.0f) {
                 self->frame = 69.0f;
                 state = 4;
             }
             break;
         case 4:
-            self->frame += 1.0f;
+            self->frame += 1.0f * gLerpSpeed;
 
-            if (self->frame == 660.0f) {
+            if (self->frame >= 660.0f) {
                 self->frame = 661.0f;
                 state = 2;
                 self->nods = 5;
             }
             break;
         case 5:
-            if (self->frame == 660.0f) {
+            if (self->frame >= 660.0f) {
                 state = 7;
             } else if (self->frame > 660.0f) {
-                self->frame -= 1.0f;
+                self->frame -= 1.0f * gLerpSpeed;
             } else if (self->frame < 660.0f) {
-                self->frame += 1.0f;
+                self->frame += 1.0f * gLerpSpeed;
             }
 
-            self->stillTimer = 150;
+            self->stillTimer = 150.0f;
             break;
         case 7:  // Mario is staying still while his eyes follow the cursor
             if (aBtnPressed) {
-                self->stillTimer = 300;
+                self->stillTimer = 300.0f;
             } else {
-                self->stillTimer--;
-                if (self->stillTimer == 0) {
+                self->stillTimer -= gLerpSpeed;
+                if (self->stillTimer <= 0.0f) {
                     state = 6;
                 }
             }

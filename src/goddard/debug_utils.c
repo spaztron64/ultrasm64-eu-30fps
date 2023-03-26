@@ -83,13 +83,6 @@ s32 gd_atoi(const char *str) {
     return out;
 }
 
-/**
- * Like the standard "atof" function, but only supports integer values
- */
-f64 gd_lazy_atof(const char *str, UNUSED u32 *unk) {
-    return gd_atoi(str);
-}
-
 static char sHexNumerals[] = {"0123456789ABCDEF"};
 
 /* 23C018 -> 23C078; orig name: func_8018D848 */

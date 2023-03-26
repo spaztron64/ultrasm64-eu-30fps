@@ -560,7 +560,7 @@ struct ObjAnimator {
     /* 0x48 */ void (*controlFunc) (struct ObjAnimator *);  // function that "controls" the animation sequence by choosing the frame number
     /* 0x4C */ s32 state;   //state enum?
     /* 0x50 */ s32 nods;  // Counts the number of nods when Mario is dozing off. When this reaches zero, he wakes up again
-    /* 0x54 */ s32 stillTimer;  // number of frames to remain in the part where Mario's head stays still with his eyes following the cursor
+    /* 0x54 */ f32 stillTimer;  // number of frames to remain in the part where Mario's head stays still with his eyes following the cursor
 }; /* sizeof = 0x58 */
 
 /* Animation Data Types */

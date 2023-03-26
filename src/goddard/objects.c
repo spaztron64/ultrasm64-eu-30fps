@@ -942,7 +942,7 @@ void func_8017E584(struct ObjNet *a0, struct GdVec3f *a1, struct GdVec3f *a2) {
     }
 
     gd_cross_vec3f(&sp70, a1, &sp94);
-    sp2C = (f32) gd_sqrt_d((sp94.x * sp94.x) + (sp94.z * sp94.z));
+    sp2C = (f32) sqrtf((sp94.x * sp94.x) + (sp94.z * sp94.z));
 
     if (sp2C > 1000.0) { //? 1000.0f
         sp2C = 1000.0f;

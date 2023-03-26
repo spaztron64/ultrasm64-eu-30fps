@@ -18,6 +18,7 @@
 #include "sfx.h"
 #include "skin.h"
 #include "skin_movement.h"
+#include "game/game_init.h"
 
 // data
 static s32 D_801A82D0 = 0;
@@ -69,14 +70,18 @@ void grabbable_joint_update_func(struct ObjJoint *self) {
     } else {
         if (gGdCtrl.trgR == FALSE) { // R trigger is released
             // Set velocity so that the joint approaches its initial position
-            self->velocity.x -= offset.x * 0.5f; //? 0.5f
-            self->velocity.y -= offset.y * 0.5f; //? 0.5f
-            self->velocity.z -= offset.z * 0.5f; //? 0.5f
+            self->velocity.x -= (offset.x * 0.5f) * gLerpSpeed; //? 0.5f
+            self->velocity.y -= (offset.y * 0.5f) * gLerpSpeed; //? 0.5f
+            self->velocity.z -= (offset.z * 0.5f) * gLerpSpeed; //? 0.5f
 
             // Decay the velocity
-            self->velocity.x *= 0.8f; //? 0.8f
-            self->velocity.y *= 0.8f; //? 0.8f
-            self->velocity.z *= 0.8f; //? 0.8f
+            //self->velocity.x *= 0.8f; //? 0.8f
+            //self->velocity.y *= 0.8f; //? 0.8f
+            //self->velocity.z *= 0.8f; //? 0.8f
+
+            self->velocity.x -= (self->velocity.x * 0.2f) * gLerpSpeed;
+            self->velocity.y -= (self->velocity.y * 0.2f) * gLerpSpeed;
+            self->velocity.z -= (self->velocity.z * 0.2f) * gLerpSpeed;
 
             // If the joint's velocity has decayed enough and it is very close
             // to its original position, stop its movement altogether
@@ -102,13 +107,13 @@ void grabbable_joint_update_func(struct ObjJoint *self) {
     }
 
     // update position
-    self->mat128[3][0] += self->velocity.x;
-    self->mat128[3][1] += self->velocity.y;
-    self->mat128[3][2] += self->velocity.z;
+    self->mat128[3][0] += (self->velocity.x) * gLerpSpeed;
+    self->mat128[3][1] += (self->velocity.y) * gLerpSpeed;
+    self->mat128[3][2] += (self->velocity.z) * gLerpSpeed;
 
     if (self->header.drawFlags & OBJ_PICKED) {
-        gGdCtrl.csrX -= (gGdCtrl.csrX - gGdCtrl.dragStartX) * 0.2f;
-        gGdCtrl.csrY -= (gGdCtrl.csrY - gGdCtrl.dragStartY) * 0.2f;
+        gGdCtrl.csrX -= ((gGdCtrl.csrX - gGdCtrl.dragStartX) * 0.2f) * gLerpSpeed;
+        gGdCtrl.csrY -= ((gGdCtrl.csrY - gGdCtrl.dragStartY) * 0.2f) * gLerpSpeed;
     }
 
     // update position of attached objects
@@ -429,7 +434,7 @@ void func_8018FB58(struct ObjBone *b) {
     vec.y = j1->worldPos.y - j2->worldPos.y;
     vec.z = j1->worldPos.z - j2->worldPos.z;
 
-    b->unkF8 = gd_sqrt_d((vec.x * vec.x) + (vec.y * vec.y) + (vec.z * vec.z));
+    b->unkF8 = sqrtf((vec.x * vec.x) + (vec.y * vec.y) + (vec.z * vec.z));
     b->unkF4 = b->unkF8;
     b->unkFC = b->unkF8;
     func_8018F328(b);

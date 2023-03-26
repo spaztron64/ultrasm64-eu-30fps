@@ -684,6 +684,11 @@ struct ReverbSettingsEU {
     u16 gain;
 };
 #else
+struct ReverbSettingsUS {
+    u8 downsampleRate;
+    u16 windowSize;
+    u16 gain;
+};
 struct ReverbSettingsEU {
     u8 downsampleRate; // always 1
     u8 windowSize; // To be multiplied by 16

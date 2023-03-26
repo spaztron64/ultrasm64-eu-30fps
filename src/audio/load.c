@@ -884,6 +884,7 @@ void audio_init() {
     u32 size;
 #endif
     void *data;
+    u64 *ptr64;
 
     gAudioLoadLock = AUDIO_LOCK_UNINITIALIZED;
 
@@ -894,21 +895,27 @@ void audio_init() {
         ((u64 *) gAudioHeap)[i] = 0;
     }
 
-#ifdef TARGET_N64
+
     // It seems boot.s doesn't clear the .bss area for audio, so do it here.
     i = 0;
     lim3 = ((uintptr_t) &gAudioGlobalsEndMarker - (uintptr_t) &gAudioGlobalsStartMarker) / 8;
-#endif
+    ptr64 = &gAudioGlobalsStartMarker;
+    for (k = lim3; k >= 0; k--) {
+        ptr64[i] = 0;
+        i++;
+    }
 
 #else
     for (i = 0; i < gAudioHeapSize / 8; i++) {
         ((u64 *) gAudioHeap)[i] = 0;
     }
 
-#ifdef TARGET_N64
     // It seems boot.s doesn't clear the .bss area for audio, so do it here.
     lim3 = ((uintptr_t) &gAudioGlobalsEndMarker - (uintptr_t) &gAudioGlobalsStartMarker) / 8;
-#endif
+    ptr64 = &gAudioGlobalsStartMarker;
+    for (k = lim3; k >= 0; k--) {
+        *ptr64++ = 0;
+    }
 
     D_EU_802298D0 = 20.03042f;
     gRefreshRate = 50;
@@ -918,7 +925,7 @@ void audio_init() {
 #endif
 
     for (i = 0; i < NUMAIBUFFERS; i++) {
-        gAiBufferLengths[i] = 0xa0;
+        gAiBufferLengths[i] = 10;
     }
 
     gAudioFrameCount = 0;
@@ -929,19 +936,14 @@ void audio_init() {
     gAudioTasks[0].task.t.data_size = 0;
     gAudioTasks[1].task.t.data_size = 0;
     osCreateMesgQueue(&gAudioDmaMesgQueue, &gAudioDmaMesg, 1);
-    osCreateMesgQueue(&gCurrAudioFrameDmaQueue, gCurrAudioFrameDmaMesgBufs,
-                      ARRAY_COUNT(gCurrAudioFrameDmaMesgBufs));
+    osCreateMesgQueue(&gCurrAudioFrameDmaQueue, gCurrAudioFrameDmaMesgBufs, ARRAY_COUNT(gCurrAudioFrameDmaMesgBufs));
     gCurrAudioFrameDmaCount = 0;
     gSampleDmaNumListItems = 0;
 
     sound_init_main_pools(gAudioInitPoolSize);
-
+    bzero(&gAiBuffers, sizeof(gAiBuffers));
     for (i = 0; i < NUMAIBUFFERS; i++) {
         gAiBuffers[i] = soundAlloc(&gAudioInitPool, AIBUFFER_LEN);
-
-        for (j = 0; j < (s32) (AIBUFFER_LEN / sizeof(s16)); j++) {
-            gAiBuffers[i][j] = 0;
-        }
     }
 
 #if defined(VERSION_EU)
@@ -949,7 +951,7 @@ void audio_init() {
     gAudioResetStatus = 1;
     audio_shut_down_and_reset_step();
 #else
-    audio_reset_session(&gAudioSessionPresets[0]);
+    audio_reset_session(&gAudioSessionPresets[0], 0);
 #endif
 
     // Load headers for sounds and sequences

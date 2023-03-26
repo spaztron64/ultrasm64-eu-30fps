@@ -101,46 +101,6 @@ void setup_lights(void) {
     return;
 }
 
-/**
- * @note Not called
- */
-void Unknown801781DC(struct ObjZone *zone) {
-    struct GdVec3f lightPos; // 3c
-    struct ObjUnk200000 *unk;
-    f32 sp34;
-    f32 sp30;
-    f32 sp2C;
-    struct ObjLight *light;
-    register struct ListNode *link = zone->unk30->firstMember; // s0 (24)
-    struct GdObj *obj;                                 // 20
-
-    while (link != NULL) {
-        obj = link->obj;
-        light = (struct ObjLight *) gGdLightGroup->firstMember->obj;
-        lightPos.x = light->position.x;
-        lightPos.y = light->position.y;
-        lightPos.z = light->position.z;
-        unk = (struct ObjUnk200000 *) obj;
-        sp34 = gd_dot_vec3f(&unk->unk34->normal, &unk->unk30->pos);
-        sp30 = gd_dot_vec3f(&unk->unk34->normal, &lightPos);
-        lightPos.x -= unk->unk34->normal.x * (sp30 - sp34);
-        lightPos.y -= unk->unk34->normal.y * (sp30 - sp34);
-        lightPos.z -= unk->unk34->normal.z * (sp30 - sp34);
-        unk->unk30->pos.x = lightPos.x;
-        unk->unk30->pos.y = lightPos.y;
-        unk->unk30->pos.z = lightPos.z;
-        sp2C = ABS((sp30 - sp34));
-        if (sp2C > 600.0f) {
-            sp2C = 600.0f;
-        }
-        sp2C = 1.0 - sp2C / 600.0f;
-        unk->unk30->normal.x = sp2C * light->colour.r;
-        unk->unk30->normal.y = sp2C * light->colour.g;
-        unk->unk30->normal.z = sp2C * light->colour.b;
-        link = link->next;
-    }
-}
-
 /* 226C6C -> 226FDC */
 void draw_shape(struct ObjShape *shape, s32 flag, f32 c, f32 d, f32 e, // "sweep" indices 0-2 x, y, z
                 f32 f, f32 g, f32 h, // translate shape + store offset (unused)
@@ -302,24 +262,6 @@ void create_mtl_gddl_if_empty(struct ObjMaterial *mtl) {
 }
 
 /**
- * A function for checking if an `ObjFace` has bad vertices. These could be either
- * unconverted vertex data, or old vertex structures (like `BetaVtx`)
- * @note Not called
- */
-void check_face_bad_vtx(struct ObjFace *face) {
-    s32 i;
-    struct ObjVertex *vtx;
-
-    for (i = 0; i < face->vtxCount; i++) {
-        vtx = face->vertices[i];
-        // These seem to be checks against bad conversions, or an outdated vertex structure..?
-        if ((uintptr_t) vtx == 39) {
-            return;
-        }
-    }
-}
-
-/**
  * @brief Convert a numeric index into pointer to a struct GdColour
  *
  * A simple switch case to convert from index @p idx to a pointer to the
@@ -373,18 +315,6 @@ struct GdColour *gd_get_colour(s32 idx) {
         default:
             return NULL;
     }
-}
-
-/**
- * Uncalled function that would render a triangle
- * @note Not called
- */
-void Unknown80178ECC(f32 v0X, f32 v0Y, f32 v0Z, f32 v1X, f32 v1Y, f32 v1Z) {
-    f32 difY = v1Y - v0Y;
-    f32 difX = v1X - v0X;
-    f32 difZ = v1Z - v0Z;
-
-    gd_dl_make_triangle(v0X, v0Y, v0Z, v1X, v1Y, v1Z, v0X + difY * 0.1f, v0Y + difX * 0.1f, v0Z + difZ * 0.1f);
 }
 
 /**
@@ -602,35 +532,6 @@ void draw_camera(struct ObjCamera *cam) {
         return;
     }
     gd_dl_lookat(cam, cam->worldPos.x, cam->worldPos.y, cam->worldPos.z, sp44.x, sp44.y, sp44.z, cam->unkA4);
-}
-
-/**
- * Forms uncalled recursive loop with func_80179B64().
- * This function seems to turn off the otherwise unused `OBJ_DRAW_UNK01` flag
- * for the GdObj.drawFlags
- * @note Not called
- */
-void Unknown80179ACC(struct GdObj *obj) {
-    switch (obj->type) {
-        case OBJ_TYPE_NETS:
-            if (((struct ObjNet *) obj)->unk1C8 != NULL) {
-                func_80179B64(((struct ObjNet *) obj)->unk1C8);
-            }
-            break;
-        default:
-            break;
-    }
-    obj->drawFlags &= ~OBJ_DRAW_UNK01;
-}
-
-/**
- * Forms uncalled recursive loop with Unknown80179ACC()
- * @note Not called
- */
-void func_80179B64(struct ObjGroup *group) {
-    apply_to_obj_types_in_group(OBJ_TYPE_LABELS | OBJ_TYPE_GADGETS | OBJ_TYPE_CAMERAS | OBJ_TYPE_NETS
-                                    | OBJ_TYPE_JOINTS | OBJ_TYPE_BONES,
-                                (applyproc_t) Unknown80179ACC, group);
 }
 
 /* 22836C -> 228498 */
@@ -1193,20 +1094,6 @@ void map_vertices(struct ObjGroup *facegrp, struct ObjGroup *vtxgrp) {
         vtx = (struct ObjVertex *) vtxNode->obj;
         calc_vtx_normal(vtx, facegrp);
         vtxNode = vtxNode->next;
-    }
-}
-
-/**
- * Unselect a grabbable objects
- *
- * @param obj `GdObj` to unselect
- * @return void
- * @note Not Called
- */
-void unpick_obj(struct GdObj *obj) {
-    struct GdObj *why = obj;
-    if (why->drawFlags & OBJ_IS_GRABBABLE) {
-        why->drawFlags &= ~(OBJ_PICKED | OBJ_HIGHLIGHTED);
     }
 }
 

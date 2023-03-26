@@ -977,21 +977,6 @@ Gfx *gdm_gettestdl(s32 id) {
     return (void *) osVirtualToPhysical(gddl->gfx);
 }
 
-/* 24B418 -> 24B4CC; not called */
-void gdm_getpos(s32 id, struct GdVec3f *dst) {
-    struct GdObj *dobj; // 1c
-    switch (id) {
-        case 5:
-            set_gd_mtx_parameters(G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_PUSH);
-            dobj = d_use_obj("testnet2");
-            dst->x = ((struct ObjNet *) dobj)->worldPos.x;
-            dst->y = ((struct ObjNet *) dobj)->worldPos.y;
-            dst->z = ((struct ObjNet *) dobj)->worldPos.z;
-            break;
-    }
-    return;
-}
-
 /**
  * Clamps the coordinates so that they are within the active view
  */
@@ -1100,18 +1085,6 @@ struct GdDisplayList *new_gd_dl(s32 id, s32 gfxs, s32 verts, s32 mtxs, s32 light
 
     dl->dlptr = NULL;
     return dl;
-}
-
-/* 24BA48 -> 24BABC; not called */
-void gd_rsp_init(void) {
-    gSPDisplayList(next_gfx(), osVirtualToPhysical(&gd_dl_rsp_init));
-    gDPPipeSync(next_gfx());
-}
-
-/* 24BABC -> 24BB30; not called */
-void gd_rdp_init(void) {
-    gSPDisplayList(next_gfx(), osVirtualToPhysical(&gd_dl_rdp_init));
-    gDPPipeSync(next_gfx());
 }
 
 /* 24BB30 -> 24BED8; orig name: func_8019D360 */

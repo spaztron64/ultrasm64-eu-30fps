@@ -210,18 +210,6 @@ void gd_strcpy(char *dst, const char *src) {
     }
 }
 
-/* 23C4AC -> 23C52C; not called; orig name: Unknown8018DCDC */
-void ascii_to_uppercase(char *str) {
-    char c;
-
-    while ((c = *str)) {
-        if (c >= 'a' && c <= 'z') {
-            *str = c & 0xDF;
-        }
-        str++;
-    }
-}
-
 /* 23C52C -> 23C5A8; orig name: func_8018DD5C */
 char *gd_strdup(const char *src) {
     char *dst; // sp24

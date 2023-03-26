@@ -348,30 +348,6 @@ void d_set_name_suffix(char *str) {
 }
 
 /**
- * Concatenate input `str` into a buffer that will be concatenated to a dynamic
- * `GdObj`'s name string when creating a new dynamic object. If input
- * is `NULL`, then a generic string is created based on the number of
- * unnamed objects.
- *
- * @note Not called
- */
-void d_append_to_name_suffix(char *str) {
-    char buf[0xff + 1];
-
-    if (str != NULL) {
-        if (str[0] == '\0') {
-            sprintf(buf, "__%d", ++sUnnamedObjCount);
-        } else {
-            gd_strcpy(buf, str);
-        }
-    } else {
-        buf[0] = '\0';
-    }
-
-    gd_strcat(sDynNameSuffix, buf);
-}
-
-/**
  * Stash the current string that is appended to a created dynamic `GdObj` name.
  */
 static void stash_name_suffix(void) {
@@ -416,24 +392,6 @@ static struct DynObjInfo *get_dynobj_info(DynObjName name) {
     }
 
     return foundDynobj;
-}
-
-/**
- * Reset the number of created dynamic objects and
- * free the dynamic object information list (`sGdDynObjList`).
- * The objects themselves still exist, though.
- *
- * @note Not called
- */
-void reset_dynamic_objs(void) {
-
-    if (sLoadedDynObjs == 0) {
-        return;
-    }
-
-    gd_free(sGdDynObjList);
-    sLoadedDynObjs = 0;
-    sGdDynObjList = NULL;
 }
 
 /**
@@ -1328,24 +1286,6 @@ void d_get_velocity(struct GdVec3f *dst) {
 }
 
 /**
- * Set the torque vectore for the current dynamic object.
- * Values from input `GdVec3f` are copied into the object.
- *
- * @note Not called
- */
-void d_set_torque(const struct GdVec3f *src) {
-    struct GdObj *dynobj = sDynListCurObj;
-
-    switch (sDynListCurObj->type) {
-        case OBJ_TYPE_NETS:
-            ((struct ObjNet *) dynobj)->torque.x = src->x;
-            ((struct ObjNet *) dynobj)->torque.y = src->y;
-            ((struct ObjNet *) dynobj)->torque.z = src->z;
-            break;
-    }
-}
-
-/**
  * Get the initial position of the current dynamic object and
  * store in `dst`.
  */
@@ -1592,57 +1532,6 @@ void d_set_att_offset(const struct GdVec3f *off) {
 }
 
 /**
- * An incorrectly-coded recursive function that was presumably supposed to
- * set the offset of an attached object. Now, it will only call itself
- * until it encounters a NULL pointer, which will trigger a `fatal_printf()`
- * call.
- *
- * @note Not called
- */
-void d_set_att_to_offset(UNUSED u32 a) {
-    struct GdObj *dynobj; // sp3c
-
-    dynobj = sDynListCurObj;
-    d_stash_dynobj();
-    switch (sDynListCurObj->type) {
-        case OBJ_TYPE_JOINTS:
-            set_cur_dynobj(((struct ObjJoint *) dynobj)->attachedToObj);
-            break;
-        case OBJ_TYPE_NETS:
-            set_cur_dynobj(((struct ObjNet *) dynobj)->attachedToObj);
-            break;
-        case OBJ_TYPE_PARTICLES:
-            set_cur_dynobj(((struct ObjParticle *) dynobj)->attachedToObj);
-            break;
-    }
-    d_set_att_to_offset(a);
-    d_unstash_dynobj();
-}
-
-/**
- * Store the offset of the attached object into `dst`.
- *
- * @note Not called
- */
-void d_get_att_offset(struct GdVec3f *dst) {
-
-    switch (sDynListCurObj->type) {
-        case OBJ_TYPE_JOINTS:
-            dst->x = ((struct ObjJoint *) sDynListCurObj)->attachOffset.x;
-            dst->y = ((struct ObjJoint *) sDynListCurObj)->attachOffset.y;
-            dst->z = ((struct ObjJoint *) sDynListCurObj)->attachOffset.z;
-            break;
-        case OBJ_TYPE_NETS:
-            dst->x = ((struct ObjNet *) sDynListCurObj)->attachOffset.x;
-            dst->y = ((struct ObjNet *) sDynListCurObj)->attachOffset.y;
-            dst->z = ((struct ObjNet *) sDynListCurObj)->attachOffset.z;
-            break;
-        case OBJ_TYPE_PARTICLES:
-            break;
-    }
-}
-
-/**
  * Get the attached object flags for the current dynamic object.
  */
 s32 d_get_att_flags(void) {
@@ -1721,24 +1610,6 @@ void d_set_normal(f32 x, f32 y, f32 z) {
             ((struct ObjVertex *) sDynListCurObj)->normal.x = normal.x;
             ((struct ObjVertex *) sDynListCurObj)->normal.y = normal.y;
             ((struct ObjVertex *) sDynListCurObj)->normal.z = normal.z;
-            break;
-    }
-}
-
-/**
- * Get a pointer to the world position vector of the active
- * dynamic object. This is a pointer inside the actual object.
- *
- * @note Not called.
- */
-struct GdVec3f *d_get_world_pos_ptr(void) {
-
-    switch (sDynListCurObj->type) {
-        case OBJ_TYPE_VERTICES:
-            return &((struct ObjVertex *) sDynListCurObj)->pos;
-            break;
-        case OBJ_TYPE_PARTICLES:
-            return &((struct ObjParticle *) sDynListCurObj)->pos;
             break;
     }
 }

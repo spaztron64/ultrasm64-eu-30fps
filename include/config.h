@@ -55,20 +55,6 @@
 #define THREAD9_STACK 0x800
 
 #define DYNAMIC_SURFACE_POOL_SIZE 0x8000
-#define GODDARD_HEAP_SIZE 0xE1000
-
-// Border Height Define for NTSC Versions
-#ifdef TARGET_N64
-#ifndef VERSION_EU
-#define BORDER_HEIGHT_CONSOLE 8
-#define BORDER_HEIGHT_EMULATOR 0
-#else
-#define BORDER_HEIGHT_CONSOLE 1
-#define BORDER_HEIGHT_EMULATOR 0
-#endif
-#else
-#define BORDER_HEIGHT_CONSOLE 0
-#define BORDER_HEIGHT_EMULATOR 0
-#endif
+#define GODDARD_HEAP_SIZE 0xC8000
 
 #endif // CONFIG_H

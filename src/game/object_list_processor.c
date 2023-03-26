@@ -629,12 +629,10 @@ void update_objects(UNUSED s32 unused) {
         gTimeStopState |= TIME_STOP_ACTIVE;
     } else {
         gTimeStopState &= ~TIME_STOP_ACTIVE;
+        gThrowMatIndex = 0;
+        gThrowMatSwap ^= 1;
+        bzero(gThrowMatStack[gThrowMatSwap], sizeof(Mat4) * THROWMATSTACK);
     }
-
-    gThrowMatIndex = 0;
-    gThrowMatSwap ^= 1;
-    bzero(gThrowMatStack[gThrowMatSwap], sizeof(Mat4) * THROWMATSTACK);
-    gPrevFrameObjectCount = gObjectCounter;
 
     gPrevFrameObjectCount = gObjectCounter;
 }

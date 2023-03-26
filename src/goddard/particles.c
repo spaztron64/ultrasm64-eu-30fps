@@ -446,10 +446,8 @@ void move_particle(struct ObjParticle *ptc) {
 
 /* 231D40 -> 231D98; orig name: func_80183570 */
 void move_particles_in_grp(struct ObjGroup *group) {
-    start_timer("particles");
     gGdSkinNet = NULL;
     apply_to_obj_types_in_group(OBJ_TYPE_PARTICLES, (applyproc_t) move_particle, group);
-    stop_timer("particles");
 }
 
 #define ABS(x) ((x) < 0.0f ? -(x) : (x))

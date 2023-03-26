@@ -79,9 +79,7 @@ void reset_net(struct ObjNet *net) {
 /* 240A64 -> 240ACC */
 void func_80192294(struct ObjNet *net) {
     if (net->attachedToObj == NULL) {
-        restart_timer("childpos");
         transform_child_objects_recursive(&net->header, NULL);
-        split_timer("childpos");
     }
 }
 
@@ -403,14 +401,10 @@ void move_net(struct ObjNet *net) {
             func_80192CCC(net);
             break;
         case 4:
-            restart_timer("move_bones");
             move_bonesnet(net);
-            split_timer("move_bones");
             break;
         case 2:
-            restart_timer("move_skin");
             move_skin(net);
-            split_timer("move_skin");
             break;
         case 3:
             move_joints_in_net(net);

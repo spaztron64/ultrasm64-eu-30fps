@@ -45,16 +45,6 @@ struct GdFile {
 extern u8 *gGdStreamBuffer;
 
 // functions
-extern void deactivate_timing(void);
-extern void activate_timing(void);
-extern void remove_all_timers(void);
-extern struct GdTimer *get_timer(const char *);
-extern struct GdTimer *get_timernum(s32);
-extern void start_timer(const char *);
-extern void restart_timer(const char *);
-extern void split_timer(const char *);
-extern void stop_timer(const char *);
-extern f32 get_scaled_timer_total(const char *);
 extern f32 gd_rand_float(void);
 extern s32 gd_atoi(const char *);
 extern f64 gd_lazy_atof(const char *, u32 *);

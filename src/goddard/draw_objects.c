@@ -156,7 +156,6 @@ void draw_shape(struct ObjShape *shape, s32 flag, f32 c, f32 d, f32 e, // "sweep
                 s32 colorIdx, Mat4f *rotMtx) {
     struct GdVec3f sp1C;
 
-    restart_timer("drawshape");
     sUpdateViewState.shapesDrawn++;
 
     if (shape == NULL) {
@@ -222,7 +221,6 @@ void draw_shape(struct ObjShape *shape, s32 flag, f32 c, f32 d, f32 e, // "sweep
 
     draw_shape_faces(shape);
     sUseSelectedColor = FALSE;
-    split_timer("drawshape");
 }
 
 void draw_shape_2d(struct ObjShape *shape, s32 flag, UNUSED f32 c, UNUSED f32 d, UNUSED f32 e, f32 f,
@@ -230,7 +228,6 @@ void draw_shape_2d(struct ObjShape *shape, s32 flag, UNUSED f32 c, UNUSED f32 d,
                    UNUSED f32 n, UNUSED s32 color, UNUSED s32 p) {
     struct GdVec3f sp1C;
 
-    restart_timer("drawshape2d");
     sUpdateViewState.shapesDrawn++;
 
     if (shape == NULL) {
@@ -247,7 +244,6 @@ void draw_shape_2d(struct ObjShape *shape, s32 flag, UNUSED f32 c, UNUSED f32 d,
         gd_dl_load_trans_matrix(sp1C.x, sp1C.y, sp1C.z);
     }
     draw_shape_faces(shape);
-    split_timer("drawshape2d");
 }
 
 void draw_light(struct ObjLight *light) {
@@ -987,7 +983,6 @@ void Proc8017A980(struct ObjLight *light) {
 
 /* 229568 -> 229658; orig name: func_8017AD98 */
 void update_shaders(struct ObjShape *shape, struct GdVec3f *offset) {
-    restart_timer("updateshaders");
     stash_current_gddl();
     sLightPositionOffset.x = offset->x;
     sLightPositionOffset.y = offset->y;
@@ -1001,7 +996,6 @@ void update_shaders(struct ObjShape *shape, struct GdVec3f *offset) {
                                     shape->mtlGroup);
     }
     pop_gddl_stash();
-    split_timer("updateshaders");
 }
 
 /**
@@ -1329,11 +1323,7 @@ void update_view(struct ObjView *view) {
     }
 
     if (view->flags & VIEW_MOVEMENT) {
-        split_timer("dlgen");
-        restart_timer("dynamics");
         proc_view_movement(view);
-        split_timer("dynamics");
-        restart_timer("dlgen");
         gViewUpdateCamera = view->activeCam;
     }
 

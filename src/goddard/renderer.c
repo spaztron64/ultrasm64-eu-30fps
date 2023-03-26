@@ -853,40 +853,6 @@ void setup_stars(void) {
     sGdDLArray[gShapeSilverSpark->dlNums[1]]->dlptr = gd_silver_sparkle_dl_array;
 }
 
-/* 24A8D0 -> 24AA40 */
-void setup_timers(void) {
-    start_timer("updateshaders");
-    stop_timer("updateshaders");
-    start_timer("childpos");
-    stop_timer("childpos");
-    start_timer("netupd");
-    stop_timer("netupd");
-    start_timer("drawshape2d");
-    stop_timer("drawshape2d");
-
-    start_timer("drawshape");
-    start_timer("drawobj");
-    start_timer("drawscene");
-    start_timer("camsearch");
-    start_timer("move_animators");
-    start_timer("move_nets");
-    stop_timer("move_animators");
-    stop_timer("move_nets");
-    stop_timer("drawshape");
-    stop_timer("drawobj");
-    stop_timer("drawscene");
-    stop_timer("camsearch");
-
-    start_timer("move_bones");
-    stop_timer("move_bones");
-    start_timer("move_skin");
-    stop_timer("move_skin");
-    start_timer("draw1");
-    stop_timer("draw1");
-    start_timer("dynamics");
-    stop_timer("dynamics");
-}
-
 /* 24AA40 -> 24AA58 */
 void Unknown8019C270(u8 *buf) {
     gGdStreamBuffer = buf;
@@ -1030,7 +996,6 @@ Gfx *gdm_gettestdl(s32 id) {
     struct GdDisplayList *gddl;
     struct GdVec3f vec;
 
-    start_timer("dlgen");
     vec.x = vec.y = vec.z = 0.0f;
     gddl = NULL;
 
@@ -1050,7 +1015,6 @@ Gfx *gdm_gettestdl(s32 id) {
             break;
         case GD_SCENE_REGULAR_MARIO:
         case GD_SCENE_DIZZY_MARIO:
-            setup_timers();
             update_view_and_dl(sMSceneView);
             if (sHandView != NULL) {
                 update_view_and_dl(sHandView);
@@ -2128,12 +2092,6 @@ void parse_p1_controller(void) {
         sCurrDebugViewIndex = sDebugViewsCount;
     }
 
-    if (sCurrDebugViewIndex) {
-        deactivate_timing();
-    } else {
-        activate_timing();
-    }
-
     for (i = 0; ((s32) i) < sDebugViewsCount; i++) {
         sDebugViews[i]->flags &= ~VIEW_UPDATE;
     }
@@ -2477,9 +2435,6 @@ void Unknown801A4B04(void) {
     if (D_801A86A8 != NULL) {
         D_801A86A8->prevScaledTotal = (f32)((sDLGenTime * 50.0f) + 20.0f);
     }
-    sDLGenTime = get_scaled_timer_total("dlgen");
-    sRCPTime = get_scaled_timer_total("rcp");
-    sDynamicsTime = get_scaled_timer_total("dynamics");
 }
 
 /* 2533DC -> 253728; orig name: func_801A4C0C */
@@ -2622,7 +2577,6 @@ void gd_init(void) {
     gd_set_identity_mat4(&sInitIdnMat4);
     mat4_to_mtx(&sInitIdnMat4, &sIdnMtx);
     null_obj_lists();
-    remove_all_timers();
 
     sStaticDl = new_gd_dl(0, 1900, 4000, 1, 300, 8);
 
@@ -2892,136 +2846,6 @@ void gd_setup_cursor(struct ObjGroup *parentgrp) {
     if (parentgrp != NULL) {
         addto_group(parentgrp, &mousegrp->header);
     }
-}
-
-/**
- * 254F94 -> 254FE4; orig name: Proc801A67C4
- * This prints all timers if the view was not updated for a frame
- **/
-void view_proc_print_timers(struct ObjView *self) {
-    if (self->flags & VIEW_WAS_UPDATED) {
-        return;
-    }
-}
-
-/* 254FE4 -> 255600; not called; orig name: Unknown801A6814 */
-void make_timer_gadgets(void) {
-    struct ObjLabel *timerLabel;
-    struct ObjGroup *timerg;
-    struct ObjView *timersview;
-    struct ObjGadget *bar1;
-    struct ObjGadget *bar2;
-    struct ObjGadget *bar3;
-    struct ObjGadget *bar4;
-    struct ObjGadget *bar5;
-    struct ObjGadget *bar6;
-    struct GdTimer *timer;
-    s32 i;
-    char timerNameBuf[0x20];
-
-    d_start_group("timerg");
-    d_makeobj(D_GADGET, "bar1");
-    d_set_obj_draw_flag(OBJ_IS_GRABBABLE);
-    d_set_world_pos(20.0f, 5.0f, 0.0f);
-    d_set_scale(50.0f, 5.0f, 0.0f);
-    d_set_type(4);
-    d_set_parm_f(PARM_F_RANGE_MIN, 0);
-    d_set_parm_f(PARM_F_RANGE_MAX, sTimeScaleFactor);
-    d_add_valptr(NULL, 0, OBJ_VALUE_FLOAT, (uintptr_t) &sTimeScaleFactor);
-    bar1 = (struct ObjGadget *) d_use_obj("bar1");
-    bar1->colourNum = COLOUR_WHITE;
-
-    d_makeobj(D_GADGET, "bar2");
-    d_set_obj_draw_flag(OBJ_IS_GRABBABLE);
-    d_set_world_pos(70.0f, 5.0f, 0.0f);
-    d_set_scale(50.0f, 5.0f, 0.0f);
-    d_set_type(4);
-    d_set_parm_f(PARM_F_RANGE_MIN, 0);
-    d_set_parm_f(PARM_F_RANGE_MAX, sTimeScaleFactor);
-    d_add_valptr(NULL, 0, OBJ_VALUE_FLOAT, (uintptr_t) &sTimeScaleFactor);
-    bar2 = (struct ObjGadget *) d_use_obj("bar2");
-    bar2->colourNum = COLOUR_PINK;
-
-    d_makeobj(D_GADGET, "bar3");
-    d_set_obj_draw_flag(OBJ_IS_GRABBABLE);
-    d_set_world_pos(120.0f, 5.0f, 0.0f);
-    d_set_scale(50.0f, 5.0f, 0.0f);
-    d_set_type(4);
-    d_set_parm_f(PARM_F_RANGE_MIN, 0);
-    d_set_parm_f(PARM_F_RANGE_MAX, sTimeScaleFactor);
-    d_add_valptr(NULL, 0, OBJ_VALUE_FLOAT, (uintptr_t) &sTimeScaleFactor);
-    bar3 = (struct ObjGadget *) d_use_obj("bar3");
-    bar3->colourNum = COLOUR_WHITE;
-
-    d_makeobj(D_GADGET, "bar4");
-    d_set_obj_draw_flag(OBJ_IS_GRABBABLE);
-    d_set_world_pos(170.0f, 5.0f, 0.0f);
-    d_set_scale(50.0f, 5.0f, 0.0f);
-    d_set_type(4);
-    d_set_parm_f(PARM_F_RANGE_MIN, 0);
-    d_set_parm_f(PARM_F_RANGE_MAX, sTimeScaleFactor);
-    d_add_valptr(NULL, 0, OBJ_VALUE_FLOAT, (uintptr_t) &sTimeScaleFactor);
-    bar4 = (struct ObjGadget *) d_use_obj("bar4");
-    bar4->colourNum = COLOUR_PINK;
-
-    d_makeobj(D_GADGET, "bar5");
-    d_set_obj_draw_flag(OBJ_IS_GRABBABLE);
-    d_set_world_pos(220.0f, 5.0f, 0.0f);
-    d_set_scale(50.0f, 5.0f, 0.0f);
-    d_set_type(4);
-    d_set_parm_f(PARM_F_RANGE_MIN, 0);
-    d_set_parm_f(PARM_F_RANGE_MAX, sTimeScaleFactor);
-    d_add_valptr(NULL, 0, OBJ_VALUE_FLOAT, (uintptr_t) &sTimeScaleFactor);
-    bar5 = (struct ObjGadget *) d_use_obj("bar5");
-    bar5->colourNum = COLOUR_WHITE;
-
-    d_makeobj(D_GADGET, "bar6");
-    d_set_obj_draw_flag(OBJ_IS_GRABBABLE);
-    d_set_world_pos(270.0f, 5.0f, 0.0f);
-    d_set_scale(50.0f, 5.0f, 0.0f);
-    d_set_type(4);
-    d_set_parm_f(PARM_F_RANGE_MIN, 0);
-    d_set_parm_f(PARM_F_RANGE_MAX, sTimeScaleFactor);
-    d_add_valptr(NULL, 0, OBJ_VALUE_FLOAT, (uintptr_t) &sTimeScaleFactor);
-    bar6 = (struct ObjGadget *) d_use_obj("bar6");
-    bar6->colourNum = COLOUR_PINK;
-
-    for (i = 0; i < GD_NUM_TIMERS; i++) {
-        sprintf(timerNameBuf, "tim%d\n", i);
-
-        timer = get_timernum(i);
-
-        d_makeobj(D_GADGET, timerNameBuf);
-        d_set_obj_draw_flag(OBJ_IS_GRABBABLE);
-        d_set_world_pos(20.0f, (f32)((i * 15) + 15), 0.0f);
-        d_set_scale(50.0f, 14.0f, 0);
-        d_set_type(4);
-        d_set_parm_f(PARM_F_RANGE_MIN, 0.0f);
-        d_set_parm_f(PARM_F_RANGE_MAX, 1.0f);
-        d_add_valptr(NULL, 0, OBJ_VALUE_FLOAT, (uintptr_t) &timer->prevScaledTotal);
-        sTimerGadgets[i] = (struct ObjGadget *) d_use_obj(timerNameBuf);
-        sTimerGadgets[i]->colourNum = timer->gadgetColourNum;
-
-        timerLabel = (struct ObjLabel *) d_makeobj(D_LABEL, AsDynName(0));
-        d_set_rel_pos(5.0f, 14.0f, 0);
-        d_set_parm_ptr(PARM_PTR_CHAR, (void *) timer->name);
-        d_add_valptr(timerNameBuf, 0x40000, 0, (uintptr_t) NULL);
-        timerLabel->unk30 = 3;
-    }
-
-    d_end_group("timerg");
-    timerg = (struct ObjGroup *) d_use_obj("timerg");
-    timersview = make_view(
-        "timersview", (VIEW_2_COL_BUF | VIEW_ALLOC_ZBUF | VIEW_1_CYCLE | VIEW_MOVEMENT | VIEW_DRAW), 2,
-        0, 10, gScreenWidth, 270, timerg);
-    timersview->colour.r = 0.0f;
-    timersview->colour.g = 0.0f;
-    timersview->colour.b = 0.0f;
-    timersview->flags &= ~VIEW_UPDATE;
-    timersview->proc = view_proc_print_timers;
-    add_debug_view(timersview);
-
-    return;
 }
 
 /**

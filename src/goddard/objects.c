@@ -1434,9 +1434,7 @@ void drag_picked_object(struct GdObj *inputObj) {
 
 /* @ 22F0F4 for 0x50; orig name: func_80180924*/
 void move_animators(struct ObjGroup *group) {
-    restart_timer("move_animators");
     apply_to_obj_types_in_group(OBJ_TYPE_ANIMATORS, (applyproc_t) move_animator, group);
-    split_timer("move_animators");
 }
 
 /* @ 22F144 for 0x3C; orig name: func_80180974 */

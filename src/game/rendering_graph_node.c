@@ -1159,36 +1159,31 @@ void geo_process_object_parent(struct GraphNodeObjectParent *node) {
 void geo_process_held_object(struct GraphNodeHeldObject *node) {
     Mat4 mat;
     Vec3f translation;
-    Mtx *mtx = alloc_display_listGRAPH(sizeof(*mtx));
+    Mat4 tempMtx;
 
-#ifdef F3DEX_GBI_2
-    gSPLookAt(gDisplayListHead++, &gCurLookAt);
-#endif
+    gSPLookAt(gDisplayListHead++, gCurLookAt);
 
     if (node->fnNode.func != NULL) {
         node->fnNode.func(GEO_CONTEXT_RENDER, &node->fnNode.node, gMatStack[gMatStackIndex]);
     }
     if (node->objNode != NULL && node->objNode->header.gfx.sharedChild != NULL) {
 
-        translation[0] = node->translation[0] / 4.0f;
-        translation[1] = node->translation[1] / 4.0f;
-        translation[2] = node->translation[2] / 4.0f;
+        translation[0] = node->translation[0] / 4;
+        translation[1] = node->translation[1] / 4;
+        translation[2] = node->translation[2] / 4;
 
         mtxf_translate(mat, translation);
         mtxf_copy(gMatStack[gMatStackIndex + 1], *gCurGraphNodeObject->throwMatrix);
         gMatStack[gMatStackIndex + 1][3][0] = gMatStack[gMatStackIndex][3][0];
         gMatStack[gMatStackIndex + 1][3][1] = gMatStack[gMatStackIndex][3][1];
         gMatStack[gMatStackIndex + 1][3][2] = gMatStack[gMatStackIndex][3][2];
-        mtxf_mul(gMatStack[gMatStackIndex + 1], mat, gMatStack[gMatStackIndex + 1]);
-        mtxf_scale_vec3f(gMatStack[gMatStackIndex + 1], gMatStack[gMatStackIndex + 1],
-                         node->objNode->header.gfx.scale);
+        mtxf_copy(tempMtx, gMatStack[gMatStackIndex + 1]);
+        mtxf_mul(gMatStack[gMatStackIndex + 1], mat, tempMtx);
+        mtxf_scale_vec3f(gMatStack[gMatStackIndex + 1], gMatStack[gMatStackIndex + 1], node->objNode->header.gfx.scaleLerp);
         if (node->fnNode.func != NULL) {
-            node->fnNode.func(GEO_CONTEXT_HELD_OBJ, &node->fnNode.node,
-                              (struct AllocOnlyPool *) gMatStack[gMatStackIndex + 1]);
+            node->fnNode.func(GEO_CONTEXT_HELD_OBJ, &node->fnNode.node, (struct AllocOnlyPool *) gMatStack[gMatStackIndex + 1]);
         }
-        gMatStackIndex++;
-        mtxf_to_mtx((s16 *) mtx, (f32 *) gMatStack[gMatStackIndex]);
-        gMatStackFixed[gMatStackIndex] = mtx;
+        inc_mat_stack();
         gGeoTempState.type = gCurrAnimType;
         gGeoTempState.enabled = gCurrAnimEnabled;
         gGeoTempState.frame = gCurrAnimFrame;
@@ -1226,6 +1221,31 @@ void geo_try_process_children(struct GraphNode *node) {
     }
 }
 
+void (*geoFunctionTable[])() = {
+    geo_try_process_children, // GRAPH_NODE_TYPE_ROOT,
+    geo_process_ortho_projection, // GRAPH_NODE_TYPE_ORTHO_PROJECTION,
+    geo_process_perspective, // GRAPH_NODE_TYPE_PERSPECTIVE,
+    geo_process_master_list, // GRAPH_NODE_TYPE_MASTER_LIST,
+    geo_try_process_children, // GRAPH_NODE_TYPE_START,
+    geo_process_level_of_detail, // GRAPH_NODE_TYPE_LEVEL_OF_DETAIL,
+    geo_process_switch, // GRAPH_NODE_TYPE_SWITCH_CASE,
+    geo_process_camera, // GRAPH_NODE_TYPE_CAMERA,
+    geo_process_translation_rotation, // GRAPH_NODE_TYPE_TRANSLATION_ROTATION,
+    geo_process_translation, // GRAPH_NODE_TYPE_TRANSLATION,
+    geo_process_rotation, // GRAPH_NODE_TYPE_ROTATION,
+    geo_process_object, // GRAPH_NODE_TYPE_OBJECT,
+    geo_process_animated_part, // GRAPH_NODE_TYPE_ANIMATED_PART,
+    geo_process_billboard, // GRAPH_NODE_TYPE_BILLBOARD,
+    geo_process_display_list, // GRAPH_NODE_TYPE_DISPLAY_LIST,
+    geo_process_scale, // GRAPH_NODE_TYPE_SCALE,
+    geo_process_shadow, // GRAPH_NODE_TYPE_SHADOW,
+    geo_process_object_parent, // GRAPH_NODE_TYPE_OBJECT_PARENT,
+    geo_process_generated_list, // GRAPH_NODE_TYPE_GENERATED_LIST,
+    geo_process_background, // GRAPH_NODE_TYPE_BACKGROUND,
+    geo_process_held_object, // GRAPH_NODE_TYPE_HELD_OBJ,
+    geo_try_process_children, // GRAPH_NODE_TYPE_CULLING_RADIUS,
+};
+
 /**
  * Process a generic geo node and its siblings.
  * The first argument is the start node, and all its siblings will
@@ -1247,68 +1267,11 @@ void geo_process_node_and_siblings(struct GraphNode *firstNode) {
             if (curGraphNode->flags & GRAPH_RENDER_CHILDREN_FIRST) {
                 geo_try_process_children(curGraphNode);
             } else {
-                switch (curGraphNode->type) {
-                    case GRAPH_NODE_TYPE_ORTHO_PROJECTION:
-                        geo_process_ortho_projection((struct GraphNodeOrthoProjection *) curGraphNode);
-                        break;
-                    case GRAPH_NODE_TYPE_PERSPECTIVE:
-                        geo_process_perspective((struct GraphNodePerspective *) curGraphNode);
-                        break;
-                    case GRAPH_NODE_TYPE_MASTER_LIST:
-                        geo_process_master_list((struct GraphNodeMasterList *) curGraphNode);
-                        break;
-                    case GRAPH_NODE_TYPE_LEVEL_OF_DETAIL:
-                        geo_process_level_of_detail((struct GraphNodeLevelOfDetail *) curGraphNode);
-                        break;
-                    case GRAPH_NODE_TYPE_SWITCH_CASE:
-                        geo_process_switch((struct GraphNodeSwitchCase *) curGraphNode);
-                        break;
-                    case GRAPH_NODE_TYPE_CAMERA:
-                        geo_process_camera((struct GraphNodeCamera *) curGraphNode);
-                        break;
-                    case GRAPH_NODE_TYPE_TRANSLATION_ROTATION:
-                        geo_process_translation_rotation(
-                            (struct GraphNodeTranslationRotation *) curGraphNode);
-                        break;
-                    case GRAPH_NODE_TYPE_TRANSLATION:
-                        geo_process_translation((struct GraphNodeTranslation *) curGraphNode);
-                        break;
-                    case GRAPH_NODE_TYPE_ROTATION:
-                        geo_process_rotation((struct GraphNodeRotation *) curGraphNode);
-                        break;
-                    case GRAPH_NODE_TYPE_OBJECT:
-                        geo_process_object((struct Object *) curGraphNode);
-                        break;
-                    case GRAPH_NODE_TYPE_ANIMATED_PART:
-                        geo_process_animated_part((struct GraphNodeAnimatedPart *) curGraphNode);
-                        break;
-                    case GRAPH_NODE_TYPE_BILLBOARD:
-                        geo_process_billboard((struct GraphNodeBillboard *) curGraphNode);
-                        break;
-                    case GRAPH_NODE_TYPE_DISPLAY_LIST:
-                        geo_process_display_list((struct GraphNodeDisplayList *) curGraphNode);
-                        break;
-                    case GRAPH_NODE_TYPE_SCALE:
-                        geo_process_scale((struct GraphNodeScale *) curGraphNode);
-                        break;
-                    case GRAPH_NODE_TYPE_SHADOW:
-                        geo_process_shadow((struct GraphNodeShadow *) curGraphNode);
-                        break;
-                    case GRAPH_NODE_TYPE_OBJECT_PARENT:
-                        geo_process_object_parent((struct GraphNodeObjectParent *) curGraphNode);
-                        break;
-                    case GRAPH_NODE_TYPE_GENERATED_LIST:
-                        geo_process_generated_list((struct GraphNodeGenerated *) curGraphNode);
-                        break;
-                    case GRAPH_NODE_TYPE_BACKGROUND:
-                        geo_process_background((struct GraphNodeBackground *) curGraphNode);
-                        break;
-                    case GRAPH_NODE_TYPE_HELD_OBJ:
-                        geo_process_held_object((struct GraphNodeHeldObject *) curGraphNode);
-                        break;
-                    default:
-                        geo_try_process_children((struct GraphNode *) curGraphNode);
-                        break;
+                u32 curGraphNodeType = curGraphNode->type;
+                if (curGraphNodeType < ARRAY_COUNT(geoFunctionTable)) {
+                    geoFunctionTable[curGraphNodeType](curGraphNode);
+                } else {
+                    geo_try_process_children(curGraphNode);
                 }
             }
         } else {

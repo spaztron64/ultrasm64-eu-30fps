@@ -97,6 +97,8 @@ void unload_object(struct Object *obj) {
     obj->prevObj = NULL;
 
     obj->header.gfx.throwMatrix = NULL;
+    obj->header.gfx.matrixID[0] = MATRIX_NULL;
+    obj->header.gfx.matrixID[1] = MATRIX_NULL;
     stop_sounds_from_source(obj->header.gfx.cameraToObject);
     geo_remove_child(&obj->header.gfx.node);
     geo_add_child(&gObjParentGraphNode, &obj->header.gfx.node);

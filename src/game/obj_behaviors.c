@@ -184,8 +184,6 @@ void obj_orient_graph(struct Object *obj, f32 normalX, f32 normalY, f32 normalZ)
         return;
     }
 
-    if (gThrowMatIndex >= THROWMATSTACK)
-        return;
 
     objVisualPosition[0] = obj->oPosX;
     objVisualPosition[1] = obj->oPosY + obj->oGraphYOffset;
@@ -196,7 +194,10 @@ void obj_orient_graph(struct Object *obj, f32 normalX, f32 normalY, f32 normalZ)
     surfaceNormals[2] = normalZ;
 
     mtxf_align_terrain_normal(*throwMatrix, surfaceNormals, objVisualPosition, obj->oFaceAngleYaw);
-    // obj->header.gfx.throwMatrix = (void *) throwMatrix;
+    obj->header.gfx.throwMatrix = (void *) throwMatrix;
+    
+    if (gThrowMatIndex >= THROWMATSTACK)
+        return;
     obj->header.gfx.matrixID[gThrowMatSwap] = gThrowMatIndex;
 
     gThrowMatIndex++;

@@ -339,6 +339,9 @@ void geo_process_perspective(struct GraphNodePerspective *node) {
 
         gCurGraphNodeCamFrustum = node;
         gHalfFovVert = (gCurGraphNodeCamFrustum->fov + 2.0f) * 91.0222222222f + 0.5f;
+        if (!gIsConsole) {
+            aspect *= 5.0f;
+        }
         gHalfFovHor = aspect * gHalfFovVert;
         gHalfFovVert = sins(gHalfFovVert) / coss(gHalfFovVert);
         gHalfFovHor = sins(gHalfFovHor) / coss(gHalfFovHor);

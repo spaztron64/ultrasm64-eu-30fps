@@ -18,6 +18,7 @@ void bhv_camera_lakitu_init(void) {
         }
     } else {
         spawn_object_relative_with_scale(CLOUD_BP_LAKITU_CLOUD, 0, 0, 0, 2.0f, o, MODEL_MIST, bhvCloud);
+        o->header.gfx.node.flags |= GRAPH_RENDER_PRIORITY;
     }
 }
 

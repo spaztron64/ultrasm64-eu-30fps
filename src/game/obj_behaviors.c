@@ -184,7 +184,6 @@ void obj_orient_graph(struct Object *obj, f32 normalX, f32 normalY, f32 normalZ)
         return;
     }
 
-
     objVisualPosition[0] = obj->oPosX;
     objVisualPosition[1] = obj->oPosY + obj->oGraphYOffset;
     objVisualPosition[2] = obj->oPosZ;
@@ -199,7 +198,6 @@ void obj_orient_graph(struct Object *obj, f32 normalX, f32 normalY, f32 normalZ)
     if (gThrowMatIndex >= THROWMATSTACK)
         return;
     obj->header.gfx.matrixID[gThrowMatSwap] = gThrowMatIndex;
-
     gThrowMatIndex++;
 }
 
@@ -207,7 +205,7 @@ void obj_orient_graph(struct Object *obj, f32 normalX, f32 normalY, f32 normalZ)
  * Determines an object's forward speed multiplier.
  */
 void calc_obj_friction(f32 *objFriction, f32 floor_nY) {
-    if (floor_nY < 0.2 && o->oFriction < 0.9999) {
+    if (floor_nY < 0.2f && o->oFriction < 0.9999f) {
         *objFriction = 0;
     } else {
         *objFriction = o->oFriction;
@@ -225,10 +223,10 @@ void calc_new_obj_vel_and_pos_y(struct Surface *objFloor, f32 objFloorY, f32 obj
 
     // Caps vertical speed with a "terminal velocity".
     o->oVelY -= o->oGravity;
-    if (o->oVelY > 75.0) {
+    if (o->oVelY > 75.0f) {
         o->oVelY = 75.0f;
     }
-    if (o->oVelY < -75.0) {
+    if (o->oVelY < -75.0f) {
         o->oVelY = -75.0f;
     }
 
@@ -239,7 +237,7 @@ void calc_new_obj_vel_and_pos_y(struct Surface *objFloor, f32 objFloorY, f32 obj
         o->oPosY = objFloorY;
 
         // Bounces an object if the ground is hit fast enough.
-        if (o->oVelY < -17.5) {
+        if (o->oVelY < -17.5f) {
             o->oVelY = -(o->oVelY / 2);
         } else {
             o->oVelY = 0;
@@ -258,10 +256,10 @@ void calc_new_obj_vel_and_pos_y(struct Surface *objFloor, f32 objFloorY, f32 obj
                    / (floor_nX * floor_nX + floor_nY * floor_nY + floor_nZ * floor_nZ) * o->oGravity
                    * 2;
 
-        if (objVelX < 0.000001 && objVelX > -0.000001) {
+        if (objVelX < 0.000001f && objVelX > -0.000001f) {
             objVelX = 0;
         }
-        if (objVelZ < 0.000001 && objVelZ > -0.000001) {
+        if (objVelZ < 0.000001f && objVelZ > -0.000001f) {
             objVelZ = 0;
         }
 
@@ -284,7 +282,7 @@ void calc_new_obj_vel_and_pos_y_underwater(struct Surface *objFloor, f32 floorY,
     o->oVelY -= netYAccel;
 
     // Caps vertical speed with a "terminal velocity".
-    if (o->oVelY > 75.0) {
+    if (o->oVelY > 75.0f) {
         o->oVelY = 75.0f;
     }
     if (o->oVelY < -75.0) {
@@ -298,7 +296,7 @@ void calc_new_obj_vel_and_pos_y_underwater(struct Surface *objFloor, f32 floorY,
         o->oPosY = floorY;
 
         // Bounces an object if the ground is hit fast enough.
-        if (o->oVelY < -17.5) {
+        if (o->oVelY < -17.5f) {
             o->oVelY = -(o->oVelY / 2);
         } else {
             o->oVelY = 0;
@@ -320,14 +318,14 @@ void calc_new_obj_vel_and_pos_y_underwater(struct Surface *objFloor, f32 floorY,
                    / (floor_nX * floor_nX + floor_nY * floor_nY + floor_nZ * floor_nZ) * netYAccel * 2;
     }
 
-    if (objVelX < 0.000001 && objVelX > -0.000001) {
+    if (objVelX < 0.000001f && objVelX > -0.000001f) {
         objVelX = 0;
     }
-    if (objVelZ < 0.000001 && objVelZ > -0.000001) {
+    if (objVelZ < 0.000001f && objVelZ > -0.000001f) {
         objVelZ = 0;
     }
 
-    if (o->oVelY < 0.000001 && o->oVelY > -0.000001) {
+    if (o->oVelY < 0.000001f && o->oVelY > -0.000001f) {
         o->oVelY = 0;
     }
 

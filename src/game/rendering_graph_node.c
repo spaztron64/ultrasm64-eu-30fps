@@ -15,6 +15,7 @@
 #include "memory.h"
 #include "string.h"
 #include "game_init.h"
+#include "object_list_processor.h"
 
 /**
  * This file contains the code that processes the scene graph for rendering.
@@ -432,6 +433,8 @@ void setup_global_light(void) {
     gSPSetLights1(gDisplayListHead++, (*curLight));
 }
 
+extern struct Object gObjectPool[OBJECT_POOL_CAPACITY];
+
 /**
  * Process a camera node.
  */
@@ -465,22 +468,12 @@ void geo_process_camera(struct GraphNodeCamera *node) {
         node->focusLerp[2] = approach_pos_lerp(node->focusLerp[2], node->focus[2]);
     }
 
-    if (gMarioState->marioObj && gAreaUpdateCounter > 8) {
-        if (gMoveSpeed && gMarioState->marioObj->header.gfx.bothMats >= 2) {
-            interpolate_node(gMarioState->marioObj);
-            if (gMarioState->marioObj->platform) {
-                interpolate_node(gMarioState->marioObj->platform);
-            }
-            if (gMarioState->riddenObj) {
-                interpolate_node(gMarioState->riddenObj);
-            }
-        } else {
-            warp_node(gMarioState->marioObj);
-            if (gMarioState->marioObj->platform) {
-                warp_node(gMarioState->marioObj->platform);
-            }
-            if (gMarioState->riddenObj) {
-                warp_node(gMarioState->riddenObj);
+    for (u32 i = 0; i < gObjectCounter; i++) {
+        if (gObjectPool[i].header.gfx.node.flags & GRAPH_RENDER_PRIORITY) {
+            if (gMoveSpeed && gObjectPool[i].header.gfx.bothMats >= 2) {
+                interpolate_node(&gObjectPool[i]);
+            } else {
+                warp_node(&gObjectPool[i]);
             }
         }
     }
@@ -1081,7 +1074,7 @@ void geo_process_object(struct Object *node) {
         return;
     }*/
 
-    if ((gMarioState->marioObj == NULL) || (node != gMarioState->marioObj && node != gMarioState->marioObj->platform && node != gMarioState->riddenObj) || gAreaUpdateCounter <= 8) {
+    if ((node->header.gfx.node.flags & GRAPH_RENDER_PRIORITY) == 0 || gAreaUpdateCounter <= 8) {
         if (gMoveSpeed && node->header.gfx.bothMats >= 2)
             interpolate_node(node);
         else

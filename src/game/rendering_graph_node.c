@@ -471,7 +471,7 @@ void geo_process_camera(struct GraphNodeCamera *node) {
         node->focusLerp[2] = approach_pos_lerp(node->focusLerp[2], node->focus[2]);
     }
 
-    for (u32 i = 0; i < gObjectCounter; i++) {
+    for (u32 i = 0; i < OBJECT_POOL_CAPACITY; i++) {
         if (gObjectPool[i].header.gfx.node.flags & GRAPH_RENDER_PRIORITY) {
             if (gMoveSpeed && gObjectPool[i].header.gfx.bothMats >= 2) {
                 interpolate_node(&gObjectPool[i]);

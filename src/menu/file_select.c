@@ -286,6 +286,9 @@ static unsigned char starIcon[] = { GLYPH_STAR, GLYPH_SPACE };
 static unsigned char xIcon[] = { GLYPH_MULTIPLY, GLYPH_SPACE };
 #endif
 
+
+f32 sFileSelectScale = 1.0f;
+
 /**
  * Yellow Background Menu Initial Action
  * Rotates the background at 180 grades and it's scale.
@@ -293,7 +296,8 @@ static unsigned char xIcon[] = { GLYPH_MULTIPLY, GLYPH_SPACE };
  */
 void beh_yellow_background_menu_init(void) {
     gCurrentObject->oFaceAngleYaw = 0x8000;
-    gCurrentObject->oMenuButtonScale = 9.0f;
+    sFileSelectScale = ((f32) gScreenWidth / (f32)SCREEN_WIDTH);
+    gCurrentObject->oMenuButtonScale = sFileSelectScale * 9.0f;
 }
 
 /**
@@ -301,7 +305,13 @@ void beh_yellow_background_menu_init(void) {
  * Properly scales the background in the main menu.
  */
 void beh_yellow_background_menu_loop(void) {
-    cur_obj_scale(9.0f);
+    sFileSelectScale = ((f32) gScreenWidth / (f32)SCREEN_WIDTH);
+    gCurrentObject->header.gfx.scale[0] = sFileSelectScale * 9.0f;
+    gCurrentObject->header.gfx.scale[1] = 9.0f;
+    gCurrentObject->header.gfx.scale[2] = 9.0f;
+    gCurrentObject->header.gfx.scaleLerp[0] = sFileSelectScale * 9.0f;
+    gCurrentObject->header.gfx.scaleLerp[1] = 9.0f;
+    gCurrentObject->header.gfx.scaleLerp[2] = 9.0f;
 }
 
 /**
@@ -309,9 +319,9 @@ void beh_yellow_background_menu_loop(void) {
  * depth = 200.0 for main menu, 22.0 for submenus.
  */
 s32 check_clicked_button(s16 x, s16 y, f32 depth) {
-    f32 a = 52.4213;
-    f32 newX = ((f32) x * 160.0) / (a * depth);
-    f32 newY = ((f32) y * 120.0) / (a * 3 / 4 * depth);
+    f32 a = 52.4213f;
+    f32 newX = ((f32) x * 160.0f) / (a * depth);
+    f32 newY = ((f32) y * 120.0f) / (a * 3 / 4 * depth);
     s16 maxX = newX + 25.0f;
     s16 minX = newX - 25.0f;
     s16 maxY = newY + 21.0f;
@@ -338,7 +348,7 @@ static void bhv_menu_button_growing_from_main_menu(struct Object *button) {
     }
     button->oParentRelativePosX -= button->oMenuButtonOrigPosX / 16.0f;
     button->oParentRelativePosY -= button->oMenuButtonOrigPosY / 16.0f;
-    if (button->oPosZ < button->oMenuButtonOrigPosZ + 17800.0) {
+    if (button->oPosZ < button->oMenuButtonOrigPosZ + 17800.0f) {
         button->oParentRelativePosZ += 1112.5f;
     }
     button->oMenuButtonTimer++;
@@ -461,7 +471,7 @@ static void bhv_menu_button_zoom_in_out(struct Object *button) {
  * Used while selecting a target copy/erase file or yes/no erase confirmation prompt.
  */
 static void bhv_menu_button_zoom_in(struct Object *button) {
-    button->oMenuButtonScale += 0.0022;
+    button->oMenuButtonScale += 0.0022f;
     button->oMenuButtonTimer++;
     if (button->oMenuButtonTimer == 10) {
         button->oMenuButtonState = MENU_BUTTON_STATE_DEFAULT;
@@ -475,7 +485,7 @@ static void bhv_menu_button_zoom_in(struct Object *button) {
  * yes/no erase confirmation prompt to undo the zoom in.
  */
 static void bhv_menu_button_zoom_out(struct Object *button) {
-    button->oMenuButtonScale -= 0.0022;
+    button->oMenuButtonScale -= 0.0022f;
     button->oMenuButtonTimer++;
     if (button->oMenuButtonTimer == 10) {
         button->oMenuButtonState = MENU_BUTTON_STATE_DEFAULT;
@@ -538,7 +548,9 @@ void bhv_menu_button_loop(void) {
             sCursorClickingTimer = 4;
             break;
     }
-    cur_obj_scale(gCurrentObject->oMenuButtonScale);
+    gCurrentObject->header.gfx.scale[0] = gCurrentObject->oMenuButtonScale;
+    gCurrentObject->header.gfx.scale[1] = gCurrentObject->oMenuButtonScale;
+    gCurrentObject->header.gfx.scale[2] = gCurrentObject->oMenuButtonScale;
 }
 
 /**
@@ -1668,7 +1680,7 @@ void handle_controller_cursor_input(void) {
     }
 
     // Move cursor
-    sCursorPos[0] += rawStickX / 8;
+    sCursorPos[0] += (rawStickX / 8) / sFileSelectScale;
     sCursorPos[1] += rawStickY / 8;
 
     // Stop cursor from going offscreen
@@ -1699,7 +1711,7 @@ void handle_controller_cursor_input(void) {
 void print_menu_cursor(void) {
     sCursorPosLerp[0] = approach_f32_asymptotic(sCursorPosLerp[0], sCursorPos[0], gLerpSpeed);
     sCursorPosLerp[1] = approach_f32_asymptotic(sCursorPosLerp[1], sCursorPos[1], gLerpSpeed);
-    create_dl_translation_matrix(MENU_MTX_PUSH, sCursorPosLerp[0] + 160.0f - 5.0, sCursorPosLerp[1] + 120.0f - 25.0, 0.0f);
+    create_dl_translation_matrix(MENU_MTX_PUSH, (sCursorPosLerp[0] + 160.0f - 5.0f) * sFileSelectScale, sCursorPosLerp[1] + 120.0f - 25.0, 0.0f);
     // Get the right graphic to use for the cursor.
     if (sCursorClickingTimer == 0)
         // Idle
@@ -1788,34 +1800,34 @@ void print_save_file_star_count(s8 fileIndex, s16 x, s16 y) {
 }
 
 #if defined(VERSION_JP) || defined(VERSION_SH)
-    #define SELECT_FILE_X 96
-    #define SCORE_X 50
-    #define COPY_X 115
-    #define ERASE_X 180
+    #define SELECT_FILE_X (gScreenWidth / 2) - 64
+    #define SCORE_X (gScreenWidth / 2) - 110
+    #define COPY_X (gScreenWidth / 2) - 45
+    #define ERASE_X (gScreenWidth / 2) + 20
 #ifdef VERSION_JP
-    #define SOUNDMODE_X1 235
+    #define SOUNDMODE_X1 (gScreenWidth / 2) + 75
 #else
     #define SOUNDMODE_X1 sSoundTextX
 #endif
-    #define SAVEFILE_X1 92
-    #define SAVEFILE_X2 209
-    #define MARIOTEXT_X1 92
-    #define MARIOTEXT_X2 207
+    #define SAVEFILE_X1 (gScreenWidth / 2) - 68
+    #define SAVEFILE_X2 (gScreenWidth / 2) + 49
+    #define MARIOTEXT_X1 (gScreenWidth / 2) - 68
+    #define MARIOTEXT_X2 (gScreenWidth / 2) + 47
 #elif defined(VERSION_US)
-    #define SELECT_FILE_X 93
-    #define SCORE_X 52
-    #define COPY_X 117
-    #define ERASE_X 177
+    #define SELECT_FILE_X (gScreenWidth / 2) - 67
+    #define SCORE_X (gScreenWidth / 2) - 108
+    #define COPY_X (gScreenWidth / 2) - 43
+    #define ERASE_X (gScreenWidth / 2) + 17
     #define SOUNDMODE_X1 sSoundTextX
-    #define SAVEFILE_X1 92
-    #define SAVEFILE_X2 209
-    #define MARIOTEXT_X1 92
-    #define MARIOTEXT_X2 207
+    #define SAVEFILE_X1 (gScreenWidth / 2) - 68
+    #define SAVEFILE_X2 (gScreenWidth / 2) + 49
+    #define MARIOTEXT_X1 (gScreenWidth / 2) - 68
+    #define MARIOTEXT_X2 (gScreenWidth / 2) + 47
 #elif defined(VERSION_EU)
-    #define SAVEFILE_X1 97
-    #define SAVEFILE_X2 204
-    #define MARIOTEXT_X1 97
-    #define MARIOTEXT_X2 204
+    #define SAVEFILE_X1 (gScreenWidth / 2) - 63
+    #define SAVEFILE_X2 (gScreenWidth / 2) + 44
+    #define MARIOTEXT_X1 (gScreenWidth / 2) - 63
+    #define MARIOTEXT_X2 (gScreenWidth / 2) + 44
 #endif
 
 /**
@@ -1850,7 +1862,7 @@ void print_main_menu_strings(void) {
     print_generic_string(COPY_X, 39, textCopy);
     print_generic_string(ERASE_X, 39, textErase);
 #ifndef VERSION_JP
-    sSoundTextX = get_str_x_pos_from_center(254, textSoundModes[sSoundMode], 10.0f);
+    sSoundTextX = get_str_x_pos_from_center((gScreenWidth / 2) + 94, textSoundModes[sSoundMode], 10.0f);
 #endif
     print_generic_string(SOUNDMODE_X1, 39, textSoundModes[sSoundMode]);
     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
@@ -1877,20 +1889,20 @@ void print_main_lang_strings(void) {
     // Print "SELECT FILE" text
     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_begin);
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, sTextBaseAlpha);
-    centeredX = get_str_x_pos_from_center_scale(160, textSelectFile[sLanguageMode], 12.0f);
+    centeredX = get_str_x_pos_from_center_scale((gScreenWidth / 2), textSelectFile[sLanguageMode], 12.0f);
     print_hud_lut_string(HUD_LUT_GLOBAL, centeredX, 35, textSelectFile[sLanguageMode]);
     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_end);
 
     // Print menu names
     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, sTextBaseAlpha);
-    centeredX = get_str_x_pos_from_center(76, textScore[sLanguageMode], 10.0f);
+    centeredX = get_str_x_pos_from_center((gScreenWidth / 2) - 84, textScore[sLanguageMode], 10.0f);
     print_generic_string(centeredX, 39, textScore[sLanguageMode]);
-    centeredX = get_str_x_pos_from_center(131, textCopy[sLanguageMode], 10.0f);
+    centeredX = get_str_x_pos_from_center((gScreenWidth / 2) - 29, textCopy[sLanguageMode], 10.0f);
     print_generic_string(centeredX, 39, textCopy[sLanguageMode]);
-    centeredX = get_str_x_pos_from_center(189, textErase[sLanguageMode], 10.0f);
+    centeredX = get_str_x_pos_from_center((gScreenWidth / 2) + 29, textErase[sLanguageMode], 10.0f);
     print_generic_string(centeredX, 39, textErase[sLanguageMode]);
-    centeredX = get_str_x_pos_from_center(245, textOption[sLanguageMode], 10.0f);
+    centeredX = get_str_x_pos_from_center((gScreenWidth / 2) - 85, textOption[sLanguageMode], 10.0f);
     print_generic_string(centeredX, 39, textOption[sLanguageMode]);
     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 
@@ -1899,11 +1911,11 @@ void print_main_lang_strings(void) {
 #endif
 
 #if defined(VERSION_JP) || defined(VERSION_SH)
-    #define CHECK_FILE_X 90
-    #define NOSAVE_DATA_X1 90
+    #define CHECK_FILE_X (gScreenWidth / 2) - 70
+    #define NOSAVE_DATA_X1 (gScreenWidth / 2) - 70
 #elif defined(VERSION_US)
-    #define CHECK_FILE_X 95
-    #define NOSAVE_DATA_X1 99
+    #define CHECK_FILE_X (gScreenWidth / 2) - 75
+    #define NOSAVE_DATA_X1 (gScreenWidth / 2) - 61
 #elif defined(VERSION_EU)
     #define CHECK_FILE_X checkFileX
     #define NOSAVE_DATA_X1 noSaveDataX
@@ -1920,13 +1932,13 @@ void score_menu_display_message(s8 messageID) {
     switch (messageID) {
         case SCORE_MSG_CHECK_FILE:
 #ifdef VERSION_EU
-            checkFileX = get_str_x_pos_from_center_scale(160, LANGUAGE_ARRAY(textCheckFile), 12.0f);
+            checkFileX = get_str_x_pos_from_center_scale((gScreenWidth / 2), LANGUAGE_ARRAY(textCheckFile), 12.0f);
 #endif
             print_hud_lut_string_fade(HUD_LUT_DIFF, CHECK_FILE_X, 35, LANGUAGE_ARRAY(textCheckFile));
             break;
         case SCORE_MSG_NOSAVE_DATA:
 #ifdef VERSION_EU
-            noSaveDataX = get_str_x_pos_from_center(160, LANGUAGE_ARRAY(textNoSavedDataExists), 10.0f);
+            noSaveDataX = get_str_x_pos_from_center((gScreenWidth / 2), LANGUAGE_ARRAY(textNoSavedDataExists), 10.0f);
 #endif
             print_generic_string_fade(NOSAVE_DATA_X1, 190, LANGUAGE_ARRAY(textNoSavedDataExists));
             break;
@@ -1934,13 +1946,13 @@ void score_menu_display_message(s8 messageID) {
 }
 
 #if defined(VERSION_JP) || defined(VERSION_SH)
-    #define RETURN_X     45
-    #define COPYFILE_X1  128
-    #define ERASEFILE_X1 228
+    #define RETURN_X     (gScreenWidth / 2) - 115
+    #define COPYFILE_X1  (gScreenWidth / 2) - 32
+    #define ERASEFILE_X1 (gScreenWidth / 2) + 68
 #elif defined(VERSION_US)
-    #define RETURN_X     44
-    #define COPYFILE_X1  135
-    #define ERASEFILE_X1 231
+    #define RETURN_X     (gScreenWidth / 2) - 116
+    #define COPYFILE_X1  (gScreenWidth / 2) - 25
+    #define ERASEFILE_X1 (gScreenWidth / 2) + 71
 #elif defined(VERSION_EU)
     #define RETURN_X     centeredX
     #define COPYFILE_X1  centeredX
@@ -1979,10 +1991,10 @@ void print_score_menu_strings(void) {
     // Print file star counts
     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_begin);
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, sTextBaseAlpha);
-    print_save_file_star_count(SAVE_FILE_A, 90, 76);
-    print_save_file_star_count(SAVE_FILE_B, 211, 76);
-    print_save_file_star_count(SAVE_FILE_C, 90, 119);
-    print_save_file_star_count(SAVE_FILE_D, 211, 119);
+    print_save_file_star_count(SAVE_FILE_A, (gScreenWidth / 2) - 70, 76);
+    print_save_file_star_count(SAVE_FILE_B, (gScreenWidth / 2) + 51, 76);
+    print_save_file_star_count(SAVE_FILE_C, (gScreenWidth / 2) - 70, 119);
+    print_save_file_star_count(SAVE_FILE_D, (gScreenWidth / 2) + 51, 119);
     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_end);
 #endif
 
@@ -1990,15 +2002,15 @@ void print_score_menu_strings(void) {
     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, sTextBaseAlpha);
 #ifdef VERSION_EU
-    centeredX = get_str_x_pos_from_center(69, textReturn[sLanguageMode], 10.0f);
+    centeredX = get_str_x_pos_from_center((gScreenWidth / 2) - 91, textReturn[sLanguageMode], 10.0f);
 #endif
     print_generic_string(RETURN_X, 35, LANGUAGE_ARRAY(textReturn));
 #ifdef VERSION_EU
-    centeredX = get_str_x_pos_from_center(159, textCopyFileButton[sLanguageMode], 10.0f);
+    centeredX = get_str_x_pos_from_center((gScreenWidth / 2) - 1, textCopyFileButton[sLanguageMode], 10.0f);
 #endif
     print_generic_string(COPYFILE_X1, 35, LANGUAGE_ARRAY(textCopyFileButton));
 #ifdef VERSION_EU
-    centeredX = get_str_x_pos_from_center(249, textEraseFileButton[sLanguageMode], 10.0f);
+    centeredX = get_str_x_pos_from_center((gScreenWidth / 2) + 89, textEraseFileButton[sLanguageMode], 10.0f);
 #endif
     print_generic_string(ERASEFILE_X1, 35, LANGUAGE_ARRAY(textEraseFileButton));
     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
@@ -2009,28 +2021,28 @@ void print_score_menu_strings(void) {
     // Print file names
     gSPDisplayList(gDisplayListHead++, dl_menu_ia8_text_begin);
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, sTextBaseAlpha);
-    print_menu_generic_string(89, 62, textMarioA);
-    print_menu_generic_string(211, 62, textMarioB);
-    print_menu_generic_string(89, 105, textMarioC);
-    print_menu_generic_string(211, 105, textMarioD);
+    print_menu_generic_string((gScreenWidth / 2) - 71, 62, textMarioA);
+    print_menu_generic_string((gScreenWidth / 2) + 51, 62, textMarioB);
+    print_menu_generic_string((gScreenWidth / 2) - 71, 105, textMarioC);
+    print_menu_generic_string((gScreenWidth / 2) + 51, 105, textMarioD);
     gSPDisplayList(gDisplayListHead++, dl_menu_ia8_text_end);
 #endif
 }
 
 #if defined(VERSION_JP) || defined(VERSION_SH)
-    #define NOFILE_COPY_X  90
-    #define COPY_FILE_X    90
-    #define COPYIT_WHERE_X 90
-    #define NOSAVE_DATA_X2 90
-    #define COPYCOMPLETE_X 90
-    #define SAVE_EXISTS_X1 90
+    #define NOFILE_COPY_X  (gScreenWidth / 2) - 70
+    #define COPY_FILE_X    (gScreenWidth / 2) - 70
+    #define COPYIT_WHERE_X (gScreenWidth / 2) - 70
+    #define NOSAVE_DATA_X2 (gScreenWidth / 2) - 70
+    #define COPYCOMPLETE_X (gScreenWidth / 2) - 70
+    #define SAVE_EXISTS_X1 (gScreenWidth / 2) - 70
 #elif defined(VERSION_US)
-    #define NOFILE_COPY_X  119
-    #define COPY_FILE_X    104
-    #define COPYIT_WHERE_X 109
-    #define NOSAVE_DATA_X2 101
-    #define COPYCOMPLETE_X 110
-    #define SAVE_EXISTS_X1 110
+    #define NOFILE_COPY_X  (gScreenWidth / 2) - 41
+    #define COPY_FILE_X    (gScreenWidth / 2) - 56
+    #define COPYIT_WHERE_X (gScreenWidth / 2) - 51
+    #define NOSAVE_DATA_X2 (gScreenWidth / 2) - 59
+    #define COPYCOMPLETE_X (gScreenWidth / 2) - 50
+    #define SAVE_EXISTS_X1 (gScreenWidth / 2) - 50
 #elif defined(VERSION_EU)
     #define NOFILE_COPY_X  centeredX
     #define COPY_FILE_X    centeredX
@@ -2052,7 +2064,7 @@ void copy_menu_display_message(s8 messageID) {
         case COPY_MSG_MAIN_TEXT:
             if (sAllFilesExist == TRUE) {
 #ifdef VERSION_EU
-                centeredX = get_str_x_pos_from_center(160, textNoFileToCopyFrom[sLanguageMode], 10.0f);
+                centeredX = get_str_x_pos_from_center((gScreenWidth / 2), textNoFileToCopyFrom[sLanguageMode], 10.0f);
 #endif
                 print_generic_string_fade(NOFILE_COPY_X, 190, LANGUAGE_ARRAY(textNoFileToCopyFrom));
             } else {
@@ -2064,13 +2076,13 @@ void copy_menu_display_message(s8 messageID) {
             break;
         case COPY_MSG_COPY_WHERE:
 #ifdef VERSION_EU
-            centeredX = get_str_x_pos_from_center(160, textCopyItToWhere[sLanguageMode], 10.0f);
+            centeredX = get_str_x_pos_from_center((gScreenWidth / 2), textCopyItToWhere[sLanguageMode], 10.0f);
 #endif
             print_generic_string_fade(COPYIT_WHERE_X, 190, LANGUAGE_ARRAY(textCopyItToWhere));
             break;
         case COPY_MSG_NOSAVE_EXISTS:
 #ifdef VERSION_EU
-            centeredX = get_str_x_pos_from_center(160, textNoSavedDataExists[sLanguageMode], 10.0f);
+            centeredX = get_str_x_pos_from_center((gScreenWidth / 2), textNoSavedDataExists[sLanguageMode], 10.0f);
             print_generic_string_fade(NOSAVE_DATA_X2, 190, textNoSavedDataExists[sLanguageMode]);
 #else
             print_generic_string_fade(NOSAVE_DATA_X2, 190, textNoSavedDataExistsCopy);
@@ -2078,13 +2090,13 @@ void copy_menu_display_message(s8 messageID) {
             break;
         case COPY_MSG_COPY_COMPLETE:
 #ifdef VERSION_EU
-            centeredX = get_str_x_pos_from_center(160, textCopyCompleted[sLanguageMode], 10.0f);
+            centeredX = get_str_x_pos_from_center((gScreenWidth / 2), textCopyCompleted[sLanguageMode], 10.0f);
 #endif
             print_generic_string_fade(COPYCOMPLETE_X, 190, LANGUAGE_ARRAY(textCopyCompleted));
             break;
         case COPY_MSG_SAVE_EXISTS:
 #ifdef VERSION_EU
-            centeredX = get_str_x_pos_from_center(160, textSavedDataExists[sLanguageMode], 10.0f);
+            centeredX = get_str_x_pos_from_center((gScreenWidth / 2), textSavedDataExists[sLanguageMode], 10.0f);
 #endif
             print_generic_string_fade(SAVE_EXISTS_X1, 190, LANGUAGE_ARRAY(textSavedDataExists));
             break;
@@ -2137,17 +2149,17 @@ void copy_menu_update_message(void) {
 }
 
 #if defined(VERSION_JP)
-    #define VIEWSCORE_X1 133
-    #define ERASEFILE_X2 220
+    #define VIEWSCORE_X1 (gScreenWidth / 2) - 27
+    #define ERASEFILE_X2 (gScreenWidth / 2) + 60
 #elif defined(VERSION_US)
-    #define VIEWSCORE_X1 128
-    #define ERASEFILE_X2 230
+    #define VIEWSCORE_X1 (gScreenWidth / 2) - 32
+    #define ERASEFILE_X2 (gScreenWidth / 2) + 70
 #elif defined(VERSION_EU)
     #define VIEWSCORE_X1 centeredX
     #define ERASEFILE_X2 centeredX
 #elif defined(VERSION_SH)
-    #define VIEWSCORE_X1 133
-    #define ERASEFILE_X2 230
+    #define VIEWSCORE_X1 (gScreenWidth / 2) - 27
+    #define ERASEFILE_X2 (gScreenWidth / 2) + 70
 #endif
 
 /**
@@ -2166,25 +2178,25 @@ void print_copy_menu_strings(void) {
     // Print file star counts
     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_begin);
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, sTextBaseAlpha);
-    print_save_file_star_count(SAVE_FILE_A, 90, 76);
-    print_save_file_star_count(SAVE_FILE_B, 211, 76);
-    print_save_file_star_count(SAVE_FILE_C, 90, 119);
-    print_save_file_star_count(SAVE_FILE_D, 211, 119);
+    print_save_file_star_count(SAVE_FILE_A, (gScreenWidth / 2) - 70, 76);
+    print_save_file_star_count(SAVE_FILE_B, (gScreenWidth / 2) + 51, 76);
+    print_save_file_star_count(SAVE_FILE_C, (gScreenWidth / 2) - 70, 119);
+    print_save_file_star_count(SAVE_FILE_D, (gScreenWidth / 2) + 51, 119);
     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_end);
 #endif
     // Print menu names
     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, sTextBaseAlpha);
 #ifdef VERSION_EU
-    centeredX = get_str_x_pos_from_center(69, textReturn[sLanguageMode], 10.0f);
+    centeredX = get_str_x_pos_from_center((gScreenWidth / 2) - 91, textReturn[sLanguageMode], 10.0f);
 #endif
     print_generic_string(RETURN_X, 35, LANGUAGE_ARRAY(textReturn));
 #ifdef VERSION_EU
-    centeredX = get_str_x_pos_from_center(159, textViewScore[sLanguageMode], 10.0f);
+    centeredX = get_str_x_pos_from_center((gScreenWidth / 2) - 1, textViewScore[sLanguageMode], 10.0f);
 #endif
     print_generic_string(VIEWSCORE_X1, 35, LANGUAGE_ARRAY(textViewScore));
 #ifdef VERSION_EU
-    centeredX = get_str_x_pos_from_center(249, textEraseFileButton[sLanguageMode], 10.0f);
+    centeredX = get_str_x_pos_from_center((gScreenWidth / 2) - 89, textEraseFileButton[sLanguageMode], 10.0f);
 #endif
     print_generic_string(ERASEFILE_X2, 35, LANGUAGE_ARRAY(textEraseFileButton));
     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
@@ -2194,17 +2206,17 @@ void print_copy_menu_strings(void) {
     // Print file names
     gSPDisplayList(gDisplayListHead++, dl_menu_ia8_text_begin);
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, sTextBaseAlpha);
-    print_menu_generic_string(89, 62, textMarioA);
-    print_menu_generic_string(211, 62, textMarioB);
-    print_menu_generic_string(89, 105, textMarioC);
-    print_menu_generic_string(211, 105, textMarioD);
+    print_menu_generic_string((gScreenWidth / 2) - 71, 62, textMarioA);
+    print_menu_generic_string((gScreenWidth / 2) + 51, 62, textMarioB);
+    print_menu_generic_string((gScreenWidth / 2) - 71, 105, textMarioC);
+    print_menu_generic_string((gScreenWidth / 2) + 51, 105, textMarioD);
     gSPDisplayList(gDisplayListHead++, dl_menu_ia8_text_end);
 #endif
 }
 
 #if defined(VERSION_JP) || defined(VERSION_SH)
 #ifdef VERSION_JP
-    #define CURSOR_X 160.0f
+    #define CURSOR_X (gScreenWidth / 2)
 #else
     #define CURSOR_X (x + 70)
 #endif
@@ -2232,7 +2244,7 @@ void print_copy_menu_strings(void) {
 void print_erase_menu_prompt(s16 x, s16 y) {
     s16 colorFade = gGlobalTimer << 12;
 
-    s16 cursorX = sCursorPos[0] + CURSOR_X;
+    s16 cursorX = sCursorPos[0] + CURSOR_X / sFileSelectScale;
     s16 cursorY = sCursorPos[1] + 120.0f;
 
     if (cursorX < MENU_ERASE_YES_MAX_X && cursorX >= MENU_ERASE_YES_MIN_X &&
@@ -2300,24 +2312,24 @@ void print_erase_menu_prompt(s16 x, s16 y) {
 // 0 1 2 3 4 5 6 --- 0 1 2 3
 #if defined(VERSION_JP) || defined(VERSION_SH)
 #ifdef VERSION_JP
-    #define ERASE_FILE_X     96
+    #define ERASE_FILE_X     (gScreenWidth / 2) - 64
 #else
-    #define ERASE_FILE_X     111
+    #define ERASE_FILE_X     (gScreenWidth / 2) - 49
 #endif
-    #define NOSAVE_DATA_X3   90
-    #define MARIO_ERASED_VAR 3
-    #define MARIO_ERASED_X   90
-    #define SAVE_EXISTS_X2   90
+    #define NOSAVE_DATA_X3   (gScreenWidth / 2) - 70
+    #define MARIO_ERASED_VAR (gScreenWidth / 2) - 157
+    #define MARIO_ERASED_X   (gScreenWidth / 2) - 70
+    #define SAVE_EXISTS_X2   (gScreenWidth / 2) - 70
 #elif defined(VERSION_US)
-    #define ERASE_FILE_X     98
-    #define NOSAVE_DATA_X3   100
-    #define MARIO_ERASED_VAR 6
-    #define MARIO_ERASED_X   100
-    #define SAVE_EXISTS_X2   100
+    #define ERASE_FILE_X     (gScreenWidth / 2) - 62
+    #define NOSAVE_DATA_X3   (gScreenWidth / 2) - 60
+    #define MARIO_ERASED_VAR (gScreenWidth / 2) - 154
+    #define MARIO_ERASED_X   (gScreenWidth / 2) - 60
+    #define SAVE_EXISTS_X2   (gScreenWidth / 2) - 60
 #elif defined(VERSION_EU)
     #define ERASE_FILE_X     centeredX
     #define NOSAVE_DATA_X3   centeredX
-    #define MARIO_ERASED_VAR 6
+    #define MARIO_ERASED_VAR (gScreenWidth / 2) - 154
     #define MARIO_ERASED_X   centeredX
     #define SAVE_EXISTS_X2   centeredX
 #endif
@@ -2341,30 +2353,30 @@ void erase_menu_display_message(s8 messageID) {
     switch (messageID) {
         case ERASE_MSG_MAIN_TEXT:
 #ifdef VERSION_EU
-            centeredX = get_str_x_pos_from_center_scale(160, textEraseFile[sLanguageMode], 12.0f);
+            centeredX = get_str_x_pos_from_center_scale((gScreenWidth / 2), textEraseFile[sLanguageMode], 12.0f);
 #endif
             print_hud_lut_string_fade(HUD_LUT_DIFF, ERASE_FILE_X, 35, LANGUAGE_ARRAY(textEraseFile));
             break;
         case ERASE_MSG_PROMPT:
-            print_generic_string_fade(90, 190, LANGUAGE_ARRAY(textSure));
-            print_erase_menu_prompt(90, 190); // YES NO, has functions for it too
+            print_generic_string_fade((gScreenWidth / 2) - 70, 190, LANGUAGE_ARRAY(textSure));
+            print_erase_menu_prompt((gScreenWidth / 2) - 70, 190); // YES NO, has functions for it too
             break;
         case ERASE_MSG_NOSAVE_EXISTS:
 #ifdef VERSION_EU
-            centeredX = get_str_x_pos_from_center(160, textNoSavedDataExists[sLanguageMode], 10.0f);
+            centeredX = get_str_x_pos_from_center((gScreenWidth / 2), textNoSavedDataExists[sLanguageMode], 10.0f);
 #endif
             print_generic_string_fade(NOSAVE_DATA_X3, 190, LANGUAGE_ARRAY(textNoSavedDataExists));
             break;
         case ERASE_MSG_MARIO_ERASED:
             LANGUAGE_ARRAY(textMarioAJustErased)[MARIO_ERASED_VAR] = sSelectedFileIndex + 10;
 #ifdef VERSION_EU
-            centeredX = get_str_x_pos_from_center(160, textMarioAJustErased[sLanguageMode], 10.0f);
+            centeredX = get_str_x_pos_from_center((gScreenWidth / 2), textMarioAJustErased[sLanguageMode], 10.0f);
 #endif
             print_generic_string_fade(MARIO_ERASED_X, 190, LANGUAGE_ARRAY(textMarioAJustErased));
             break;
         case ERASE_MSG_SAVE_EXISTS: // unused
 #ifdef VERSION_EU
-            centeredX = get_str_x_pos_from_center(160, textSavedDataExists[sLanguageMode], 10.0f);
+            centeredX = get_str_x_pos_from_center((gScreenWidth / 2), textSavedDataExists[sLanguageMode], 10.0f);
 #endif
             print_generic_string_fade(SAVE_EXISTS_X2, 190, LANGUAGE_ARRAY(textSavedDataExists));
             break;
@@ -2414,11 +2426,11 @@ void erase_menu_update_message(void) {
 }
 
 #if defined(VERSION_JP) || defined(VERSION_SH)
-    #define VIEWSCORE_X2 133
-    #define COPYFILE_X2 223
+    #define VIEWSCORE_X2 (gScreenWidth / 2) - 27
+    #define COPYFILE_X2 (gScreenWidth / 2) + 63
 #else
-    #define VIEWSCORE_X2 127
-    #define COPYFILE_X2 233
+    #define VIEWSCORE_X2 (gScreenWidth / 2) - 33
+    #define COPYFILE_X2 (gScreenWidth / 2) + 73
 #endif
 
 /**
@@ -2439,10 +2451,10 @@ void print_erase_menu_strings(void) {
     // Print file star counts
     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_begin);
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, sTextBaseAlpha);
-    print_save_file_star_count(SAVE_FILE_A, 90, 76);
-    print_save_file_star_count(SAVE_FILE_B, 211, 76);
-    print_save_file_star_count(SAVE_FILE_C, 90, 119);
-    print_save_file_star_count(SAVE_FILE_D, 211, 119);
+    print_save_file_star_count(SAVE_FILE_A, (gScreenWidth / 2) - 70, 76);
+    print_save_file_star_count(SAVE_FILE_B, (gScreenWidth / 2) + 51, 76);
+    print_save_file_star_count(SAVE_FILE_C, (gScreenWidth / 2) - 70, 119);
+    print_save_file_star_count(SAVE_FILE_D, (gScreenWidth / 2) + 51, 119);
     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_end);
 #endif
 
@@ -2451,11 +2463,11 @@ void print_erase_menu_strings(void) {
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, sTextBaseAlpha);
 
 #ifdef VERSION_EU
-    centeredX = get_str_x_pos_from_center(69, textReturn[sLanguageMode], 10.0f);
+    centeredX = get_str_x_pos_from_center((gScreenWidth / 2) - 91, textReturn[sLanguageMode], 10.0f);
     print_generic_string(centeredX, 35, textReturn[sLanguageMode]);
-    centeredX = get_str_x_pos_from_center(159, textViewScore[sLanguageMode], 10.0f);
+    centeredX = get_str_x_pos_from_center((gScreenWidth / 2) - 1, textViewScore[sLanguageMode], 10.0f);
     print_generic_string(centeredX, 35, textViewScore[sLanguageMode]);
-    centeredX = get_str_x_pos_from_center(249, textCopyFileButton[sLanguageMode], 10.0f);
+    centeredX = get_str_x_pos_from_center((gScreenWidth / 2) + 89, textCopyFileButton[sLanguageMode], 10.0f);
     print_generic_string(centeredX, 35, textCopyFileButton[sLanguageMode]);
 #else
     print_generic_string(RETURN_X, 35, textReturn);
@@ -2470,18 +2482,18 @@ void print_erase_menu_strings(void) {
     // Print file names
     gSPDisplayList(gDisplayListHead++, dl_menu_ia8_text_begin);
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, sTextBaseAlpha);
-    print_menu_generic_string(89, 62, textMarioA);
-    print_menu_generic_string(211, 62, textMarioB);
-    print_menu_generic_string(89, 105, textMarioC);
-    print_menu_generic_string(211, 105, textMarioD);
+    print_menu_generic_string((gScreenWidth / 2) - 71, 62, textMarioA);
+    print_menu_generic_string((gScreenWidth / 2) + 51, 62, textMarioB);
+    print_menu_generic_string((gScreenWidth / 2) - 71, 105, textMarioC);
+    print_menu_generic_string((gScreenWidth / 2) + 51, 105, textMarioD);
     gSPDisplayList(gDisplayListHead++, dl_menu_ia8_text_end);
 #endif
 }
 
 #if defined(VERSION_JP) || defined(VERSION_SH)
-    #define SOUND_HUD_X 96
+    #define SOUND_HUD_X (gScreenWidth / 2) - 64
 #elif defined(VERSION_US)
-    #define SOUND_HUD_X 88
+    #define SOUND_HUD_X (gScreenWidth / 2) - 72
 #endif
 
 /**
@@ -2507,8 +2519,8 @@ void print_sound_mode_menu_strings(void) {
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, sTextBaseAlpha);
 
 #ifdef VERSION_EU
-    print_hud_lut_string(HUD_LUT_DIFF, 47, 32, textSoundSelect[sLanguageMode]);
-    print_hud_lut_string(HUD_LUT_DIFF, 47, 101, textLanguageSelect[sLanguageMode]);
+    print_hud_lut_string(HUD_LUT_DIFF, (gScreenWidth / 2) - 114, 32, textSoundSelect[sLanguageMode]);
+    print_hud_lut_string(HUD_LUT_DIFF, (gScreenWidth / 2) - 114, 101, textLanguageSelect[sLanguageMode]);
 #else
     print_hud_lut_string(HUD_LUT_DIFF, SOUND_HUD_X, 35, textSoundSelect);
 #endif
@@ -2519,7 +2531,7 @@ void print_sound_mode_menu_strings(void) {
 
 #ifdef VERSION_EU // In EU their X position get increased each string
     // Print sound mode names
-    for (mode = 0, textX = 90; mode < 3; textX += 70, mode++) {
+    for (mode = 0, textX = (gScreenWidth / 2) - 70; mode < 3; textX += 70, mode++) {
         if (mode == sSoundMode) {
             gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, sTextBaseAlpha);
         } else {
@@ -2531,7 +2543,7 @@ void print_sound_mode_menu_strings(void) {
     }
 
     // In EU, print language mode names
-    for (mode = 0, textX = 90; mode < 3; textX += 70, mode++) {
+    for (mode = 0, textX = (gScreenWidth / 2) - 70; mode < 3; textX += 70, mode++) {
         if (mode == sLanguageMode) {
             gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, sTextBaseAlpha);
         } else {
@@ -2551,17 +2563,17 @@ void print_sound_mode_menu_strings(void) {
         }
         #ifndef VERSION_JP
             // Mode names are centered correctly on US and Shindou
-            textX = get_str_x_pos_from_center(mode * 74 + 87, textSoundModes[mode], 10.0f);
+            textX = get_str_x_pos_from_center(((gScreenWidth - SCREEN_WIDTH) / 2) + (mode * 74 + 87), textSoundModes[mode], 10.0f);
             print_generic_string(textX, 87, textSoundModes[mode]);
         #else
-            print_generic_string(mode * 74 + 67, 87, textSoundModes[mode]);
+            print_generic_string(((gScreenWidth - SCREEN_WIDTH) / 2) + (mode * 74 + 67), 87, textSoundModes[mode]);
         #endif
     }
 #endif
 
 #ifdef VERSION_EU
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, sTextBaseAlpha);
-    print_generic_string(182, 29, textReturn[sLanguageMode]);
+    print_generic_string((gScreenWidth / 2) + 22, 29, textReturn[sLanguageMode]);
 #endif
 
     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
@@ -2661,8 +2673,8 @@ void print_score_file_star_score(s8 fileIndex, s16 courseIndex, s16 x, s16 y) {
 }
 
 #if defined(VERSION_JP) || defined(VERSION_SH)
-    #define MARIO_X 28
-    #define FILE_LETTER_X 86
+    #define MARIO_X (gScreenWidth / 2) - 132
+    #define FILE_LETTER_X (gScreenWidth / 2) - 74
 #ifdef VERSION_JP
     #define LEVEL_NUM_PAD 0
     #define SECRET_STARS_PAD 0
@@ -2671,22 +2683,22 @@ void print_score_file_star_score(s8 fileIndex, s16 courseIndex, s16 x, s16 y) {
     #define SECRET_STARS_PAD 10
 #endif
     #define LEVEL_NAME_X 23
-    #define STAR_SCORE_X 152
-    #define MYSCORE_X 237
-    #define HISCORE_X 237
+    #define STAR_SCORE_X (gScreenWidth / 2) - 8
+    #define MYSCORE_X (gScreenWidth / 2) + 77
+    #define HISCORE_X (gScreenWidth / 2) + 77
 #else
-    #define MARIO_X 25
-    #define FILE_LETTER_X 95
+    #define MARIO_X (gScreenWidth / 2) - 135
+    #define FILE_LETTER_X (gScreenWidth / 2) - 65
     #define LEVEL_NUM_PAD 3
     #define SECRET_STARS_PAD 6
-    #define LEVEL_NAME_X 23
-    #define STAR_SCORE_X 171
+    #define LEVEL_NAME_X (gScreenWidth / 2) - 137
+    #define STAR_SCORE_X (gScreenWidth / 2) + 11
 #ifdef VERSION_EU
-    #define MYSCORE_X get_str_x_pos_from_center(257, textMyScore[sLanguageMode], 10.0f)
-    #define HISCORE_X get_str_x_pos_from_center(257, textHiScore[sLanguageMode], 10.0f)
+    #define MYSCORE_X get_str_x_pos_from_center((gScreenWidth / 2) + 97, textMyScore[sLanguageMode], 10.0f)
+    #define HISCORE_X get_str_x_pos_from_center((gScreenWidth / 2) + 97, textHiScore[sLanguageMode], 10.0f)
 #else
-    #define MYSCORE_X 238
-    #define HISCORE_X 231
+    #define MYSCORE_X (gScreenWidth / 2) - 78
+    #define HISCORE_X (gScreenWidth / 2) - 71
 #endif
 #endif
 
@@ -2736,7 +2748,7 @@ void print_save_file_scores(s8 fileIndex) {
     print_hud_lut_string(HUD_LUT_GLOBAL, FILE_LETTER_X, 15, textFileLetter);
 
     // Print save file star count at top
-    print_save_file_star_count(fileIndex, 124, 15);
+    print_save_file_star_count(fileIndex, (gScreenWidth / 2) - 36, 15);
     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_end);
     // Print course scores
     gSPDisplayList(gDisplayListHead++, dl_menu_ia8_text_begin);
@@ -2747,7 +2759,7 @@ void print_save_file_scores(s8 fileIndex) {
     print_menu_generic_string(LEVEL_NAME_X + (pad * LEVEL_NUM_PAD), 23 + 12 * courseIndex, \
                               segmented_to_virtual(levelNameTable[courseIndex - 1])); \
     print_score_file_star_score(fileIndex, courseIndex - 1, STAR_SCORE_X, 23 + 12 * courseIndex); \
-    print_score_file_course_coin_score(fileIndex, courseIndex - 1, 213, 23 + 12 * courseIndex);
+    print_score_file_course_coin_score(fileIndex, courseIndex - 1, (gScreenWidth / 2) + 53, 23 + 12 * courseIndex);
 
     // Course values are indexed, from Bob-omb Battlefield to Rainbow Ride
     PRINT_COURSE_SCORES(COURSE_BOB, 1)
@@ -2790,6 +2802,8 @@ void print_save_file_scores(s8 fileIndex) {
 static void print_file_select_strings(void) {
 
     create_dl_ortho_matrix();
+    f32 scaleVal = (f32) SCREEN_WIDTH / (f32)gScreenWidth;
+    create_dl_scale_matrix(MENU_MTX_PUSH, scaleVal, 1.0f, 1.0f);
     switch (sSelectedButtonID) {
         case MENU_BUTTON_NONE:
 #ifdef VERSION_EU

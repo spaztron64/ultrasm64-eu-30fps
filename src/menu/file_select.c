@@ -1174,6 +1174,7 @@ void check_sound_mode_menu_clicked_buttons(struct Object *soundModeButton) {
                 // If neither of the buttons above are pressed, return to main menu
                 if (buttonID == MENU_BUTTON_LANGUAGE_RETURN) {
                     sMainMenuButtons[buttonID]->oMenuButtonState = MENU_BUTTON_STATE_ZOOM_IN_OUT;
+                    save_file_set_config();
                     sSelectedButtonID = buttonID;
                 }
                 sCurrentMenuLevel = MENU_LAYER_SUBMENU;

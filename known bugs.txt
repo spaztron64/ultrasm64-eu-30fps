@@ -6,4 +6,5 @@ transitions also get cut off on the right side in widescreen
 memory collision only presumably caused by goddard's very existence
 some NPC's will disppear during dialogue, assuming throwmatrix strikes again
 audio corruption. I blame goddard
-issue with shadows in bowser 1
+bowser's tail is not grabbable
+certain point of the thwomp crashes the game trying to find_floor

@@ -628,7 +628,7 @@ void draw_bone(struct GdObj *obj) {
     // dead code
     scale.x = 1.0f;
     scale.y = 1.0f;
-    scale.z = bone->unkF8 / 50.0f;
+    scale.z = bone->unkF8 / sqr(50.0f);
 
     if (bone->header.drawFlags & OBJ_HIGHLIGHTED) {
         colour = COLOUR_YELLOW;

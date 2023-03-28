@@ -114,7 +114,7 @@ struct AnimInfo {
     /*0x0A 0x42*/ u16 animTimer;
     /*0x0C 0x44*/ s32 animFrameAccelAssist;
     /*0x10 0x48*/ s32 animAccel;
-    Vec3s animRotStack[32];
+    Vec3s animRotStack[48];
     u8 animPosStackNum;
 };
 

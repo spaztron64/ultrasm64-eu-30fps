@@ -947,7 +947,7 @@ void func_8017E584(struct ObjNet *a0, struct GdVec3f *a1, struct GdVec3f *a2) {
     }
 
     sp2C /= 1000.0f;    //? 1000.0f
-    sp2C = 1.0 - sp2C; //? 1.0f - sp2C
+    sp2C = 1.0f - sp2C; //? 1.0f - sp2C
 
     sp88.x = a2->x * sp2C;
     sp88.y = a2->y * sp2C;

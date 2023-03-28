@@ -20,6 +20,7 @@
 #include "types.h"
 #include "game/rendering_graph_node.h"
 #include "game/game_init.h"
+#include "engine/math_util.h"
 
 #define MAX_GD_DLS 1000
 #define OS_MESG_SI_COMPLETE 0x33333333
@@ -1573,14 +1574,14 @@ void gd_dl_hilite(s32 idx, // material GdDl number; offsets into hilite array
     sp34 = 32.0f; // y scale factor?
     hilite = &sHilites[idx];
 
-    gDPSetPrimColor(next_gfx(), 0, 0, (s32)(colour->r * 255.0f), (s32)(colour->g * 255.0f),
-                    (s32)(colour->b * 255.0f), 255);
+    gDPSetPrimColor(next_gfx(), 0, 0, (s32)(colour->r * 255.0f), (s32)(colour->g * 255.0f), (s32)(colour->b * 255.0f), 255);
     sp40.z = cam->unkE8[0][2] + arg4->x;
     sp40.y = cam->unkE8[1][2] + arg4->y;
     sp40.x = cam->unkE8[2][2] + arg4->z;
-    sp3C = sqrtf(SQ(sp40.z) + SQ(sp40.y) + SQ(sp40.x));
-    if (sp3C > 0.1) {
-        sp3C = 1.0 / sp3C; //? 1.0f
+    sp3C = (SQ(sp40.z) + SQ(sp40.y) + SQ(sp40.x));
+    if (sp3C > sqr(0.1f)) {
+        sp3C = sqrtf(sp3C);
+        sp3C = 1.0f / sp3C; //? 1.0f
         sp40.z *= sp3C;
         sp40.y *= sp3C;
         sp40.x *= sp3C;

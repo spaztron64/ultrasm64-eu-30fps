@@ -20,6 +20,7 @@
 #include "shape_helper.h"
 #include "skin.h"
 #include "game/game_init.h"
+#include "engine/math_util.h"
 
 // data
 struct ObjGroup *gMarioFaceGrp = NULL;     // @ 801A82E0; returned by load_dynlist
@@ -464,10 +465,9 @@ void Unknown80198444(struct ObjVertex *vtx) {
     distance = vtx->pos.x * vtx->pos.x + vtx->pos.y * vtx->pos.y + vtx->pos.z * vtx->pos.z;
 
     if (distance != 0.0f) {
-        distance = sqrtf(distance); // sqrtd?
 
-        if (distance > D_801A8668) {
-            D_801A8668 = distance;
+        if (distance > sqr(D_801A8668)) {
+            D_801A8668 = sqrtf(distance);
         }
     }
 }

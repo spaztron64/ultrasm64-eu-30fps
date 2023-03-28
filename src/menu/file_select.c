@@ -53,6 +53,7 @@ static s16 sSoundTextX;
 // Amount of main menu buttons defined in the code called by spawn_object_rel_with_rot.
 // See file_select.h for the names in MenuButtonTypes.
 static struct Object *sMainMenuButtons[NUM_BUTTONS];
+static struct Object *sMainMenuBG;
 
 // Used to defined yes/no fade colors after a file is selected in the erase menu.
 // sYesNoColor[0]: YES | sYesNoColor[1]: NO
@@ -303,6 +304,33 @@ void beh_yellow_background_menu_init(void) {
     gCurrentObject->oFaceAngleYaw = 0x8000;
     sFileSelectScale = ((f32) gScreenWidth / (f32)SCREEN_WIDTH);
     gCurrentObject->oMenuButtonScale = sFileSelectScale * 9.0f;
+    sMainMenuBG = gCurrentObject;
+}
+
+void hide_main_menu(void) {
+    gCurrentObject->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
+    sMainMenuButtons[MENU_BUTTON_PLAY_FILE_A]->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
+    sMainMenuButtons[MENU_BUTTON_PLAY_FILE_B]->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
+    sMainMenuButtons[MENU_BUTTON_PLAY_FILE_C]->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
+    sMainMenuButtons[MENU_BUTTON_PLAY_FILE_D]->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
+    sMainMenuButtons[MENU_BUTTON_SCORE]->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
+    sMainMenuButtons[MENU_BUTTON_COPY]->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
+    sMainMenuButtons[MENU_BUTTON_ERASE]->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
+    sMainMenuButtons[MENU_BUTTON_SOUND_MODE]->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
+    sMainMenuBG->header.gfx.sharedChild = gCurrentObject->header.gfx.sharedChild;
+}
+
+void show_main_menu(void) {
+    gCurrentObject->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
+    sMainMenuButtons[MENU_BUTTON_PLAY_FILE_A]->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
+    sMainMenuButtons[MENU_BUTTON_PLAY_FILE_B]->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
+    sMainMenuButtons[MENU_BUTTON_PLAY_FILE_C]->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
+    sMainMenuButtons[MENU_BUTTON_PLAY_FILE_D]->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
+    sMainMenuButtons[MENU_BUTTON_SCORE]->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
+    sMainMenuButtons[MENU_BUTTON_COPY]->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
+    sMainMenuButtons[MENU_BUTTON_ERASE]->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
+    sMainMenuButtons[MENU_BUTTON_SOUND_MODE]->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
+    sMainMenuBG->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAIN_MENU_YELLOW_FILE_BUTTON];
 }
 
 /**
@@ -362,6 +390,7 @@ static void bhv_menu_button_growing_from_main_menu(struct Object *button) {
         button->oParentRelativePosY = 0.0f;
         button->oMenuButtonState = MENU_BUTTON_STATE_FULLSCREEN;
         button->oMenuButtonTimer = 0;
+        hide_main_menu();
     }
 }
 
@@ -382,6 +411,9 @@ static void bhv_menu_button_shrinking_to_main_menu(struct Object *button) {
     button->oParentRelativePosY += button->oMenuButtonOrigPosY / 16.0f;
     if (button->oPosZ > button->oMenuButtonOrigPosZ) {
         button->oParentRelativePosZ -= 1112.5f;
+    }
+    if (button->oMenuButtonTimer == 0 && sSelectedButtonID != MENU_BUTTON_NONE) {
+        show_main_menu();
     }
     button->oMenuButtonTimer++;
     if (button->oMenuButtonTimer == 16) {

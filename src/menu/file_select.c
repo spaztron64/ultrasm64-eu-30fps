@@ -309,26 +309,18 @@ void beh_yellow_background_menu_init(void) {
 
 void hide_main_menu(void) {
     gCurrentObject->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
-    sMainMenuButtons[MENU_BUTTON_PLAY_FILE_A]->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
-    sMainMenuButtons[MENU_BUTTON_PLAY_FILE_B]->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
-    sMainMenuButtons[MENU_BUTTON_PLAY_FILE_C]->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
-    sMainMenuButtons[MENU_BUTTON_PLAY_FILE_D]->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
-    sMainMenuButtons[MENU_BUTTON_SCORE]->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
-    sMainMenuButtons[MENU_BUTTON_COPY]->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
-    sMainMenuButtons[MENU_BUTTON_ERASE]->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
+    for (s32 i = MENU_BUTTON_PLAY_FILE_A; i < MENU_BUTTON_ERASE + 1; i++) {
+        sMainMenuButtons[i]->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
+    }
     sMainMenuButtons[MENU_BUTTON_SOUND_MODE]->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
     sMainMenuBG->header.gfx.sharedChild = gCurrentObject->header.gfx.sharedChild;
 }
 
 void show_main_menu(void) {
     gCurrentObject->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
-    sMainMenuButtons[MENU_BUTTON_PLAY_FILE_A]->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
-    sMainMenuButtons[MENU_BUTTON_PLAY_FILE_B]->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
-    sMainMenuButtons[MENU_BUTTON_PLAY_FILE_C]->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
-    sMainMenuButtons[MENU_BUTTON_PLAY_FILE_D]->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
-    sMainMenuButtons[MENU_BUTTON_SCORE]->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
-    sMainMenuButtons[MENU_BUTTON_COPY]->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
-    sMainMenuButtons[MENU_BUTTON_ERASE]->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
+    for (s32 i = MENU_BUTTON_PLAY_FILE_A; i < MENU_BUTTON_ERASE + 1; i++) {
+        sMainMenuButtons[i]->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
+    }
     sMainMenuButtons[MENU_BUTTON_SOUND_MODE]->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
     sMainMenuBG->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAIN_MENU_YELLOW_FILE_BUTTON];
 }

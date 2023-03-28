@@ -82,7 +82,7 @@ Gfx *geo_update_layer_transparency(s32 callContext, struct GraphNode *node, UNUS
             if (currentGraphNode->parameter == 20) {
                 currentGraphNode->fnNode.node.flags = (LAYER_TRANSPARENT_DECAL << 8) | (currentGraphNode->fnNode.node.flags & 0xFF);
             } else {
-                currentGraphNode->fnNode.node.flags = (LAYER_TRANSPARENT << 8) | (currentGraphNode->fnNode.node.flags & 0xFF);
+                currentGraphNode->fnNode.node.flags = (LAYER_TRANSPARENT_ZSORT << 8) | (currentGraphNode->fnNode.node.flags & 0xFF);
             }
 
             objectGraphNode->oAnimState = 1;

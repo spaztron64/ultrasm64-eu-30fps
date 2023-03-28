@@ -48,7 +48,7 @@ enum GraphNodeTypes {
 
 // The number of master lists. A master list determines the order and render
 // mode with which display lists are drawn.
-#define GFX_NUM_MASTER_LISTS 6
+#define GFX_NUM_MASTER_LISTS 7
 
 // Passed as first argument to a GraphNodeFunc to give information about in
 // which context it was called and what it is expected to do.

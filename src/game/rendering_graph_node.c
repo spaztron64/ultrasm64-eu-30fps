@@ -85,7 +85,7 @@ struct DmaHandlerList *gMarioGfxAnimList = &gMarioGfxAnimBuf;
 struct AllocOnlyPool *gDisplayListHeap;
 
 struct RenderModeContainer {
-    u32 modes[6];
+    u32 modes[7];
 };
 
 s8 gAntiAliasing = 0;
@@ -101,6 +101,7 @@ static struct RenderModeContainer renderModeTable_2Cycle[3] = { { {
     G_RM_ZB_OPA_DECAL2,
     G_RM_RA_ZB_TEX_EDGE2,
     G_RM_ZB_XLU_SURF2,
+    G_RM_ZB_XLU_SURF2 | Z_UPD,
     G_RM_ZB_XLU_DECAL2,
     } },
     { {
@@ -110,6 +111,7 @@ static struct RenderModeContainer renderModeTable_2Cycle[3] = { { {
     G_RM_RA_ZB_OPA_DECAL2,
     G_RM_RA_ZB_TEX_EDGE2,
     G_RM_AA_ZB_XLU_SURF2,
+    G_RM_AA_ZB_XLU_SURF2 | Z_UPD,
     G_RM_AA_ZB_XLU_DECAL2,
     } },
     { {
@@ -119,6 +121,7 @@ static struct RenderModeContainer renderModeTable_2Cycle[3] = { { {
     G_RM_AA_ZB_OPA_DECAL2,
     G_RM_AA_ZB_TEX_EDGE2,
     G_RM_AA_ZB_XLU_SURF2,
+    G_RM_AA_ZB_XLU_SURF2 | Z_UPD,
     G_RM_AA_ZB_XLU_DECAL2,
     } } };
 

@@ -717,45 +717,6 @@ void mtxf_rot_trans_mul(Vec3s rot, Vec3f trans, Mat4 dest, Mat4 src) {
     ((u32 *) dest)[15] = 0x3F800000;
 }
 
-s32 allocate_animation_translation(void) {
-    /*gCurGraphNodeObjectNode->header.gfx.animInfo.animPosStack[gCurrAnimPos][0] = mem_pool_alloc(gAnimationsMemoryPool, sizeof(f32) * 3);
-    if (gCurGraphNodeObjectNode->header.gfx.animInfo.animPosStack[gCurrAnimPos][0] == NULL) {
-        return TRUE;
-    }
-    bzero(&gCurGraphNodeObjectNode->header.gfx.animInfo.animPosStack[gCurrAnimPos], sizeof(f32) * 3);
-    gCurGraphNodeObjectNode->header.gfx.animInfo.animPosStackNum++;*/
-    return FALSE;
-}
-
-s32 allocate_animation_rotation(void) {
-    /*gCurGraphNodeObjectNode->header.gfx.animInfo.animRotStack[gCurrAnimPos][0] = mem_pool_alloc(gAnimationsMemoryPool, sizeof(s16) * 3);
-    if (gCurGraphNodeObjectNode->header.gfx.animInfo.animRotStack[gCurrAnimPos][0] == NULL) {
-        return TRUE;
-    }
-    bzero(&gCurGraphNodeObjectNode->header.gfx.animInfo.animRotStack[gCurrAnimPos], sizeof(s16) * 3);
-    gCurGraphNodeObjectNode->header.gfx.animInfo.animRotStackNum++;*/
-    return FALSE;
-}
-
-void deallocate_animations(struct Object *obj) {
-    /*// If the first index doesn't exist, then neither are the rest.
-    for (u32 i = 0; i < obj->header.gfx.animInfo.animRotStackNum; i++) {
-        if (obj->header.gfx.animInfo.animRotStack[i])
-            mem_pool_free(gAnimationsMemoryPool, obj->header.gfx.animInfo.animRotStack[i]);
-    }
-    obj->header.gfx.animInfo.animRotStackNum = 0;
-    for (u32 i = 0; i < obj->header.gfx.animInfo.animPosStackNum; i++) {
-        if (obj->header.gfx.animInfo.animPosStack[i])
-            mem_pool_free(gAnimationsMemoryPool, obj->header.gfx.animInfo.animPosStack[i]);
-    }
-    obj->header.gfx.animInfo.animPosStackNum = 0;*/
-}
-
-void snap_animation_pos(Vec3s rot, Vec3f pos) {
-    //vec3s_copy((s16 *) gCurGraphNodeObjectNode->header.gfx.animInfo.animRotStack[gCurrAnimPos], rot);
-    //vec3f_copy((f32 *) gCurGraphNodeObjectNode->header.gfx.animInfo.animRotStack[gCurrAnimPos], pos);
-}
-
 /**
  * Render an animated part. The current animation state is not part of the node
  * but set in global variables. If an animated part is skipped, everything afterwards desyncs.

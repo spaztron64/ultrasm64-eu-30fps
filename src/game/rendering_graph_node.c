@@ -88,7 +88,7 @@ struct RenderModeContainer {
     u32 modes[6];
 };
 
-u8 gAntiAliasing = 0;
+s8 gAntiAliasing = 0;
 u8 gScreenMode = 0;
 u8 gFrameCap = 0;
 u8 gDedither = 0;
@@ -212,7 +212,7 @@ void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
         if ((currList = node->listHeads[i]) != NULL) {
             while (currList != NULL) {
                 if (switchAA == TRUE || currList->fancyAA != lastAA) {
-                    mode2List = &renderModeTable_2Cycle[gAntiAliasing + currList->fancyAA];
+                    mode2List = &renderModeTable_2Cycle[gAntiAliasing + 1 + currList->fancyAA];
                     gDPSetRenderMode(gfx++, gFirstCycleRM, mode2List->modes[i]);
                     switchAA = FALSE;
                 }
@@ -256,7 +256,7 @@ void geo_append_display_list(void *displayList, s16 layer) {
         listNode->transform = gMatStackFixed[gMatStackIndex];
         listNode->displayList = displayList;
         listNode->next = 0;
-        if (gCurGraphNodeObject != NULL && gAntiAliasing == 1) {
+        if (gCurGraphNodeObject != NULL && gAntiAliasing == 0) {
             listNode->fancyAA = TRUE;
         } else {
             listNode->fancyAA = FALSE;

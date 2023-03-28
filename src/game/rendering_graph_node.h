@@ -5,7 +5,7 @@
 
 #include "engine/graph_node.h"
 
-#define THROWMATSTACK 20
+#define THROWMATSTACK 32
 #define MATRIX_NULL 65000
 
 extern struct GraphNodeRoot *gCurGraphNodeRoot;
@@ -23,7 +23,7 @@ extern Mat4 gCameraTransform;
 extern u8 gScreenMode;
 extern u8 gFrameCap;
 extern u8 gDedither;
-extern u8 gAntiAliasing;
+extern s8 gAntiAliasing;
 
 // after processing an object, the type is reset to this
 #define ANIM_TYPE_NONE                  0

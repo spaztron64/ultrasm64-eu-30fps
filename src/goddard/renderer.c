@@ -1769,15 +1769,15 @@ u32 gGoddardRenderTable[] = {
 static void update_render_mode(void) {
     if ((sActiveView->flags & VIEW_ALLOC_ZBUF) != 0) {
         if (sAlpha != 0xff) {
-            gDPSetRenderMode(next_gfx(), gGoddardRenderTable[0 + gAntiAliasing], gGoddardRenderTable[6 + gAntiAliasing]);
+            gDPSetRenderMode(next_gfx(), gGoddardRenderTable[0 + gAntiAliasing + 1], gGoddardRenderTable[6 + gAntiAliasing + 1]);
         } else {
-            gDPSetRenderMode(next_gfx(), gGoddardRenderTable[3 + gAntiAliasing], G_RM_NOOP2);
+            gDPSetRenderMode(next_gfx(), gGoddardRenderTable[3 + gAntiAliasing + 1], G_RM_NOOP2);
         }
     } else {
         if (sAlpha != 0xff) {
-            gDPSetRenderMode(next_gfx(), gGoddardRenderTable[9 + gAntiAliasing], gGoddardRenderTable[12 + gAntiAliasing]);
+            gDPSetRenderMode(next_gfx(), gGoddardRenderTable[9 + gAntiAliasing + 1], gGoddardRenderTable[12 + gAntiAliasing + 1]);
         } else {
-            gDPSetRenderMode(next_gfx(), gGoddardRenderTable[3 + gAntiAliasing], G_RM_NOOP2);
+            gDPSetRenderMode(next_gfx(), gGoddardRenderTable[3 + gAntiAliasing + 1], G_RM_NOOP2);
         }
     }
 }

@@ -751,8 +751,8 @@ void thread5_game_loop(UNUSED void *arg) {
         }
         if (gPlayer1Controller->buttonPressed & R_JPAD) {
             gAntiAliasing++;
-            if (gAntiAliasing == 3) {
-                gAntiAliasing = 0;
+            if (gAntiAliasing == 2) {
+                gAntiAliasing = -1;
             }
         }
         gGameTime = osGetTime() - first;

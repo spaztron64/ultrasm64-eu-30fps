@@ -41,14 +41,7 @@
 static s16 sSoundTextX;
 #endif
 
-//! @Bug (UB Array Access) For EU, more buttons were added than the array was extended.
-//! This causes no currently known issues on console (as the other variables are not changed
-//! while this is used) but can cause issues with other compilers.
-#if defined(VERSION_EU) && !defined(AVOID_UB)
-#define NUM_BUTTONS (MENU_BUTTON_OPTION_MAX - 1)
-#else
 #define NUM_BUTTONS MENU_BUTTON_OPTION_MAX
-#endif
 
 // Amount of main menu buttons defined in the code called by spawn_object_rel_with_rot.
 // See file_select.h for the names in MenuButtonTypes.
@@ -124,9 +117,7 @@ static s8 sSelectedFileNum = 0;
 static s8 sScoreFileCoinScoreMode = 0;
 
 // In EU, if no save file exists, open the language menu so the user can find it.
-#ifdef VERSION_EU
 static s8 sOpenLangSettings = FALSE;
-#endif
 
 #ifndef VERSION_EU
 static unsigned char textReturn[] = { TEXT_RETURN };
@@ -1488,14 +1479,12 @@ void check_main_menu_clicked_buttons(void) {
                 }
             }
         }
-#ifdef VERSION_EU
         // Open Options Menu if sOpenLangSettings is TRUE (It's TRUE when there's no saves)
         if (sOpenLangSettings == TRUE) {
             sMainMenuButtons[MENU_BUTTON_SOUND_MODE]->oMenuButtonState = MENU_BUTTON_STATE_GROWING;
             sSelectedButtonID = MENU_BUTTON_SOUND_MODE;
             sOpenLangSettings = FALSE;
         }
-#endif
 
         // Play sound of the save file clicked
         switch (sSelectedButtonID) {
@@ -2972,9 +2961,7 @@ Gfx *geo_file_select_strings_and_menu_cursor(s32 callContext, UNUSED struct Grap
  * either completing a course choosing "SAVE & QUIT" or having a game over.
  */
 s32 lvl_init_menu_values_and_cursor_pos(UNUSED s32 arg, UNUSED s32 unused) {
-#ifdef VERSION_EU
-    s8 fileNum;
-#endif
+    s32 fileNum;
     sSelectedButtonID = MENU_BUTTON_NONE;
     sCurrentMenuLevel = MENU_LAYER_MAIN;
     sTextBaseAlpha = 0;
@@ -3020,7 +3007,7 @@ s32 lvl_init_menu_values_and_cursor_pos(UNUSED s32 arg, UNUSED s32 unused) {
     sSoundMode = save_file_get_sound_mode();
 #ifdef VERSION_EU
     sLanguageMode = eu_get_language();
-
+#endif
     for (fileNum = 0; fileNum < 4; fileNum++) {
         if (save_file_exists(fileNum) == TRUE) {
             sOpenLangSettings = FALSE;
@@ -3029,11 +3016,7 @@ s32 lvl_init_menu_values_and_cursor_pos(UNUSED s32 arg, UNUSED s32 unused) {
             sOpenLangSettings = TRUE;
         }
     }
-#endif
-    //! no return value
-#ifdef AVOID_UB
     return 0;
-#endif
 }
 
 /**

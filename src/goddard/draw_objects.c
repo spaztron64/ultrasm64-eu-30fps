@@ -743,7 +743,7 @@ void Proc8017A980(struct ObjLight *light) {
         sp1C = 1.0 - light->unk38 / 90.0f;
         if (sp20 > sp1C) {
             sp20 = (sp20 - sp1C) * (1.0 / (1.0 - sp1C));
-            if (sp20 > 1.0) {
+            if (sp20 > 1.0f) {
                 sp20 = 1.0f;
             } else if (sp20 < 0.0f) {
                 sp20 = 0.0f;

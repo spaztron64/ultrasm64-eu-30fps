@@ -142,7 +142,6 @@ struct ObjGroup {
     /* 0x20 */ struct ListNode *lastMember; ///< Tail of a linked list for objects contained in this group
     /* 0x24 */ s32 memberTypes;   ///< OR'd collection of type flags for all objects in this group
     /* 0x28 */ s32 memberCount;  // number of objects in this group
-    /* 0x2C */ s32 debugPrint;  // might also be a type?
     /* 0x30 */ s32 linkType;
     /* 0x34 */ char name[0x40]; ///< possibly, only referenced in old code
     /* 0x74 */ s32 id;

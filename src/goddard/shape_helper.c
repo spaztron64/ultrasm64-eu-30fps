@@ -493,9 +493,9 @@ void Unknown801985E8(struct ObjShape *shape) {
 
     get_some_bounding_box(&bbox);
 
-    sShapeCenter.x = (f32)((bbox.minX + bbox.maxX) / 2.0); //? 2.0f
-    sShapeCenter.y = (f32)((bbox.minY + bbox.maxY) / 2.0); //? 2.0f
-    sShapeCenter.z = (f32)((bbox.minZ + bbox.maxZ) / 2.0); //? 2.0f
+    sShapeCenter.x = (f32)((bbox.minX + bbox.maxX) / 2.0f); //? 2.0f
+    sShapeCenter.y = (f32)((bbox.minY + bbox.maxY) / 2.0f); //? 2.0f
+    sShapeCenter.z = (f32)((bbox.minZ + bbox.maxZ) / 2.0f); //? 2.0f
 
     apply_to_obj_types_in_group(OBJ_TYPE_VERTICES, (applyproc_t) Unknown80198524, shape->vtxGroup);
 }

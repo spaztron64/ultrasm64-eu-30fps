@@ -86,8 +86,8 @@ void grabbable_joint_update_func(struct ObjJoint *self) {
 
             // If the joint's velocity has decayed enough and it is very close
             // to its original position, stop its movement altogether
-            if (ABS(self->velocity.x) + ABS(self->velocity.y) + ABS(self->velocity.z) < 1.0) {
-                if (ABS(offset.x) + ABS(offset.y) + ABS(offset.z) < 1.0) {
+            if (ABS(self->velocity.x) + ABS(self->velocity.y) + ABS(self->velocity.z) < 1.0f) {
+                if (ABS(offset.x) + ABS(offset.y) + ABS(offset.z) < 1.0f) {
                     self->velocity.x = self->velocity.y = self->velocity.z = 0.0f;
                     self->mat128[3][0] -= offset.x;
                     self->mat128[3][1] -= offset.y;

@@ -192,7 +192,6 @@ struct Object *allocate_object(struct ObjectNode *objList) {
     obj->header.gfx.matrixID[0] = MATRIX_NULL;
     obj->header.gfx.matrixID[1] = MATRIX_NULL;
     obj->header.gfx.bothMats = 0;
-    obj->header.gfx.animInfo.animRotStackNum = 0;
     obj->header.gfx.animInfo.animPosStackNum = 0;
 
     return obj;

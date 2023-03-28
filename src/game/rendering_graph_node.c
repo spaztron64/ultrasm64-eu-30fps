@@ -738,7 +738,7 @@ s32 allocate_animation_rotation(void) {
 }
 
 void deallocate_animations(struct Object *obj) {
-    // If the first index doesn't exist, then neither are the rest.
+    /*// If the first index doesn't exist, then neither are the rest.
     for (u32 i = 0; i < obj->header.gfx.animInfo.animRotStackNum; i++) {
         if (obj->header.gfx.animInfo.animRotStack[i])
             mem_pool_free(gAnimationsMemoryPool, obj->header.gfx.animInfo.animRotStack[i]);
@@ -748,12 +748,12 @@ void deallocate_animations(struct Object *obj) {
         if (obj->header.gfx.animInfo.animPosStack[i])
             mem_pool_free(gAnimationsMemoryPool, obj->header.gfx.animInfo.animPosStack[i]);
     }
-    obj->header.gfx.animInfo.animPosStackNum = 0;
+    obj->header.gfx.animInfo.animPosStackNum = 0;*/
 }
 
 void snap_animation_pos(Vec3s rot, Vec3f pos) {
-    vec3s_copy((s16 *) gCurGraphNodeObjectNode->header.gfx.animInfo.animRotStack[gCurrAnimPos], rot);
-    vec3f_copy((f32 *) gCurGraphNodeObjectNode->header.gfx.animInfo.animPosStack[gCurrAnimPos], pos);
+    //vec3s_copy((s16 *) gCurGraphNodeObjectNode->header.gfx.animInfo.animRotStack[gCurrAnimPos], rot);
+    //vec3f_copy((f32 *) gCurGraphNodeObjectNode->header.gfx.animInfo.animRotStack[gCurrAnimPos], pos);
 }
 
 /**
@@ -786,15 +786,16 @@ void geo_process_animated_part(const struct GraphNodeAnimatedPart *node) {
             }
 
             if (gMoveSpeed == 0) {
-                gCurGraphNodeObjectNode->header.gfx.animInfo.animPosStack[gCurrAnimPos][0 + 0] = translation[0];
-                gCurGraphNodeObjectNode->header.gfx.animInfo.animPosStack[gCurrAnimPos][0 + 1] = translation[1];
-                gCurGraphNodeObjectNode->header.gfx.animInfo.animPosStack[gCurrAnimPos][0 + 2] = translation[2];
+                gCurGraphNodeObjectNode->header.gfx.animInfo.animRotStack[gCurrAnimPos][0 + 0] = translation[0];
+                gCurGraphNodeObjectNode->header.gfx.animInfo.animRotStack[gCurrAnimPos][0 + 1] = translation[1];
+                gCurGraphNodeObjectNode->header.gfx.animInfo.animRotStack[gCurrAnimPos][0 + 2] = translation[2];
             } else {
-                gCurGraphNodeObjectNode->header.gfx.animInfo.animPosStack[gCurrAnimPos][0 + 0] = approach_pos_lerp(gCurGraphNodeObjectNode->header.gfx.animInfo.animPosStack[gCurrAnimPos][0 + 0], translation[0]);
-                gCurGraphNodeObjectNode->header.gfx.animInfo.animPosStack[gCurrAnimPos][0 + 1] = approach_pos_lerp(gCurGraphNodeObjectNode->header.gfx.animInfo.animPosStack[gCurrAnimPos][0 + 1], translation[1]);
-                gCurGraphNodeObjectNode->header.gfx.animInfo.animPosStack[gCurrAnimPos][0 + 2] = approach_pos_lerp(gCurGraphNodeObjectNode->header.gfx.animInfo.animPosStack[gCurrAnimPos][0 + 2], translation[2]);
+                gCurGraphNodeObjectNode->header.gfx.animInfo.animRotStack[gCurrAnimPos][0 + 0] = approach_pos_lerp(gCurGraphNodeObjectNode->header.gfx.animInfo.animRotStack[gCurrAnimPos][0 + 0], translation[0]);
+                gCurGraphNodeObjectNode->header.gfx.animInfo.animRotStack[gCurrAnimPos][0 + 1] = approach_pos_lerp(gCurGraphNodeObjectNode->header.gfx.animInfo.animRotStack[gCurrAnimPos][0 + 1], translation[1]);
+                gCurGraphNodeObjectNode->header.gfx.animInfo.animRotStack[gCurrAnimPos][0 + 2] = approach_pos_lerp(gCurGraphNodeObjectNode->header.gfx.animInfo.animRotStack[gCurrAnimPos][0 + 2], translation[2]);
             }
-            vec3f_set(translation, gCurGraphNodeObjectNode->header.gfx.animInfo.animPosStack[gCurrAnimPos][0], gCurGraphNodeObjectNode->header.gfx.animInfo.animPosStack[gCurrAnimPos][1], gCurGraphNodeObjectNode->header.gfx.animInfo.animPosStack[gCurrAnimPos][2]);
+            vec3f_set(translation, gCurGraphNodeObjectNode->header.gfx.animInfo.animRotStack[gCurrAnimPos][0], gCurGraphNodeObjectNode->header.gfx.animInfo.animRotStack[gCurrAnimPos][1], gCurGraphNodeObjectNode->header.gfx.animInfo.animRotStack[gCurrAnimPos][2]);
+            gCurrAnimPos++;
         }
         gCurrAnimType = ANIM_TYPE_ROTATION;
         if (gMoveSpeed == 0) {

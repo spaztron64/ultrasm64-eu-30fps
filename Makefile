@@ -185,7 +185,7 @@ BUILD_DIR_BASE := build
 # BUILD_DIR is the location where all build artifacts are placed
 BUILD_DIR      := $(BUILD_DIR_BASE)/$(VERSION)_$(CONSOLE)
 
-COMPRESS ?= gzip
+COMPRESS ?= rnc1
 $(eval $(call validate-option,COMPRESS,mio0 yay0 gzip rnc1 rnc2 uncomp))
 ifeq ($(COMPRESS),gzip)
   DEFINES += GZIP=1
@@ -347,6 +347,8 @@ export LD_LIBRARY_PATH=./tools
 AS        := $(CROSS)as
 ifeq ($(COMPILER),gcc)
   CC      := $(CROSS)gcc
+  $(BUILD_DIR)/actors/%.o:           OPT_FLAGS := -Os -mlong-calls -ffast-math
+  $(BUILD_DIR)/levels/%.o:           OPT_FLAGS := -Os -mlong-calls -ffast-math
 else ifeq ($(COMPILER),clang)
   CC      := clang
 endif

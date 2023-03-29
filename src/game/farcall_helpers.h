@@ -26,15 +26,43 @@
 #include "level_misc_macros.h"
 #include "rendering_graph_node.h"
 #include "spawn_object.h"
+#include "game_init.h"
+#include "seq_ids.h"
+#include "camera.h"
+#include "platform_displacement.h"
+#include "behavior_actions.h"
+#include "envfx_snow.h"
+#include "envfx_bubbles.h"
+#include "mario_actions_cutscene.h"
 
 #include "levels/bob/header.h"
 #include "levels/ttm/header.h"
+#include "levels/jrb/header.h"
+#include "levels/ssl/header.h"
+#include "levels/ccm/header.h"
+#include "levels/bowser_3/header.h"
+#include "levels/castle_inside/header.h"
+#include "levels/wdw/header.h"
+#include "levels/thi/header.h"
+#include "levels/rr/header.h"
+#include "levels/bitdw/header.h"
+#include "levels/bits/header.h"
+#include "levels/bitfs/header.h"
+#include "levels/vcutm/header.h"
+#include "levels/lll/header.h"
+#include "levels/hmc/header.h"
 
 #define o gCurrentObject
 
-extern s32 gGlobalTimer;
 extern struct Surface *sObjFloor;
 extern s8 sOrientObjWithFloor;
+extern s16 gCutsceneTimer;
+extern s8 sYoshiDead;
+extern u32 gCutsceneObjSpawn;
+extern struct CutsceneVariable sCutsceneVars[10];
+extern struct CutsceneSplinePoint gIntroLakituStartToPipeFocus[];
+extern struct CutsceneSplinePoint gIntroLakituStartToPipeOffsetFromCamera[];
+extern struct PlayerCameraState *sMarioCamState;
 
 s32 obj_is_rendering_enabled(void);
 s16 obj_get_pitch_from_vel(void);

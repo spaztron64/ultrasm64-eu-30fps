@@ -543,6 +543,35 @@ s8 obj_check_if_facing_toward_angle(u32 base, u32 goal, s16 range) {
     return FALSE;
 }
 
+static struct ObjectHitbox sRollingSphereHitbox = {
+    /* interactType:      */ INTERACT_DAMAGE,
+    /* downOffset:        */ 0,
+    /* damageOrCoinValue: */ 3,
+    /* health:            */ 0,
+    /* numLootCoins:      */ 0,
+    /* radius:            */ 210,
+    /* height:            */ 350,
+    /* hurtboxRadius:     */ 0,
+    /* hurtboxHeight:     */ 0,
+};
+
+void adjust_rolling_face_pitch(f32 f12) {
+    o->oFaceAnglePitch += (s16)(o->oForwardVel * (100.0f / f12));
+    o->oSnowmansBottomScale += o->oForwardVel * 0.0001;
+
+    if (o->oSnowmansBottomScale > 1.0) {
+        o->oSnowmansBottomScale = 1.0f;
+    }
+}
+
+void set_rolling_sphere_hitbox(void) {
+    obj_set_hitbox(o, &sRollingSphereHitbox);
+
+    if (o->oInteractStatus & INT_STATUS_INTERACTED) {
+        o->oInteractStatus = 0;
+    }
+}
+
 /**
  * Finds any wall collisions and returns what the displacement vector would be.
  */
@@ -717,47 +746,3 @@ void spawn_orange_number(s8 behParam, s16 relX, s16 relY, s16 relZ) {
     orangeNumber = spawn_object_relative(behParam, relX, relY, relZ, o, MODEL_NUMBER, bhvOrangeNumber);
     orangeNumber->oPosY += 25.0f;
 }
-
-#include "behaviors/moving_coin.inc.c"
-#include "behaviors/seaweed.inc.c"
-#include "behaviors/cannon_door.inc.c"
-#include "behaviors/whirlpool.inc.c"
-#include "behaviors/butterfly.inc.c"
-#include "behaviors/hoot.inc.c"
-#include "behaviors/bubble.inc.c"
-#include "behaviors/water_wave.inc.c"
-#include "behaviors/corkbox.inc.c"
-#include "behaviors/bully.inc.c"
-#include "behaviors/water_ring.inc.c"
-#include "behaviors/bowser_bomb.inc.c"
-#include "behaviors/drawbridge.inc.c"
-#include "behaviors/bomp.inc.c"
-#include "behaviors/sliding_platform.inc.c"
-#include "behaviors/moneybag.inc.c"
-#include "behaviors/cruiser.inc.c"
-#include "behaviors/spindel.inc.c"
-#include "behaviors/pyramid_wall.inc.c"
-#include "behaviors/pyramid_elevator.inc.c"
-#include "behaviors/pyramid_top.inc.c"
-#include "behaviors/sound_waterfall.inc.c"
-#include "behaviors/sound_volcano.inc.c"
-#include "behaviors/castle_flag.inc.c"
-#include "behaviors/sound_birds.inc.c"
-#include "behaviors/sound_ambient.inc.c"
-#include "behaviors/sound_sand.inc.c"
-#include "behaviors/castle_cannon_grate.inc.c"
-#include "behaviors/snowman.inc.c"
-#include "behaviors/boulder.inc.c"
-#include "behaviors/rolling_log.inc.c"
-#include "behaviors/controllable_platform.inc.c"
-#include "behaviors/breakable_box_small.inc.c"
-#include "behaviors/snow_mound.inc.c"
-#include "behaviors/floating_platform.inc.c"
-#include "behaviors/arrow_lift.inc.c"
-#include "behaviors/manta_ray.inc.c"
-#include "behaviors/falling_pillar.inc.c"
-#include "behaviors/floating_box.inc.c"
-#include "behaviors/decorative_pendulum.inc.c"
-#include "behaviors/treasure_chest.inc.c"
-#include "behaviors/mips.inc.c"
-#include "behaviors/yoshi.inc.c"

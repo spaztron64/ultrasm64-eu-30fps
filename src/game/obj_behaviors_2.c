@@ -46,10 +46,6 @@
 #include "seq_ids.h"
 #include "spawn_sound.h"
 
-#define POS_OP_SAVE_POSITION 0
-#define POS_OP_COMPUTE_VELOCITY 1
-#define POS_OP_RESTORE_POSITION 2
-
 #define o gCurrentObject
 
 /* BSS (declared to force order) */
@@ -64,11 +60,6 @@ extern f32 sMontyMoleLastKilledPosX;
 extern f32 sMontyMoleLastKilledPosY;
 extern f32 sMontyMoleLastKilledPosZ;
 extern struct Object *sMasterTreadmill;
-
-/**
- * The treadmill that plays sounds and controls the others on random setting.
- */
-struct Object *sMasterTreadmill;
 
 
 f32 sObjSavedPosX;
@@ -697,6 +688,47 @@ void huge_goomba_weakly_attacked(void) {
     o->oAction = GOOMBA_ACT_ATTACKED_MARIO;
 }
 
+/**
+ * Attack handler for when wiggler is jumped or ground pounded on.
+ * Stop and enter the jumped on action.
+ */
+void wiggler_jumped_on_attack_handler(void) {
+    cur_obj_play_sound_2(SOUND_OBJ_WIGGLER_ATTACKED);
+    o->oAction = WIGGLER_ACT_JUMPED_ON;
+    o->oForwardVel = o->oVelY = 0.0f;
+    o->oWigglerSquishSpeed = 0.4f;
+}
+
+/**
+ * Attack handler for regular-sized shelled koopa.
+ * Lose shell and enter lying action.
+ */
+void shelled_koopa_attack_handler(s32 attackType) {
+    if (o->header.gfx.scale[0] > 0.8f) {
+        cur_obj_play_sound_2(SOUND_OBJ_KOOPA_DAMAGE);
+
+        o->oKoopaMovementType = KOOPA_BP_UNSHELLED;
+        o->oAction = KOOPA_UNSHELLED_ACT_LYING;
+        o->oForwardVel = 20.0f;
+
+        // If attacked from the side, get knocked away from mario
+        if (attackType != ATTACK_FROM_ABOVE && attackType != ATTACK_GROUND_POUND_OR_TWIRL) {
+            o->oMoveAngleYaw = obj_angle_to_object(gMarioObject, o);
+        }
+
+        cur_obj_set_model(MODEL_KOOPA_WITHOUT_SHELL);
+        spawn_object(o, MODEL_KOOPA_SHELL, bhvKoopaShell);
+
+        //! Because bob-ombs/corkboxes come after koopa in processing order,
+        //  they can interact with the koopa on the same frame that this
+        //  happens. This causes the koopa to die immediately.
+        cur_obj_become_intangible();
+    } else {
+        // Die if tiny koopa
+        obj_die_if_health_non_positive();
+    }
+}
+
 s32 obj_handle_attacks(struct ObjectHitbox *hitbox, s32 attackedMarioAction,
                               u8 *attackHandlers) {
     s32 attackType;
@@ -899,40 +931,9 @@ void treat_far_home_as_mario(f32 threshold) {
     }
 }
 
-#include "behaviors/koopa.inc.c" // TODO: Text arg field name
-#include "behaviors/pokey.inc.c"
-#include "behaviors/swoop.inc.c"
-#include "behaviors/chain_chomp.inc.c" // TODO: chain_chomp_sub_act_lunge documentation
-#include "behaviors/wiggler.inc.c"     // TODO
-#include "behaviors/spiny.inc.c"
-#include "behaviors/enemy_lakitu.inc.c" // TODO
-#include "behaviors/cloud.inc.c"
-#include "behaviors/camera_lakitu.inc.c" // TODO: 104 label, follow cam documentation
-#include "behaviors/monty_mole.inc.c"    // TODO
-#include "behaviors/platform_on_track.inc.c"
-#include "behaviors/seesaw_platform.inc.c"
-#include "behaviors/ferris_wheel.inc.c"
-#include "behaviors/water_bomb.inc.c" // TODO: Shadow position
-#include "behaviors/ttc_rotating_solid.inc.c"
-#include "behaviors/ttc_pendulum.inc.c"
-#include "behaviors/ttc_treadmill.inc.c" // TODO
-#include "behaviors/ttc_moving_bar.inc.c"
-#include "behaviors/ttc_cog.inc.c"
-#include "behaviors/ttc_pit_block.inc.c"
-#include "behaviors/ttc_elevator.inc.c"
-#include "behaviors/ttc_2d_rotator.inc.c"
-#include "behaviors/ttc_spinner.inc.c"
-#include "behaviors/mr_blizzard.inc.c"
-#include "behaviors/sliding_platform_2.inc.c"
-#include "behaviors/rotating_octagonal_plat.inc.c"
-#include "behaviors/animated_floor_switch.inc.c"
-#include "behaviors/activated_bf_plat.inc.c"
-#include "behaviors/water_bomb_cannon.inc.c"
-#include "behaviors/unagi.inc.c"
-#include "behaviors/dorrie.inc.c"
-#include "behaviors/haunted_chair.inc.c"
-#include "behaviors/mad_piano.inc.c"
-#include "behaviors/flying_bookend_switch.inc.c"
+void obj_set_speed_to_zero(void) {
+    o->oForwardVel = o->oVelY = 0.0f;
+}
 
 /**
  * Used by bowser, fly guy, piranha plant, and fire spitters.
@@ -950,19 +951,3 @@ void obj_spit_fire(s16 relativePosX, s16 relativePosY, s16 relativePosZ, f32 sca
     }
 }
 
-#include "behaviors/fire_piranha_plant.inc.c"
-#include "behaviors/fire_spitter.inc.c"
-#include "behaviors/flame.inc.c"
-#include "behaviors/snufit.inc.c"
-#include "behaviors/horizontal_grindel.inc.c"
-#include "behaviors/eyerok.inc.c"
-#include "behaviors/klepto.inc.c"
-#include "behaviors/bird.inc.c"
-#include "behaviors/racing_penguin.inc.c"
-#include "behaviors/coffin.inc.c"
-#include "behaviors/clam.inc.c"
-#include "behaviors/skeeter.inc.c"
-#include "behaviors/swing_platform.inc.c"
-#include "behaviors/donut_platform.inc.c"
-#include "behaviors/ddd_pole.inc.c"
-#include "behaviors/bubba.inc.c"

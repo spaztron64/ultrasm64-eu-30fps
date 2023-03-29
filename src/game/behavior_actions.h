@@ -17,6 +17,7 @@ void play_penguin_walking_sound(s32 walk);
 s32 update_angle_from_move_flags(s32 *angle);
 void cur_obj_spawn_strong_wind_particles(s32 windSpread, f32 scale, f32 relPosX, f32 relPosY, f32 relPosZ);
 s32 approach_forward_vel(f32 *forwardVel, f32 spC, f32 sp10);
+Gfx *geo_update_held_mario_pos(s32 run, UNUSED struct GraphNode *node, Mat4 mtx);
 
 void bhv_cap_switch_loop(void);
 void bhv_tiny_star_particles_init(void);
@@ -538,6 +539,9 @@ void bhv_dust_smoke_loop(void);
 void bhv_yoshi_loop(void);
 void bhv_volcano_trap_loop(void);
 void spawn_sparkle_particles(s32 n, s32 a1, s32 a2, s32 r);
+s32 mario_is_far_below_object(f32 arg0);
+s32 set_obj_anim_with_accel_and_sound(s16 a0, s16 a1, s32 a2);
+s32 obj_begin_race(s32 noTimer);
 
 Gfx *geo_move_mario_part_from_parent(s32 run, UNUSED struct GraphNode *node, Mat4 mtx);
 

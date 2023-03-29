@@ -25,6 +25,7 @@
 #include "rendering_graph_node.h"
 #include "spawn_object.h"
 #include "spawn_sound.h"
+#include "string.h"
 
 static s8 sBbhStairJiggleOffsets[] = { -8, 8, -4, 4 };
 static s16 sPowersOfTwo[] = { 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80 };

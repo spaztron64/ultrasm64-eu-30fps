@@ -168,5 +168,15 @@ s8 is_point_within_radius_of_mario(f32 x, f32 y, f32 z, s32 dist);
 void spawn_orange_number(s8 behParam, s16 relX, s16 relY, s16 relZ);
 s8 obj_flicker_and_disappear(struct Object *obj, s16 lifeSpan);
 void obj_move_xyz_using_fvel_and_yaw(struct Object *obj);
+f32 absf_2(f32 f);
+s8 is_point_close_to_object(struct Object *obj, f32 x, f32 y, f32 z, s32 dist);
+void obj_return_and_displace_home(struct Object *obj, f32 homeX, UNUSED f32 homeY, f32 homeZ, s32 baseDisp);
+s16 object_step_without_floor_orient(void);
+s16 trigger_obj_dialog_when_facing(s32 *inDialog, s16 dialogID, f32 dist, s32 actionArg);
+void obj_orient_graph(struct Object *obj, f32 normalX, f32 normalY, f32 normalZ);
+s8 obj_find_wall_displacement(Vec3f dist, f32 x, f32 y, f32 z, f32 radius);
+void adjust_rolling_face_pitch(f32 f12);
+void set_rolling_sphere_hitbox(void);
+s8 current_mario_room_check(s16 room);
 
 #endif // OBJ_BEHAVIORS_H

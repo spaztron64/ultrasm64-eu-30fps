@@ -14,6 +14,7 @@
 #include "shape_helper.h"
 #include "draw_objects.h"
 #include "game/game_init.h"
+#include "engine/math_util.h"
 
 /**
  * @file draw_objects.c

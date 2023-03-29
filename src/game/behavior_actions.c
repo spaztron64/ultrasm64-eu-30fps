@@ -310,14 +310,6 @@ void spawn_sparkle_particles(s32 n, s32 a1, s32 a2, s32 r) {
     D_8035FF10 += r * 0x100;
 }
 
-// Not in behavior file, duplicate of vec3f_copy except without bad return.
-// Used in a few behavior files.
-void vec3f_copy_2(Vec3f dest, Vec3f src) {
-    dest[0] = src[0];
-    dest[1] = src[1];
-    dest[2] = src[2];
-}
-
 
 s32 set_obj_anim_with_accel_and_sound(s16 a0, s16 a1, s32 a2) {
     f32 sp1C;

@@ -320,8 +320,8 @@ void unmap_tlbs(void) {
                     gTlbEntries--;
                 }
             } else {
-                gTlbEntries -= gTlbSegments[i];
-                gTlbSegments[i] = 0;
+                //gTlbEntries -= gTlbSegments[i];
+                //gTlbSegments[i] = 0;
             }
         }
     }

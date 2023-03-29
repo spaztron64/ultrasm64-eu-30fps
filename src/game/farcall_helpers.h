@@ -24,6 +24,8 @@
 #include "obj_behaviors_2.h"
 #include "ingame_menu.h"
 #include "level_misc_macros.h"
+#include "rendering_graph_node.h"
+#include "spawn_object.h"
 
 #include "levels/bob/header.h"
 #include "levels/ttm/header.h"

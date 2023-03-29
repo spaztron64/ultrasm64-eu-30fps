@@ -92,6 +92,10 @@ s32 check_if_moving_over_floor(f32 a0, f32 a1) {
     }
 }
 
+#include "game/behaviors/spawn_star_exit.inc.c"
+#include "game/behaviors/spawn_star.inc.c"
+#include "game/behaviors/hidden_star.inc.c"
+
 #include "behaviors/star_door.inc.c"
 #include "behaviors/mr_i.inc.c"
 #include "behaviors/pole.inc.c"
@@ -141,9 +145,7 @@ void spawn_mist_particles_variable(s32 count, s32 offsetY, f32 size) {
 }
 
 #include "behaviors/sparkle_spawn_star.inc.c"
-#include "behaviors/coin.inc.c"
 #include "behaviors/collide_particles.inc.c"
-#include "behaviors/door.inc.c"
 #include "behaviors/thwomp.inc.c"
 #include "behaviors/tumbling_bridge.inc.c"
 #include "behaviors/elevator.inc.c"
@@ -155,13 +157,9 @@ void spawn_mist_particles_variable(s32 count, s32 offsetY, f32 size) {
 #include "behaviors/ukiki_cage.inc.c"
 #include "behaviors/falling_rising_platform.inc.c"
 #include "behaviors/fishing_boo.inc.c"
-#include "behaviors/flamethrower.inc.c"
-#include "behaviors/bouncing_fireball.inc.c"
 #include "behaviors/shock_wave.inc.c"
-#include "behaviors/flame_mario.inc.c"
 #include "behaviors/spindrift.inc.c"
 #include "behaviors/tower_platform.inc.c"
-#include "behaviors/tree_particles.inc.c"
 #include "behaviors/square_platform_cycle.inc.c"
 #include "behaviors/piranha_bubbles.inc.c"
 #include "behaviors/switch_hidden_objects.inc.c"
@@ -239,7 +237,6 @@ s32 approach_forward_vel(f32 *forwardVel, f32 spC, f32 sp10) {
 }
 
 #include "behaviors/heave_ho.inc.c"
-#include "behaviors/spawn_star_exit.inc.c"
 #include "behaviors/jumping_box.inc.c"
 #include "behaviors/boo_cage.inc.c"
 
@@ -259,12 +256,9 @@ void spawn_sparkle_particles(s32 n, s32 a1, s32 a2, s32 r) {
 }
 
 #include "behaviors/grand_star.inc.c"
-#include "behaviors/bowser_key.inc.c"
 #include "behaviors/bullet_bill.inc.c"
 #include "behaviors/bowser.inc.c"
 #include "behaviors/bowser_falling_platform.inc.c"
-#include "behaviors/bowser_flame.inc.c"
-#include "behaviors/blue_fish.inc.c"
 
 // Not in behavior file, duplicate of vec3f_copy except without bad return.
 // Used in a few behavior files.
@@ -277,15 +271,12 @@ void vec3f_copy_2(Vec3f dest, Vec3f src) {
 #include "behaviors/ddd_warp.inc.c"
 #include "behaviors/water_pillar.inc.c"
 #include "behaviors/moat_drainer.inc.c"
-#include "behaviors/bowser_key_cutscene.inc.c"
 #include "behaviors/moat_grill.inc.c"
 #include "behaviors/clock_arm.inc.c"
 #include "behaviors/ukiki.inc.c"
 #include "behaviors/lll_octagonal_rotating_mesh.inc.c"
 #include "behaviors/lll_sinking_rock_block.inc.c"
-#include "behaviors/lll_rotating_hex_flame.inc.c"
 #include "behaviors/lll_floating_wood_piece.inc.c"
-#include "behaviors/lll_volcano_flames.inc.c"
 #include "behaviors/lll_hexagonal_ring.inc.c"
 #include "behaviors/lll_sinking_rectangle.inc.c"
 #include "behaviors/tilting_inverted_pyramid.inc.c"

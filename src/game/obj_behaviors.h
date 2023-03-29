@@ -165,5 +165,8 @@ void obj_spawn_yellow_coins(struct Object *obj, s8 nCoins);
 void set_object_visibility(struct Object *obj, s32 dist);
 s16 object_step(void);
 s8 is_point_within_radius_of_mario(f32 x, f32 y, f32 z, s32 dist);
+void spawn_orange_number(s8 behParam, s16 relX, s16 relY, s16 relZ);
+s8 obj_flicker_and_disappear(struct Object *obj, s16 lifeSpan);
+void obj_move_xyz_using_fvel_and_yaw(struct Object *obj);
 
 #endif // OBJ_BEHAVIORS_H

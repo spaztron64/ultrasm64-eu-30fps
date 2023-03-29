@@ -41,22 +41,16 @@
 
 #define o gCurrentObject
 
-#define OBJ_COL_FLAG_GROUNDED   (1 << 0)
-#define OBJ_COL_FLAG_HIT_WALL   (1 << 1)
-#define OBJ_COL_FLAG_UNDERWATER (1 << 2)
-#define OBJ_COL_FLAG_NO_Y_VEL   (1 << 3)
-#define OBJ_COL_FLAGS_LANDED    (OBJ_COL_FLAG_GROUNDED | OBJ_COL_FLAG_NO_Y_VEL)
-
 /**
  * Current object floor as defined in object_step.
  */
-static struct Surface *sObjFloor;
+struct Surface *sObjFloor;
 
 /**
  * Set to false when an object close to the floor should not be oriented in reference
  * to it. Happens with boulder, falling pillar, and the rolling snowman body.
  */
-static s8 sOrientObjWithFloor = TRUE;
+s8 sOrientObjWithFloor = TRUE;
 
 /**
  * Keeps track of Mario's previous non-zero room.
@@ -726,10 +720,8 @@ void spawn_orange_number(s8 behParam, s16 relX, s16 relY, s16 relZ) {
 
 #include "behaviors/moving_coin.inc.c"
 #include "behaviors/seaweed.inc.c"
-#include "behaviors/bobomb.inc.c"
 #include "behaviors/cannon_door.inc.c"
 #include "behaviors/whirlpool.inc.c"
-#include "behaviors/amp.inc.c"
 #include "behaviors/butterfly.inc.c"
 #include "behaviors/hoot.inc.c"
 #include "behaviors/bubble.inc.c"
@@ -744,7 +736,6 @@ void spawn_orange_number(s8 behParam, s16 relX, s16 relY, s16 relZ) {
 #include "behaviors/bomp.inc.c"
 #include "behaviors/sliding_platform.inc.c"
 #include "behaviors/moneybag.inc.c"
-#include "behaviors/bowling_ball.inc.c"
 #include "behaviors/cruiser.inc.c"
 #include "behaviors/spindel.inc.c"
 #include "behaviors/pyramid_wall.inc.c"

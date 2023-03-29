@@ -7,6 +7,12 @@
 #include "macros.h"
 #include "types.h"
 
+#define OBJ_COL_FLAG_GROUNDED   (1 << 0)
+#define OBJ_COL_FLAG_HIT_WALL   (1 << 1)
+#define OBJ_COL_FLAG_UNDERWATER (1 << 2)
+#define OBJ_COL_FLAG_NO_Y_VEL   (1 << 3)
+#define OBJ_COL_FLAGS_LANDED    (OBJ_COL_FLAG_GROUNDED | OBJ_COL_FLAG_NO_Y_VEL)
+
 void set_yoshi_as_not_dead(void);
 s32 coin_step(s16 *collisionFlagsPtr);
 void moving_coin_flicker(void);
@@ -151,5 +157,13 @@ void bhv_bob_pit_bowling_ball_loop(void);
 void bhv_rr_cruiser_wing_init(void);
 void bhv_rr_cruiser_wing_loop(void);
 void spawn_default_star(f32 sp20, f32 sp24, f32 sp28);
+s8 obj_lava_death(void);
+void obj_check_floor_death(s16 collisionFlags, struct Surface *floor);
+s8 obj_check_if_facing_toward_angle(u32 base, u32 goal, s16 range);
+s8 obj_return_home_if_safe(struct Object *obj, f32 homeX, f32 y, f32 homeZ, s32 dist);
+void obj_spawn_yellow_coins(struct Object *obj, s8 nCoins);
+void set_object_visibility(struct Object *obj, s32 dist);
+s16 object_step(void);
+s8 is_point_within_radius_of_mario(f32 x, f32 y, f32 z, s32 dist);
 
 #endif // OBJ_BEHAVIORS_H

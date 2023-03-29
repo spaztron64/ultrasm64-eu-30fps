@@ -20,8 +20,19 @@
 #include "level_update.h"
 #include "mario.h"
 #include "save_file.h"
+#include "dialog_ids.h"
+#include "obj_behaviors_2.h"
+#include "ingame_menu.h"
+#include "level_misc_macros.h"
+
+#include "levels/bob/header.h"
+#include "levels/ttm/header.h"
 
 #define o gCurrentObject
+
+extern s32 gGlobalTimer;
+extern struct Surface *sObjFloor;
+extern s8 sOrientObjWithFloor;
 
 s32 obj_is_rendering_enabled(void);
 s16 obj_get_pitch_from_vel(void);

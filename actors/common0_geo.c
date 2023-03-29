@@ -6,10 +6,9 @@
 
 #include "common1.h"
 #include "common0.h"
+#include "game/farcall_helpers.h"
 
 #include "blue_coin_switch/geo.inc.c"
-// Hmm, this is included earlier.
-#include "test_platform/geo.inc.c"
 #include "amp/geo.inc.c"
 #include "cannon_lid/geo.inc.c"
 #include "cannon_base/geo.inc.c"
@@ -27,3 +26,20 @@
 #include "metal_box/geo.inc.c"
 #include "exclamation_box_outline/geo.inc.c"
 #include "koopa_shell/geo.inc.c"
+
+
+#include "game/behaviors/blue_coin.inc.c"
+#include "game/behaviors/amp.inc.c"
+#include "game/behaviors/cannon.inc.c"
+#include "game/behaviors/chuckya.inc.c"
+#include "game/behaviors/purple_switch.inc.c"
+#include "game/behaviors/checkerboard_platform.inc.c"
+#include "game/behaviors/recovery_heart.inc.c"
+#include "game/behaviors/fly_guy.inc.c"
+#include "game/behaviors/breakable_box.inc.c"
+#include "game/behaviors/bowling_ball.inc.c"
+#include "game/behaviors/exclamation_box.inc.c"
+#include "game/behaviors/goomba.inc.c"
+#include "game/behaviors/bobomb.inc.c"
+#include "game/behaviors/metal_box.inc.c"
+#include "game/behaviors/koopa_shell.inc.c"

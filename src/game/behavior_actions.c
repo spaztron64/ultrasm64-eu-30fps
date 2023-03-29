@@ -46,18 +46,51 @@
 
 #define o gCurrentObject
 
-static s32 sCapSaveFlags[] = {
-    SAVE_FLAG_HAVE_WING_CAP,
-    SAVE_FLAG_HAVE_METAL_CAP,
-    SAVE_FLAG_HAVE_VANISH_CAP,
-};
-
 // Boo Roll
 static s16 sBooHitRotations[] = {
     6047, 5664, 5292, 4934, 4587, 4254, 3933, 3624, 3329, 3046, 2775,
     2517, 2271, 2039, 1818, 1611, 1416, 1233, 1063, 906,  761,  629,
     509,  402,  308,  226,  157,  100,  56,   25,   4,    0,
 };
+
+void curr_obj_random_blink(s32 *blinkTimer) {
+    if (*blinkTimer == 0) {
+        if ((s16)(random_float() * 100.0f) == 0) {
+            o->oAnimState = 1;
+            *blinkTimer = 1;
+        }
+    } else {
+        (*blinkTimer)++;
+
+        if (*blinkTimer > 5) {
+            o->oAnimState = 0;
+        }
+
+        if (*blinkTimer > 10) {
+            o->oAnimState = 1;
+        }
+
+        if (*blinkTimer > 15) {
+            o->oAnimState = 0;
+            *blinkTimer = 0;
+        }
+    }
+}
+
+s32 check_if_moving_over_floor(f32 a0, f32 a1) {
+    struct Surface *sp24;
+    f32 sp20 = o->oPosX + sins(o->oMoveAngleYaw) * a1;
+    f32 floorHeight;
+    f32 sp18 = o->oPosZ + coss(o->oMoveAngleYaw) * a1;
+
+    floorHeight = find_floor(sp20, o->oPosY, sp18, &sp24);
+
+    if (absf(floorHeight - o->oPosY) < a0) {
+        return TRUE;
+    } else {
+        return FALSE;
+    }
+}
 
 #include "behaviors/star_door.inc.c"
 #include "behaviors/mr_i.inc.c"
@@ -66,8 +99,6 @@ static s16 sBooHitRotations[] = {
 #include "behaviors/capswitch.inc.c"
 #include "behaviors/king_bobomb.inc.c"
 #include "behaviors/water_objs.inc.c"
-#include "behaviors/cannon.inc.c"
-#include "behaviors/chuckya.inc.c"
 #include "behaviors/breakable_wall.inc.c"
 #include "behaviors/kickable_board.inc.c"
 #include "behaviors/tower_door.inc.c"
@@ -133,10 +164,7 @@ void spawn_mist_particles_variable(s32 count, s32 offsetY, f32 size) {
 #include "behaviors/tree_particles.inc.c"
 #include "behaviors/square_platform_cycle.inc.c"
 #include "behaviors/piranha_bubbles.inc.c"
-#include "behaviors/purple_switch.inc.c"
-#include "behaviors/metal_box.inc.c"
 #include "behaviors/switch_hidden_objects.inc.c"
-#include "behaviors/breakable_box.inc.c"
 
 // not sure what this is doing here. not in a behavior file.
 Gfx *geo_move_mario_part_from_parent(s32 run, UNUSED struct GraphNode *node, Mat4 mtx) {
@@ -152,6 +180,62 @@ Gfx *geo_move_mario_part_from_parent(s32 run, UNUSED struct GraphNode *node, Mat
     }
 
     return NULL;
+}
+
+void common_anchor_mario_behavior(f32 sp28, f32 sp2C, s32 sp30) {
+    switch (o->parentObj->oChuckyaUnk88) {
+        case 0:
+            break;
+
+        case 1:
+            obj_set_gfx_pos_at_obj_pos(gMarioObject, o);
+            break;
+
+        case 2:
+            gMarioObject->oInteractStatus |= (INT_STATUS_MARIO_UNK2 + sp30);
+            gMarioStates[0].forwardVel = sp28;
+            gMarioStates[0].vel[1] = sp2C;
+            o->parentObj->oChuckyaUnk88 = 0;
+            break;
+
+        case 3:
+            gMarioObject->oInteractStatus |= (INT_STATUS_MARIO_UNK2 | INT_STATUS_MARIO_UNK6);
+            gMarioStates[0].forwardVel = 10.0f;
+            gMarioStates[0].vel[1] = 10.0f;
+            o->parentObj->oChuckyaUnk88 = 0;
+            break;
+    }
+
+    o->oMoveAngleYaw = o->parentObj->oMoveAngleYaw;
+
+    if (o->parentObj->activeFlags == ACTIVE_FLAG_DEACTIVATED) {
+        obj_mark_for_deletion(o);
+    }
+}
+
+void bhv_bobomb_anchor_mario_loop(void) {
+    common_anchor_mario_behavior(50.0f, 50.0f, INT_STATUS_MARIO_UNK6);
+}
+
+
+s32 approach_forward_vel(f32 *forwardVel, f32 spC, f32 sp10) {
+    s32 sp4 = 0;
+
+    if (*forwardVel > spC) {
+        *forwardVel -= sp10;
+        if (*forwardVel < spC) {
+            *forwardVel = spC;
+        }
+    } else if (*forwardVel < spC) {
+        *forwardVel += sp10;
+        if (*forwardVel > spC) {
+            *forwardVel = spC;
+        }
+    } else {
+        sp4 = 1;
+    }
+
+    return sp4;
 }
 
 #include "behaviors/heave_ho.inc.c"
@@ -190,7 +274,6 @@ void vec3f_copy_2(Vec3f dest, Vec3f src) {
     dest[2] = src[2];
 }
 
-#include "behaviors/checkerboard_platform.inc.c"
 #include "behaviors/ddd_warp.inc.c"
 #include "behaviors/water_pillar.inc.c"
 #include "behaviors/moat_drainer.inc.c"
@@ -206,7 +289,6 @@ void vec3f_copy_2(Vec3f dest, Vec3f src) {
 #include "behaviors/lll_hexagonal_ring.inc.c"
 #include "behaviors/lll_sinking_rectangle.inc.c"
 #include "behaviors/tilting_inverted_pyramid.inc.c"
-#include "behaviors/koopa_shell.inc.c"
 #include "behaviors/tox_box.inc.c"
 #include "behaviors/piranha_plant.inc.c"
 #include "behaviors/bowser_puzzle_piece.inc.c"
@@ -230,13 +312,11 @@ s32 set_obj_anim_with_accel_and_sound(s16 a0, s16 a1, s32 a2) {
 #include "behaviors/fish.inc.c"
 #include "behaviors/express_elevator.inc.c"
 #include "behaviors/bub.inc.c"
-#include "behaviors/exclamation_box.inc.c"
 #include "behaviors/sound_spawner.inc.c"
 #include "behaviors/ddd_sub.inc.c"
 #include "behaviors/sushi.inc.c"
 #include "behaviors/jrb_ship.inc.c"
 #include "behaviors/white_puff.inc.c"
-#include "behaviors/blue_coin.inc.c"
 #include "behaviors/grill_door.inc.c"
 #include "behaviors/wdw_water_level.inc.c"
 #include "behaviors/tweester.inc.c"

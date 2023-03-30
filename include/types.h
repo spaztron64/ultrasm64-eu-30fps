@@ -133,7 +133,7 @@ struct GraphNodeObject {
     Vec3f posLerp;
     Vec3f scaleLerp;
     Vec3s angleLerp;
-    u16 matrixID[2];
+    u8 matrixID[2];
     u8 bothMats;
 };
 

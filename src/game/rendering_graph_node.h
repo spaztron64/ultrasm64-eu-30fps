@@ -6,7 +6,7 @@
 #include "engine/graph_node.h"
 
 #define THROWMATSTACK 24
-#define MATRIX_NULL 65000
+#define MATRIX_NULL 250
 
 extern struct GraphNodeRoot *gCurGraphNodeRoot;
 extern struct GraphNodeMasterList *gCurGraphNodeMasterList;

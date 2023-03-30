@@ -36,15 +36,13 @@ static s32 clear_move_flag(u32 *, s32);
 #define o gCurrentObject
 
 Gfx *geo_update_projectile_pos_from_parent(s32 callContext, UNUSED struct GraphNode *node, Mat4 mtx) {
-    Mat4 sp20;
-    struct Object *sp1C;
+    struct Object *projObj ;
 
     if (callContext == GEO_CONTEXT_RENDER) {
-        sp1C = (struct Object *) gCurGraphNodeObject; // TODO: change global type to Object pointer
-        if (sp1C && sp1C->prevObj) {
-            create_transformation_from_matrices(sp20, mtx, *gCurGraphNodeCamera->matrixPtr);
-            obj_update_pos_from_parent_transformation(sp20, sp1C->prevObj);
-            obj_set_gfx_pos_from_pos(sp1C->prevObj);
+        projObj  = (struct Object *) gCurGraphNodeObject; // TODO: change global type to Object pointer
+        if (projObj  && projObj ->prevObj) {
+            obj_update_pos_from_parent_transformation(mtx, projObj->prevObj);
+            obj_set_gfx_pos_from_pos(projObj ->prevObj);
         }
     }
     return NULL;

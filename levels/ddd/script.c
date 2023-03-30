@@ -125,4 +125,3 @@ const LevelScript level_ddd_entry[] = {
 #include "game/behaviors/ddd_pole.inc.c"
 #include "game/behaviors/ddd_sub.inc.c"
 #include "game/behaviors/manta_ray.inc.c"
-#include "game/behaviors/whirlpool.inc.c"

@@ -15,3 +15,4 @@
 #include "game/behaviors/clam.inc.c"
 #include "game/behaviors/sushi.inc.c"
 #include "game/behaviors/unagi.inc.c"
+#include "game/behaviors/whirlpool.inc.c"

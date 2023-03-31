@@ -213,7 +213,7 @@ f32 lookAtCalc(f32 sqrtsqrt) {
         sqrtsqrt = 0.00000000001f;
     return -1.0f / sqrtsqrt;
 }
-void *matRow_mult(f32 *dest, f32 a) {
+void matRow_mult(f32 *dest, f32 a) {
     register f32 *temp = dest;
     while (temp < dest + 12) {
         *temp *= a;

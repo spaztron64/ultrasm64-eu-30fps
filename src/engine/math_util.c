@@ -28,21 +28,21 @@ __attribute__((aligned(8))) u8 indices[5] = { 0, 1, 2, 0, 1 };
 #endif
 
 /// Copy vector 'src' to 'dest'
-void *vec3f_copy(Vec3f dest, Vec3f src) {
+void vec3f_copy(Vec3f dest, Vec3f src) {
     dest[0] = src[0];
     dest[1] = src[1];
     dest[2] = src[2];
 }
 
 /// Set vector 'dest' to (x, y, z)
-void *vec3f_set(Vec3f dest, f32 x, f32 y, f32 z) {
+void vec3f_set(Vec3f dest, f32 x, f32 y, f32 z) {
     dest[0] = x;
     dest[1] = y;
     dest[2] = z;
 }
 
 /// Add vector 'a' to 'dest'
-void *vec3f_add(Vec3f dest, Vec3f a) {
+void vec3f_add(Vec3f dest, Vec3f a) {
     register f32 *temp = dest;
     register f32 sum, sum2;
     while (temp < dest + 3) {
@@ -55,7 +55,7 @@ void *vec3f_add(Vec3f dest, Vec3f a) {
 }
 
 /// Make 'dest' the sum of vectors a and b.
-void *vec3f_sum(Vec3f dest, Vec3f a, Vec3f b) {
+void vec3f_sum(Vec3f dest, Vec3f a, Vec3f b) {
     register f32 *temp = dest;
     register f32 x, y;
     while (temp < dest + 3) {
@@ -69,7 +69,7 @@ void *vec3f_sum(Vec3f dest, Vec3f a, Vec3f b) {
 }
 
 /// Copy vector src to dest
-void *vec3s_copy(Vec3s dest, Vec3s src) {
+void vec3s_copy(Vec3s dest, Vec3s src) {
     register s16 x = src[0];
     register s16 y = src[1];
     register s16 z = src[2];
@@ -80,35 +80,35 @@ void *vec3s_copy(Vec3s dest, Vec3s src) {
 }
 
 /// Set vector 'dest' to (x, y, z)
-void *vec3s_set(Vec3s dest, s16 x, s16 y, s16 z) {
+void vec3s_set(Vec3s dest, s16 x, s16 y, s16 z) {
     dest[0] = x;
     dest[1] = y;
     dest[2] = z;
 }
 
 /// Add vector a to 'dest'
-void *vec3s_add(Vec3s dest, Vec3s a) {
+void vec3s_add(Vec3s dest, Vec3s a) {
     dest[0] += a[0];
     dest[1] += a[1];
     dest[2] += a[2];
 }
 
 /// Make 'dest' the sum of vectors a and b.
-void *vec3s_sum(Vec3s dest, Vec3s a, Vec3s b) {
+void vec3s_sum(Vec3s dest, Vec3s a, Vec3s b) {
     dest[0] = a[0] + b[0];
     dest[1] = a[1] + b[1];
     dest[2] = a[2] + b[2];
 }
 
 /// Subtract vector a from 'dest'
-void *vec3s_sub(Vec3s dest, Vec3s a) {
+void vec3s_sub(Vec3s dest, Vec3s a) {
     dest[0] -= a[0];
     dest[1] -= a[1];
     dest[2] -= a[2];
 }
 
 /// Convert short vector a to float vector 'dest'
-void *vec3s_to_vec3f(Vec3f dest, Vec3s a) {
+void vec3s_to_vec3f(Vec3f dest, Vec3s a) {
     dest[0] = a[0];
     dest[1] = a[1];
     dest[2] = a[2];
@@ -118,7 +118,7 @@ void *vec3s_to_vec3f(Vec3f dest, Vec3s a) {
  * Convert float vector a to a short vector 'dest' by rounding the components
  * to the nearest integer.
  */
-void *vec3f_to_vec3s(Vec3s dest, Vec3f a) {
+void vec3f_to_vec3s(Vec3s dest, Vec3f a) {
     // add/subtract 0.5 in order to round to the nearest s32 instead of truncating
     dest[0] = a[0] + ((a[0] > 0) ? 0.5f : -0.5f);
     dest[1] = a[1] + ((a[1] > 0) ? 0.5f : -0.5f);
@@ -130,21 +130,21 @@ void *vec3f_to_vec3s(Vec3s dest, Vec3f a) {
  * It is similar to vec3f_cross, but it calculates the vectors (c-b) and (b-a)
  * at the same time.
  */
-void *find_vector_perpendicular_to_plane(Vec3f dest, Vec3f a, Vec3f b, Vec3f c) {
+void find_vector_perpendicular_to_plane(Vec3f dest, Vec3f a, Vec3f b, Vec3f c) {
     dest[0] = (b[1] - a[1]) * (c[2] - b[2]) - (c[1] - b[1]) * (b[2] - a[2]);
     dest[1] = (b[2] - a[2]) * (c[0] - b[0]) - (c[2] - b[2]) * (b[0] - a[0]);
     dest[2] = (b[0] - a[0]) * (c[1] - b[1]) - (c[0] - b[0]) * (b[1] - a[1]);
 }
 
 /// Make vector 'dest' the cross product of vectors a and b.
-void *vec3f_cross(Vec3f dest, Vec3f a, Vec3f b) {
+void vec3f_cross(Vec3f dest, Vec3f a, Vec3f b) {
     dest[0] = a[1] * b[2] - b[1] * a[2];
     dest[1] = a[2] * b[0] - b[2] * a[0];
     dest[2] = a[0] * b[1] - b[0] * a[1];
 }
 
 /// Scale vector 'dest' so it has length 1
-void *vec3f_normalize(Vec3f dest) {
+void vec3f_normalize(Vec3f dest) {
     f32 size = sqrtf(dest[0] * dest[0] + dest[1] * dest[1] + dest[2] * dest[2]);
     register f32 invsqrt;
     if (size > 0.01f) {

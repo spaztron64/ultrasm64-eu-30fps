@@ -115,7 +115,7 @@ endif
 ifeq ($(COMPILER),gcc)
   NON_MATCHING := 1
   MIPSISET     := -mips3
-  OPT_FLAGS    := -O2
+  OPT_FLAGS    := -Os
 else ifeq ($(COMPILER),clang)
   NON_MATCHING := 1
   # clang doesn't support ABI 'o32' for 'mips3'

@@ -21,6 +21,7 @@
 #include "math_util.h"
 #include "surface_collision.h"
 #include "surface_load.h"
+#include "game/level_update.h"
 
 #define CMD_GET(type, offset) (*(type *) (CMD_PROCESS_OFFSET(offset) + (u8 *) sCurrentCmd))
 
@@ -340,7 +341,9 @@ static void level_cmd_clear_level(void) {
     clear_areas();
     main_pool_pop_state();
     // the game does a push on level load and a pop on level unload, we need to add another push to store state after the level has been loaded, so one more pop is needed
-    main_pool_pop_state();
+    if (gCurrDemoInput == FALSE) {
+        main_pool_pop_state();
+    }
     unmap_tlbs();
 
     sCurrentCmd = CMD_NEXT;
@@ -366,7 +369,9 @@ static void level_cmd_free_level_pool(void) {
             break;
         }
     }
-    main_pool_push_state();
+    if (gCurrDemoInput == FALSE) {
+        main_pool_push_state();
+    }
 
     sCurrentCmd = CMD_NEXT;
 }

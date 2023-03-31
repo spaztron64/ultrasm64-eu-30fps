@@ -224,8 +224,10 @@ void load_area(s32 index) {
     if (gCurrentArea == NULL && gAreaData[index].unk04 != NULL) {
         gCurrentArea = &gAreaData[index];
         gCurrAreaIndex = gCurrentArea->index;
-        main_pool_pop_state();
-        main_pool_push_state();
+        if (gCurrDemoInput == FALSE) {
+            main_pool_pop_state();
+            main_pool_push_state();
+        }
 
         if (gCurrentArea->terrainData != NULL) {
             load_area_terrain(index, gCurrentArea->terrainData, gCurrentArea->surfaceRooms, gCurrentArea->macroObjects);

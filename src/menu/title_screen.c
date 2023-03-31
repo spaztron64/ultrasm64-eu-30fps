@@ -154,10 +154,6 @@ extern void load_goddard(void);
 s32 intro_regular(void) {
     s32 level = LEVEL_NONE;
 
-    if (gGoddardReady == FALSE) {
-        load_goddard();
-    }
-
 #ifndef VERSION_JP
     // When the game stars, gGlobalTimer is less than 129 frames,
     // so Mario greets the player. After that, he will always say

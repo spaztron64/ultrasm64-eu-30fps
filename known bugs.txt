@@ -1,4 +1,3 @@
-most grabbable objects crash the RSP when grabbed.
 mirror mario be missing, my guess is throwmatrix, though it's possible matstack is also involved
 transition lerping occasionally has gaps in it
 some NPC's will disppear during dialogue, assuming throwmatrix strikes again

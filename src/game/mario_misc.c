@@ -88,7 +88,7 @@ Gfx *geo_draw_mario_head_goddard(s32 callContext, struct GraphNode *node, Mat4 *
     s16 sfx = 0;
     struct GraphNodeGenerated *asGenerated = (struct GraphNodeGenerated *) node;
 
-    if (callContext == GEO_CONTEXT_RENDER) {
+    if (callContext == GEO_CONTEXT_RENDER && gGoddardReady) {
         if (gPlayer1Controller->controllerData != NULL && !gWarpTransition.isActive) {
             gd_copy_p1_contpad(gPlayer1Controller->controllerData);
         }

@@ -1171,6 +1171,7 @@ s32 init_level(void) {
             reset_camera(gCurrentArea->camera);
 
             if (gCurrDemoInput != NULL) {
+                gGoddardReady = FALSE;
                 set_mario_action(gMarioState, ACT_IDLE, 0);
             } else if (!gDebugLevelSelect) {
                 if (gMarioState->action != ACT_UNINITIALIZED) {

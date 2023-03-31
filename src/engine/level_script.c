@@ -275,9 +275,8 @@ static void level_cmd_load_yay0(void) {
     sCurrentCmd = CMD_NEXT;
 }
 
-static void level_cmd_load_mario_head(void) {
 #ifdef GODDARD
-    // TODO: Fix these hardcoded sizes
+void load_goddard(void) {
     void *addr = main_pool_alloc(GODDARD_HEAP_SIZE, MEMORY_POOL_LEFT);
     if (addr != NULL) {
         gdm_init(addr, GODDARD_HEAP_SIZE);
@@ -285,7 +284,15 @@ static void level_cmd_load_mario_head(void) {
         gd_add_to_heap(gFramebuffer0, 3 * sizeof(gFramebuffer0)); // 0x70800
         gdm_setup();
         gdm_maketestdl(CMD_GET(s16, 2));
+        gGoddardReady = TRUE;
     }
+}
+#endif
+
+static void level_cmd_load_mario_head(void) {
+#ifdef GODDARD
+    // TODO: Fix these hardcoded sizes
+    load_goddard();
 #endif
     sCurrentCmd = CMD_NEXT;
 }

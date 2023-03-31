@@ -146,11 +146,17 @@ s16 intro_level_select(void) {
     return 0;
 }
 
+extern void load_goddard(void);
+
 /**
  * Regular intro function that handles Mario's greeting voice and game start.
  */
 s32 intro_regular(void) {
     s32 level = LEVEL_NONE;
+
+    if (gGoddardReady == FALSE) {
+        load_goddard();
+    }
 
 #ifndef VERSION_JP
     // When the game stars, gGlobalTimer is less than 129 frames,
@@ -158,7 +164,7 @@ s32 intro_regular(void) {
     // "press start to play" when it goes back to the title screen
     // (using SAVE AND QUIT)
     if (sPlayMarioGreeting == TRUE) {
-        if (gGlobalTimer < 129) {
+        if (gGlobalTimer < 135) {
             play_sound(SOUND_MARIO_HELLO, gGlobalSoundSource);
         } else {
             play_sound(SOUND_MARIO_PRESS_START_TO_PLAY, gGlobalSoundSource);

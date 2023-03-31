@@ -78,6 +78,7 @@ void *gMarioAnimsMemAlloc;
 void *gDemoInputsMemAlloc;
 struct DmaHandlerList gMarioAnimsBuf;
 struct DmaHandlerList gDemoInputsBuf;
+u8 gGoddardReady = FALSE;
 
 // General timer that runs as the game starts
 u32 gGlobalTimer = 0;

@@ -173,8 +173,8 @@ void load_tex_transition_vertex(Vtx *verts, s8 fadeTimer, struct WarpTransitionD
         f32 centerY = (texTransRadius) * sins(sTransitionTextureFadeCountLerp[fadeTimer]) - (texTransRadius) * coss(sTransitionTextureFadeCountLerp[fadeTimer]) + centerTransY;
         prepare_blank_box();
         gDPSetPrimColor(gDisplayListHead++, 0, 0, transData->red, transData->blue, transData->green, 255);
-        gDPFillRectangle(gDisplayListHead++, 0, 0, centerX, SCREEN_HEIGHT);
-        gDPFillRectangle(gDisplayListHead++, gScreenWidth - centerX, 0, gScreenWidth, SCREEN_HEIGHT);
+        gDPFillRectangle(gDisplayListHead++, 0, 0, centerX + 4, SCREEN_HEIGHT);
+        gDPFillRectangle(gDisplayListHead++, gScreenWidth - centerX - 4, 0, gScreenWidth, SCREEN_HEIGHT);
         if (centerY > 0) {
             gDPFillRectangle(gDisplayListHead++, centerX, 0, gScreenWidth - centerX, centerY);
             gDPFillRectangle(gDisplayListHead++, centerX, SCREEN_HEIGHT - centerY, gScreenWidth - centerX, SCREEN_HEIGHT);

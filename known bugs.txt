@@ -3,3 +3,4 @@ transition lerping occasionally has gaps in it
 some NPC's will disppear during dialogue, assuming throwmatrix strikes again
 certain point of the thwomp crashes the game trying to find_floor
 BBH demo crashes, pointing to "bhv_exclamation_box_loop"
+SSL Pyramid crashes

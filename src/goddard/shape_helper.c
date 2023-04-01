@@ -1071,7 +1071,11 @@ void animate_mario_head_normal(struct ObjAnimator *self) {
             }
             break;
         case 4:
-            self->frame += 1.0f * gLerpSpeed;
+            if (self->frame >= 500.0f && self->frame <= 505.0f) {
+                self->frame = (s32)(self->frame + 1);
+            } else {
+                self->frame += 1.0f * gLerpSpeed;
+            }
 
             if (self->frame >= 660.0f) {
                 self->frame = 661.0f;

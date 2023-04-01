@@ -17,6 +17,11 @@ u8 gCrashScreenCharToGlyph[128] = {
     23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, -1, -1, -1, -1, -1,
 };
 
+#ifdef PUPPYPRINT_DEBUG
+char sAssertString[255];
+u8 gAssert = FALSE;
+#endif
+
 // A height of seven pixels for each Character * nine rows of characters + one row unused.
 u32 gCrashScreenFont[7 * 9 + 1] = {
     #include "textures/crash_custom/crash_screen_font.ia1.inc.c"
@@ -227,6 +232,19 @@ void draw_crash_screen(OSThread *thread) {
     osViSwapBuffer(gCrashScreen.framebuffer);
 }
 
+#ifdef PUPPYPRINT_DEBUG
+void draw_assert_screen(OSThread *thread) {
+    s32 x = (gScreenWidth / 2) - 160;
+
+    crash_screen_draw_rect(x + 25, 20, 270, 210);
+    crash_screen_print(x + 30, 25, "ASSERT TRIGGERED:");
+    crash_screen_print(x + 30, 35, sAssertString);
+    osWritebackDCacheAll();
+    osViBlack(FALSE);
+    osViSwapBuffer(gCrashScreen.framebuffer);
+}
+#endif
+
 OSThread *get_crashed_thread(void) {
     OSThread *thread;
 
@@ -256,7 +274,15 @@ void thread2_crash_screen(UNUSED void *arg) {
     } while (thread == NULL);
     gCrashScreen.framebuffer = (u16 *) gPhysicalFramebuffers[sRenderingFramebuffer];
     gCrashScreen.width = gScreenWidth;
+#ifdef PUPPYPRINT_DEBUG
+    if (gAssert) {
+        draw_assert_screen(thread);
+    } else {
+        draw_crash_screen(thread);
+    }
+#else
     draw_crash_screen(thread);
+#endif
     for (;;) {
     }
 }
@@ -272,10 +298,29 @@ void crash_screen_init(void) {
     gCrashScreen.width = gScreenWidth;
     gCrashScreen.height = SCREEN_HEIGHT;
     osCreateMesgQueue(&gCrashScreen.mesgQueue, &gCrashScreen.mesg, 1);
-    osCreateThread(&gCrashScreen.thread, 2, thread2_crash_screen, NULL,
-                   (u8 *) gCrashScreen.stack + sizeof(gCrashScreen.stack),
-                   OS_PRIORITY_APPMAX
-                  );
+    osCreateThread(&gCrashScreen.thread, 2, thread2_crash_screen, NULL, (u8 *) gCrashScreen.stack + sizeof(gCrashScreen.stack), OS_PRIORITY_APPMAX);
     osStartThread(&gCrashScreen.thread);
 }
 
+#ifdef PUPPYPRINT_DEBUG
+void debug_assert(u32 condition, const char *str, ...) {
+    char *ptr;
+    u32 glyph;
+    s32 size;
+
+    if (!condition) {
+        return;
+    }
+
+    va_list args;
+    va_start(args, str);
+    bzero(&sAssertString, sizeof(sAssertString));
+
+    _Printf(write_to_buf, &sAssertString, str, args);
+
+    va_end(args);
+    gAssert = TRUE;
+
+    *(volatile int *) 0 = 0;
+}
+#endif

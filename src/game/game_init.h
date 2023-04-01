@@ -90,4 +90,10 @@ void select_gfx_pool(void);
 void display_and_vsync(void);
 void thread9_graphics(UNUSED void *arg);
 
+#ifdef PUPPYPRINT_DEBUG
+void debug_assert(u32 condition, const char *str, ...);
+#else
+#define debug_assert(condition, str, ...)
+#endif
+
 #endif // GAME_INIT_H

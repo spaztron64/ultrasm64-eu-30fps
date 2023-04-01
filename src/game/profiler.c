@@ -4,6 +4,8 @@
 #include "profiler.h"
 #include "game_init.h"
 
+#ifdef PUPPYPRINT_DEBUG
+
 s16 gProfilerMode = 0;
 
 // the thread 3 info is logged on the opposite profiler from what is used by
@@ -315,3 +317,5 @@ void draw_profiler(void) {
         draw_profiler_mode_1();
     }
 }
+
+#endif

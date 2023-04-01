@@ -370,7 +370,12 @@ void render_hud_camera_status(void) {
 #define OS_CYCLES_TO_USEC(c)    (((u32)(c)*(1000000LL/15625LL))/(OS_CPU_COUNTER/15625LL))
 #define FRAMETIME_COUNT 30
 #define PROFILER_COUNT 60
+#define NUM_PERF_ITERATIONS 30
+#define PERF_AGGREGATE NUM_PERF_ITERATIONS
+#define PERF_TOTAL NUM_PERF_ITERATIONS + 1
 
+
+#ifdef PUPPYPRINT_DEBUG
 u8 gFPS = 30;
 OSTime frameTimes[FRAMETIME_COUNT];
 u8 curFrameTimeIndex = 0;
@@ -454,19 +459,6 @@ void profiler_logic(void) {
     cpuTime = MIN(OS_CYCLES_TO_USEC(gVideoTime + (gSoundTime * 2) + gGameTime), 66666);
     totalCPUReads[perfIteration] = cpuTime;
     totalCPUReads[PROFILER_COUNT] += cpuTime;
-
-    /*rdpTime = IO_READ(DPC_TMEM_REG);
-    rdpTime = MAX(IO_READ(DPC_BUFBUSY_REG), rdpTime);
-    rdpTime = MAX(IO_READ(DPC_PIPEBUSY_REG), rdpTime);
-
-    rdpTime = (rdpTime * 10) / 625;
-
-    IO_WRITE(DPC_STATUS_REG, (DPC_CLR_CLOCK_CTR | DPC_CLR_CMD_CTR | DPC_CLR_PIPE_CTR | DPC_CLR_TMEM_CTR));
-
-    totalRDPReads[30] -= totalRDPReads[perfIteration];
-    totalRDPReads[perfIteration] = rdpTime;
-    totalRDPReads[30] += rdpTime;*/
-
     totalCPUReads[PROFILER_COUNT + 1] = totalCPUReads[PROFILER_COUNT] / PROFILER_COUNT;
 
     perfIteration++;
@@ -474,15 +466,17 @@ void profiler_logic(void) {
         perfIteration = 0;
     }
 }
+#endif
 
 void ui_logic(void) {
     s16 hudDisplayFlags = gHudDisplay.flags;
     
+#ifdef PUPPYPRINT_DEBUG
     if (gPlayer1Controller->buttonDown & U_JPAD && gPlayer1Controller->buttonPressed & L_TRIG) {
         gShowProfilerNew ^= 1;
     }
-
     profiler_logic();
+#endif
 
     if (hudDisplayFlags & HUD_DISPLAY_FLAG_CAMERA_AND_POWER) {
         s16 shownHealthWedges = gHudDisplay.wedges;
@@ -567,7 +561,9 @@ void render_hud(void) {
         }
     }
 
+#ifdef PUPPYPRINT_DEBUG
     if (gShowProfilerNew) {
         render_profiler();
     }
+#endif
 }

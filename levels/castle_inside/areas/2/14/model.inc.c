@@ -591,7 +591,7 @@ static const Gfx inside_castle_seg7_dl_070571E8[] = {
 // 0x070572A0 - 0x07057380
 const Gfx inside_castle_seg7_dl_070572A0[] = {
     gsDPPipeSync(),
-    gsDPSetRenderMode(G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2),
+    gsDPSetRenderMode(G_RM_FOG_SHADE_A, G_RM_RA_ZB_OPA_SURF2),
     gsDPSetDepthSource(G_ZS_PIXEL),
     gsDPSetFogColor(0, 0, 0, 255),
     gsSPFogPosition(950, 1000),

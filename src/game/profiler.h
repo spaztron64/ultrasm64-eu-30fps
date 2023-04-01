@@ -48,11 +48,19 @@ enum ProfilerGfxEvent {
     RDP_COMPLETE
 };
 
+#ifdef PUPPYPRINT_DEBUG
 void profiler_log_thread5_time(enum ProfilerGameEvent eventID);
 void profiler_log_thread9_time(enum ProfilerGameEvent9 eventID);
 void profiler_log_thread4_time(void);
 void profiler_log_gfx_time(enum ProfilerGfxEvent eventID);
 void profiler_log_vblank_time(void);
 void draw_profiler(void);
+#else
+#define profiler_log_thread5_time(x);
+#define profiler_log_thread9_time(x);
+#define profiler_log_thread4_time(x);
+#define profiler_log_gfx_time(x);
+#define profiler_log_vblank_time();
+#endif
 
 #endif // PROFILER_H

@@ -282,6 +282,32 @@ void handle_dp_complete(void) {
 }
 extern void crash_screen_init(void);
 
+/**
+ * Increment the first and last values of the stack.
+ * If they're different, that means an error has occured, so trigger a crash.
+*/
+#ifdef PUPPYPRINT_DEBUG
+void check_stack_validity(void) {
+    gIdleThreadStack[0]++;
+    gIdleThreadStack[THREAD1_STACK - 1]++;
+    debug_assert(gIdleThreadStack[0] != gIdleThreadStack[THREAD1_STACK - 1], "Thread 1 stack overflow.");
+    gThread3Stack[0]++;
+    gThread3Stack[THREAD3_STACK - 1]++;
+    debug_assert(gThread3Stack[0] != gThread3Stack[THREAD3_STACK - 1], "Thread 3 stack overflow.");
+    gThread4Stack[0]++;
+    gThread4Stack[THREAD4_STACK - 1]++;
+    debug_assert(gThread4Stack[0] != gThread4Stack[THREAD4_STACK - 1], "Thread 4 stack overflow.");
+    gThread5Stack[0]++;
+    gThread5Stack[THREAD5_STACK - 1]++;
+    debug_assert(gThread5Stack[0] != gThread5Stack[THREAD5_STACK - 1], "Thread 5 stack overflow.");
+#if ENABLE_RUMBLE
+    gThread6Stack[0]++;
+    gThread6Stack[THREAD6_STACK - 1]++;
+    debug_assert(gThread6Stack[0] != gThread6Stack[THREAD6_STACK - 1], "Thread 6 stack overflow.");
+#endif
+}
+#endif
+
 void thread3_main(UNUSED void *arg) {
     setup_mesg_queues();
     alloc_pool();
@@ -303,6 +329,21 @@ void thread3_main(UNUSED void *arg) {
     osSyncPrintf("Linker  : %s\n", __linker__);
 #endif
 
+#ifdef PUPPYPRINT_DEBUG
+    gIdleThreadStack[0] = 0;
+    gIdleThreadStack[THREAD1_STACK - 1] = 0;
+    gThread3Stack[0] = 0;
+    gThread3Stack[THREAD3_STACK - 1] = 0;
+    gThread4Stack[0] = 0;
+    gThread4Stack[THREAD4_STACK - 1] = 0;
+    gThread5Stack[0] = 0;
+    gThread5Stack[THREAD5_STACK - 1] = 0;
+#if ENABLE_RUMBLE
+    gThread6Stack[0] = 0;
+    gThread6Stack[THREAD6_STACK - 1] = 0;
+#endif
+#endif
+
     create_thread(&gSoundThread, 4, thread4_sound, NULL, gThread4Stack + THREAD4_STACK, 20);
     osStartThread(&gSoundThread);
 
@@ -316,6 +357,9 @@ void thread3_main(UNUSED void *arg) {
         OSMesg msg;
 
         osRecvMesg(&gIntrMesgQueue, &msg, OS_MESG_BLOCK);
+#ifdef PUPPYPRINT_DEBUG
+        check_stack_validity();
+#endif
         switch ((uintptr_t) msg) {
             case MESG_VI_VBLANK:
                 handle_vblank();

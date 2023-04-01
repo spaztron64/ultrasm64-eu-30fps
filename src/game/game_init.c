@@ -322,9 +322,6 @@ void init_rcp(void) {
  */
 void end_master_display_list(void) {
     draw_screen_borders();
-    if (gShowProfiler) {
-        draw_profiler();
-    }
 
     gDPFullSync(gDisplayListHead++);
     gSPEndDisplayList(gDisplayListHead++);
@@ -718,13 +715,15 @@ void thread5_game_loop(UNUSED void *arg) {
     load_config();
 
     while (TRUE) {
-        u32 first = osGetTime();
         // If the reset timer is active, run the process to reset the game.
         if (gResetTimer != 0) {
             draw_reset_bars();
             continue;
         }
+#ifdef PUPPYPRINT_DEBUG
+        u32 first = osGetTime();
         profiler_log_thread5_time(THREAD5_START);
+#endif
 
         // If any controllers are plugged in, start read the data for when
         // read_controller_inputs is called later.
@@ -740,23 +739,12 @@ void thread5_game_loop(UNUSED void *arg) {
         addr = level_script_execute(addr);
         hud_logic();
         gGlobalTimer++;
+#ifdef PUPPYPRINT_DEBUG
         profiler_log_thread5_time(BEFORE_DISPLAY_LISTS);
         profiler_log_thread5_time(AFTER_DISPLAY_LISTS);
         profiler_log_thread5_time(THREAD5_END);
-        if (gPlayer1Controller->buttonPressed & D_JPAD) {
-            gScreenMode ++;
-            if (gScreenMode == 3) {
-                gScreenMode = 0;
-            }
-            gScreenSwapTimer = 3;
-        }
-        if (gPlayer1Controller->buttonPressed & R_JPAD) {
-            gAntiAliasing++;
-            if (gAntiAliasing == 2) {
-                gAntiAliasing = -1;
-            }
-        }
         gGameTime = osGetTime() - first;
+#endif
         osRecvMesg(&gGameVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
         osRecvMesg(&gGameVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
 #if 0
@@ -804,7 +792,9 @@ void thread9_graphics(UNUSED void *arg) {
     render_init();
 
     while (gResetTimer == 0) {
+#ifdef PUPPYPRINT_DEBUG
         u32 first = osGetTime();
+#endif
 
         u32 deltaTime = osGetTime() - prevTime;
         prevTime = osGetTime();
@@ -840,8 +830,10 @@ void thread9_graphics(UNUSED void *arg) {
             render_game();
             end_master_display_list();
             alloc_display_list(0);
+#ifdef PUPPYPRINT_DEBUG
             gVideoTime = osGetTime() - first;
             profiler_log_thread9_time(THREAD9_END);
+#endif
 
             display_and_vsync();
         }

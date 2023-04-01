@@ -133,7 +133,7 @@ extern OSMesgQueue *D_SH_80350FA8;
 #endif
 
 #if defined(VERSION_EU) || defined(VERSION_SH)
-#define AUDIO_HEAP_SIZE 0x2c500
+#define AUDIO_HEAP_SIZE 0x40000
 #define AUDIO_INIT_POOL_SIZE 0x2c00
 #else
 #define AUDIO_HEAP_SIZE 0x34000

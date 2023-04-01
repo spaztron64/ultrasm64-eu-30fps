@@ -393,6 +393,16 @@ const BehaviorScript bhvPurpleParticle[] = {
     DEACTIVATE(),
 };
 
+const BehaviorScript bhvPurpleParticle2[] = {
+    BEGIN(OBJ_LIST_UNIMPORTANT),
+    BILLBOARD(),
+    OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),
+    BEGIN_REPEAT(10),
+        CALL_NATIVE(bhv_piranha_particle_loop2),
+    END_REPEAT(),
+    DEACTIVATE(),
+};
+
 const BehaviorScript bhvGiantPole[] = {
     BEGIN(OBJ_LIST_POLELIKE),
     OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),

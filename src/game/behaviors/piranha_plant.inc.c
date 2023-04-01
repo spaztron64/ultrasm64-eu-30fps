@@ -28,6 +28,48 @@ void piranha_plant_act_idle(void) {
     }
 }
 
+// this is actually the MrI particle loop function. piranha
+// plant code later on reuses this function.
+void bhv_piranha_particle_loop2(void) {
+    if (o->oTimer == 0) {
+        o->oVelY = 20.0f + 20.0f * random_float();
+        o->oForwardVel = 20.0f + 20.0f * random_float();
+        o->oMoveAngleYaw = random_u16();
+    }
+    cur_obj_move_using_fvel_and_gravity();
+}
+
+void mr_i_piranha_particle_act_02(void) {
+    cur_obj_scale(3.0f);
+    o->oForwardVel = 20.0f;
+    cur_obj_update_floor_and_walls();
+
+    if (o->oInteractStatus & INT_STATUS_INTERACTED) {
+        o->oAction = 1;
+    } else if ((o->oTimer > 100) || (o->oMoveFlags & OBJ_MOVE_HIT_WALL)
+               || (o->activeFlags & ACTIVE_FLAG_IN_DIFFERENT_ROOM)) {
+        obj_mark_for_deletion(o);
+        spawn_mist_particles();
+    }
+}
+
+void mr_i_piranha_particle_act_12(void) {
+    s32 i;
+    obj_mark_for_deletion(o);
+    for (i = 0; i < 10; i++) {
+        spawn_object(o, MODEL_PURPLE_MARBLE, bhvPurpleParticle2);
+    }
+}
+
+void (*sMrIParticleActions2[])(void) = {
+    mr_i_piranha_particle_act_02,
+    mr_i_piranha_particle_act_12,
+};
+
+void bhv_mr_i_particle_loop2(void) {
+    cur_obj_call_action_function(sMrIParticleActions2);
+}
+
 /**
  * Check if the player has interacted with the Piranha Plant. If the Piranha
  * Plant was attacked, move it to the dying state. If the player interacted
@@ -47,7 +89,7 @@ s32 piranha_plant_check_interactions(void) {
 
             // Spawn 20 intangible purple particles that quickly dissipate.
             for (i = 0; i < 20; i++) {
-                spawn_object(o, MODEL_PURPLE_MARBLE, bhvPurpleParticle);
+                spawn_object(o, MODEL_PURPLE_MARBLE, bhvPurpleParticle2);
             }
             o->oAction = PIRANHA_PLANT_ACT_ATTACKED;
         } else {

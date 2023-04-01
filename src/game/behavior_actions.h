@@ -541,6 +541,8 @@ void spawn_sparkle_particles(s32 n, s32 a1, s32 a2, s32 r);
 s32 mario_is_far_below_object(f32 arg0);
 s32 set_obj_anim_with_accel_and_sound(s16 a0, s16 a1, s32 a2);
 s32 obj_begin_race(s32 noTimer);
+void bhv_piranha_particle_loop2(void);
+void bhv_mr_i_particle_loop2(void);
 
 Gfx *geo_move_mario_part_from_parent(s32 run, UNUSED struct GraphNode *node, Mat4 mtx);
 

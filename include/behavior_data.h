@@ -8,6 +8,7 @@ extern const BehaviorScript bhvMrI[];
 extern const BehaviorScript bhvMrIBody[];
 extern const BehaviorScript bhvMrIParticle[];
 extern const BehaviorScript bhvPurpleParticle[];
+extern const BehaviorScript bhvPurpleParticle2[];
 extern const BehaviorScript bhvGiantPole[];
 extern const BehaviorScript bhvPoleGrabbing[];
 extern const BehaviorScript bhvThiHugeIslandTop[];

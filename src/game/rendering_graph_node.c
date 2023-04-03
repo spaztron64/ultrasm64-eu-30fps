@@ -133,8 +133,6 @@ struct GraphNodeObject *gCurGraphNodeObject = NULL;
 struct GraphNodeHeldObject *gCurGraphNodeHeldObject = NULL;
 u16 gAreaUpdateCounter = 0;
 LookAt* gCurLookAt;
-Vec3f gCameraPosAdd;
-Vec3f gCameraFocusAdd;
 
 struct LevelFog {
     s16 near;
@@ -454,27 +452,20 @@ void update_graph_node_camera(struct GraphNodeCamera *gc) {
     vec3f_copy(gc->focus, gLakituState.focus);
     zoom_out_if_paused_and_outside(gc);
 
-    if (gCameraPosAdd[0] + gCameraPosAdd[1] + gCameraPosAdd[2]) {
-        vec3f_add(gc->posLerp, gCameraPosAdd);
-        vec3f_add(gc->focusLerp, gCameraFocusAdd);
-        bzero(gCameraPosAdd, sizeof(Vec3f));
-        bzero(gCameraFocusAdd, sizeof(Vec3f));
+    if (!gMoveSpeed || sCurrPlayMode == 2) {
+        gc->posLerp[0] = gc->pos[0];
+        gc->posLerp[1] = gc->pos[1];
+        gc->posLerp[2] = gc->pos[2];
+        gc->focusLerp[0] = gc->focus[0];
+        gc->focusLerp[1] = gc->focus[1];
+        gc->focusLerp[2] = gc->focus[2];
     } else {
-        if (!gMoveSpeed || sCurrPlayMode == 2) {
-            gc->posLerp[0] = gc->pos[0];
-            gc->posLerp[1] = gc->pos[1];
-            gc->posLerp[2] = gc->pos[2];
-            gc->focusLerp[0] = gc->focus[0];
-            gc->focusLerp[1] = gc->focus[1];
-            gc->focusLerp[2] = gc->focus[2];
-        } else {
-            gc->posLerp[0] = approach_pos_lerp(gc->posLerp[0], gc->pos[0]);
-            gc->posLerp[1] = approach_pos_lerp(gc->posLerp[1], gc->pos[1]);
-            gc->posLerp[2] = approach_pos_lerp(gc->posLerp[2], gc->pos[2]);
-            gc->focusLerp[0] = approach_pos_lerp(gc->focusLerp[0], gc->focus[0]);
-            gc->focusLerp[1] = approach_pos_lerp(gc->focusLerp[1], gc->focus[1]);
-            gc->focusLerp[2] = approach_pos_lerp(gc->focusLerp[2], gc->focus[2]);
-        }
+        gc->posLerp[0] = approach_pos_lerp(gc->posLerp[0], gc->pos[0]);
+        gc->posLerp[1] = approach_pos_lerp(gc->posLerp[1], gc->pos[1]);
+        gc->posLerp[2] = approach_pos_lerp(gc->posLerp[2], gc->pos[2]);
+        gc->focusLerp[0] = approach_pos_lerp(gc->focusLerp[0], gc->focus[0]);
+        gc->focusLerp[1] = approach_pos_lerp(gc->focusLerp[1], gc->focus[1]);
+        gc->focusLerp[2] = approach_pos_lerp(gc->focusLerp[2], gc->focus[2]);
     }
 
     for (u32 i = 0; i < OBJECT_POOL_CAPACITY; i++) {

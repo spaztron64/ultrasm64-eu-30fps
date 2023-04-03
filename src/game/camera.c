@@ -2708,6 +2708,10 @@ void set_camera_mode(struct Camera *c, s16 mode, s16 frames) {
     }
 }
 
+s16 gTempYaw;
+s16 gTempPitch;
+f32 gTempDist;
+
 /**
  * Updates Lakitu's position/focus and applies camera shakes.
  */
@@ -2770,9 +2774,7 @@ void update_lakitu(struct Camera *c) {
             vec3f_set(sPlayer2FocusOffset, 0, 0, 0);
         }
 
-        f32 plop;
-        s16 plop2;
-        vec3f_get_dist_and_angle(gLakituState.pos, gLakituState.focus, &plop, &plop2, &plop2);
+        vec3f_get_dist_and_angle(gLakituState.pos, gLakituState.focus, &gTempDist, &gTempPitch, &gTempYaw);
 
         gLakituState.roll = 0;
 

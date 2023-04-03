@@ -1063,11 +1063,12 @@ void geo_process_object(struct Object *node) {
             warp_node(node);
     }
 
-    if (node->header.gfx.matrixID[gThrowMatSwap ^ 1] != MATRIX_NULL) {
+    /*if (node->header.gfx.matrixID[gThrowMatSwap ^ 1] != MATRIX_NULL) {
         node->header.gfx.throwMatrix = &gThrowMatStack[gThrowMatSwap ^ 1][node->header.gfx.matrixID[gThrowMatSwap ^ 1]];
     } else {
         node->header.gfx.throwMatrix = NULL;
-    }
+    }*/
+    node->header.gfx.throwMatrix = NULL;
 
     if (node->header.gfx.bothMats < 5) {
         node->header.gfx.bothMats++;

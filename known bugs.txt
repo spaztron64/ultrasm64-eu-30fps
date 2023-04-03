@@ -3,6 +3,5 @@ transition lerping occasionally has gaps in it
 some NPC's will disppear during dialogue, assuming throwmatrix strikes again
 certain point of the thwomp crashes the game trying to find_floor
 BBH demo crashes, pointing to "bhv_exclamation_box_loop"
-WDW town camera is wierd, definitely not behaving right
 Grabbing bowser activates the far camera, maybe the one as if he was already thrown
 BBH falling bridge room needs BG drawn - am actually surprised that was a problem

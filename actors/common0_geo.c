@@ -66,3 +66,4 @@
 #include "game/behaviors/square_platform_cycle.inc.c"
 #include "game/behaviors/tilting_inverted_pyramid.inc.c"
 #include "game/behaviors/bully.inc.c"
+#include "game/behaviors/thwomp.inc.c"

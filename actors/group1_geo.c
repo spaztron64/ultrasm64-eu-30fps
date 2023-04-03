@@ -15,6 +15,5 @@
 #include "heave_ho/geo.inc.c"
 
 #include "game/behaviors/hoot.inc.c"
-#include "game/behaviors/thwomp.inc.c"
 #include "game/behaviors/bullet_bill.inc.c"
 #include "game/behaviors/heave_ho.inc.c"

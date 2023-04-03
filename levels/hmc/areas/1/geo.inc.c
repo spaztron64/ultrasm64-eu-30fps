@@ -287,16 +287,25 @@ const GeoLayout hmc_geo_000B48[] = {
    GEO_RETURN(),
 };
 
-// 0x0E000B90
-const GeoLayout hmc_geo_000B90[] = {
-   GEO_NODE_SCREEN_AREA(10, SCREEN_WIDTH/2, SCREEN_HEIGHT/2, SCREEN_WIDTH/2, SCREEN_HEIGHT/2),
-   GEO_OPEN_NODE(),
+static const GeoLayout ddd_geo_bg_a2[] = {
+   GEO_NODE_START(),
       GEO_ZBUFFER(0),
       GEO_OPEN_NODE(),
          GEO_NODE_ORTHO(100),
          GEO_OPEN_NODE(),
             GEO_BACKGROUND_COLOR(0x0001),
          GEO_CLOSE_NODE(),
+      GEO_CLOSE_NODE(),
+   GEO_RETURN(),
+};
+
+// 0x0E000B90
+const GeoLayout hmc_geo_000B90[] = {
+   GEO_NODE_SCREEN_AREA(10, SCREEN_WIDTH/2, SCREEN_HEIGHT/2, SCREEN_WIDTH/2, SCREEN_HEIGHT/2),
+   GEO_OPEN_NODE(),
+      GEO_SWITCH_CASE(2, geo_switch_BG),
+      GEO_OPEN_NODE(),
+         GEO_BRANCH(1, ddd_geo_bg_a2),
       GEO_CLOSE_NODE(),
       GEO_ZBUFFER(1),
       GEO_OPEN_NODE(),

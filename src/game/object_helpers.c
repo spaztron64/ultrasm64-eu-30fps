@@ -170,6 +170,8 @@ Gfx *geo_switch_area(s32 callContext, struct GraphNode *node, UNUSED void *conte
     return NULL;
 }
 
+#include "print.h"
+
 Gfx *geo_switch_BG(s32 callContext, struct GraphNode *node, UNUSED void *context) {
     s16 sp26;
     struct Surface *sp20;
@@ -202,6 +204,21 @@ Gfx *geo_switch_BG(s32 callContext, struct GraphNode *node, UNUSED void *context
                 }
                 return NULL;
             }
+            // BBH has some spots you can't see the BG, so it'd benefit from this too
+            if (gCurrLevelNum == LEVEL_HMC) {
+                if (gMarioCurrentRoom == 2) {
+                    if (gCamera->pitch < 0x4400 && gMarioState->pos[1] < 800) {
+                        switchCase->selectedCase = BG_HIDE;
+                    } else if (gCamera->pitch < 0x4000 && gMarioState->pos[1] < 1500) {
+                        switchCase->selectedCase = BG_HIDE;
+                    } else if (gCamera->pitch < 0x3800) {
+                        switchCase->selectedCase = BG_HIDE;
+                    }
+                } else if (gMarioCurrentRoom == 3 || gMarioCurrentRoom == 5 || gMarioCurrentRoom == 13) {
+                    switchCase->selectedCase = BG_HIDE;
+                }
+                return NULL;
+            }
             // The castle can only see the void from doors, so that's handled above, otherwise unconditionally hide.
             if (gCurrLevelNum == LEVEL_CASTLE) {
                 switchCase->selectedCase = BG_HIDE;
@@ -211,7 +228,7 @@ Gfx *geo_switch_BG(s32 callContext, struct GraphNode *node, UNUSED void *context
             if (gCurrLevelNum == LEVEL_JRB) {
                 if (gMarioState->pos[1] < -1000 && !(gMarioState->action & ACT_FLAG_SWIMMING)) {
                     switchCase->selectedCase = BG_HIDE;
-                    return;
+                    return NULL;
                 }
             }
             // TTC, we want the opposite of the regular condition

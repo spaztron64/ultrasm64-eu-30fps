@@ -169,7 +169,7 @@ Gfx *geo_switch_area(s32 callContext, struct GraphNode *node, UNUSED void *conte
 
     return NULL;
 }
-
+#include "print.h"
 Gfx *geo_switch_BG(s32 callContext, struct GraphNode *node, UNUSED void *context) {
     s16 sp26;
     struct Surface *sp20;
@@ -181,6 +181,9 @@ Gfx *geo_switch_BG(s32 callContext, struct GraphNode *node, UNUSED void *context
     // A return of 0 means draw BG, a return of 1 means don't draw BG.
 
     if (callContext == GEO_CONTEXT_RENDER) {
+        print_text_fmt_int(32,48,"%d", (s32) gMarioState->pos[1]);
+        print_text_fmt_int(32,64,"%d", gCamera->pitch);
+        print_text_fmt_int(32,80,"%d", gMarioCurrentRoom);
         switchCase->selectedCase = BG_SHOW;
         if (gMarioObject == NULL) {
             switchCase->selectedCase = BG_HIDE;
@@ -208,6 +211,19 @@ Gfx *geo_switch_BG(s32 callContext, struct GraphNode *node, UNUSED void *context
                     switchCase->selectedCase = BG_HIDE;
                     return;
                 }
+            }
+            // TTC, we want the opposite of the regular condition
+            if (gCurrLevelNum == LEVEL_TTC) {
+                s32 pitch;
+                if (gMarioState->pos[1] > -1000) {
+                    pitch = 0x1C00;
+                } else {
+                    pitch = 0x3000;
+                }
+                if (gCamera->pitch > 0x3000) {
+                    switchCase->selectedCase = BG_HIDE;
+                }
+                return;
             }
             // It's possible in area 1 of DDD to look down enough, but still see the skybox, so add a height requirement too.
             if (gCurrLevelNum == LEVEL_DDD && gCurrAreaIndex == 1) {

@@ -185,6 +185,11 @@ Gfx *geo_switch_BG(s32 callContext, struct GraphNode *node, UNUSED void *context
         if (gMarioObject == NULL) {
             switchCase->selectedCase = BG_HIDE;
         } else {
+            // If the camera is out of bounds, show the background anyway
+            if (gCamera->isFloor == FALSE) {
+                switchCase->selectedCase = BG_SHOW;
+                return NULL;
+            }
             // Cheeky solution to doors showing off voids. Not like the extra perf is important here.
             if (gMarioState->action == ACT_PULLING_DOOR || gMarioState->action == ACT_PUSHING_DOOR || gMarioState->action == ACT_ENTERING_STAR_DOOR ||
                 gMarioState->action == ACT_WARP_DOOR_SPAWN) {
@@ -232,6 +237,32 @@ Gfx *geo_switch_BG(s32 callContext, struct GraphNode *node, UNUSED void *context
                 if (gCamera->pitch < 0x3000) {
                     switchCase->selectedCase = BG_HIDE;
                 }
+            }
+        }
+    } else {
+        switchCase->selectedCase = BG_SHOW;
+    }
+
+    return NULL;
+}
+
+Gfx *geo_switch_BG_simple(s32 callContext, struct GraphNode *node, UNUSED void *context) {
+    s16 sp26;
+    struct Surface *sp20;
+    struct GraphNodeSwitchCase *switchCase = (struct GraphNodeSwitchCase *) node;
+
+    #define BG_HIDE 0
+    #define BG_SHOW 1
+
+    // A return of 0 means draw BG, a return of 1 means don't draw BG.
+
+    if (callContext == GEO_CONTEXT_RENDER) {
+        switchCase->selectedCase = BG_SHOW;
+        if (gMarioObject == NULL) {
+            switchCase->selectedCase = BG_HIDE;
+        } else {
+            if (gCamera->isFloor == FALSE) {
+                switchCase->selectedCase = BG_SHOW;
             }
         }
     } else {

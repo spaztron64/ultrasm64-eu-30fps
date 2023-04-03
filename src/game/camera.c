@@ -3005,6 +3005,17 @@ void update_camera(struct Camera *c) {
 
     gLakituState.lastFrameAction = sMarioCamState->action;
     fov_logic();
+    struct Surface *floor;
+    find_floor(gCamera->pos[0], gCamera->pos[1], gCamera->pos[2], &floor);
+    if (floor == NULL) {
+        gCamera->isFloor = FALSE;
+    } else {
+        if (floor->type == SURFACE_DEATH_PLANE) {
+            gCamera->isFloor = FALSE;
+        } else {
+            gCamera->isFloor = TRUE;
+        }
+    }
 }
 
 /**

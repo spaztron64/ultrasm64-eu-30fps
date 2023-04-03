@@ -2808,6 +2808,7 @@ void update_lakitu(struct Camera *c) {
     clamp_pitch(gLakituState.pos, gLakituState.focus, 0x3E00, -0x3E00);
     gLakituState.mode = c->mode;
     gLakituState.defMode = c->defMode;
+    gCamera->pitch = atan2s(gCamera->pos[1] - gCamera->focus[1], sqrtf(sqr(gCamera->pos[0] - gCamera->focus[0]) + sqr(gCamera->pos[2] - gCamera->focus[2])));
 }
 
 

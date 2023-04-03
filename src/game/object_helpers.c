@@ -113,11 +113,7 @@ Gfx *geo_update_layer_transparency(s32 callContext, struct GraphNode *node, UNUS
  * declare it. This is undefined behavior, but harmless in practice due to the
  * o32 calling convention.
  */
-#ifdef AVOID_UB
 Gfx *geo_switch_anim_state(s32 callContext, struct GraphNode *node, UNUSED void *context) {
-#else
-Gfx *geo_switch_anim_state(s32 callContext, struct GraphNode *node) {
-#endif
     struct Object *obj;
     struct GraphNodeSwitchCase *switchCase;
 
@@ -145,12 +141,7 @@ Gfx *geo_switch_anim_state(s32 callContext, struct GraphNode *node) {
     return NULL;
 }
 
-//! @bug Same issue as geo_switch_anim_state.
-#ifdef AVOID_UB
 Gfx *geo_switch_area(s32 callContext, struct GraphNode *node, UNUSED void *context) {
-#else
-Gfx *geo_switch_area(s32 callContext, struct GraphNode *node) {
-#endif
     s16 sp26;
     struct Surface *sp20;
     struct GraphNodeSwitchCase *switchCase = (struct GraphNodeSwitchCase *) node;
@@ -174,6 +165,70 @@ Gfx *geo_switch_area(s32 callContext, struct GraphNode *node) {
         }
     } else {
         switchCase->selectedCase = 0;
+    }
+
+    return NULL;
+}
+#include "print.h"
+Gfx *geo_switch_BG(s32 callContext, struct GraphNode *node, UNUSED void *context) {
+    s16 sp26;
+    struct Surface *sp20;
+    struct GraphNodeSwitchCase *switchCase = (struct GraphNodeSwitchCase *) node;
+
+    #define BG_HIDE 0
+    #define BG_SHOW 1
+
+    // A return of 0 means draw BG, a return of 1 means don't draw BG.
+
+    if (callContext == GEO_CONTEXT_RENDER) {
+        print_text_fmt_int(32,48,"%d", (s32) gMarioState->pos[1]);
+        print_text_fmt_int(32,64,"%d", gCamera->pitch);
+        print_text_fmt_int(32,80,"%d", gMarioCurrentRoom);
+        switchCase->selectedCase = BG_SHOW;
+        if (gMarioObject == NULL) {
+            switchCase->selectedCase = BG_HIDE;
+        } else {
+            // Cheeky solution to doors showing off voids. Not like the extra perf is important here.
+            if (gMarioState->action == ACT_PULLING_DOOR || gMarioState->action == ACT_PUSHING_DOOR || gMarioState->action == ACT_ENTERING_STAR_DOOR ||
+                gMarioState->action == ACT_WARP_DOOR_SPAWN) {
+                print_text(32, 96, "show");
+                return NULL;
+            }
+            // BBH is only visible when outdoors, so check if the room can be active from outdoors.
+            if (gCurrLevelNum == LEVEL_BBH) {
+                if (gMarioCurrentRoom != 13 && gMarioCurrentRoom != 21 && gMarioCurrentRoom != 32 && gMarioCurrentRoom != 28) {
+                    switchCase->selectedCase = BG_HIDE;
+                    print_text(32, 96, "hide");
+                }
+                return NULL;
+            }
+            // The castle can only see the void from doors, so that's handled above, otherwise unconditionally hide.
+            if (gCurrLevelNum == LEVEL_CASTLE) {
+                switchCase->selectedCase = BG_HIDE;
+                return NULL;
+            }
+            // If Mario isn't swimming, but is below -1000, then that means he's in the cove, where the sky is never visible.
+            if (gCurrLevelNum == LEVEL_JRB) {
+                if (gMarioState->pos[1] < -1000 && !(gMarioState->action & ACT_FLAG_SWIMMING)) {
+                    switchCase->selectedCase = BG_HIDE;
+                    return;
+                }
+            }
+            // It's possible in area 1 of DDD to look down enough, but still see the skybox, so add a height requirement too.
+            if (gCurrLevelNum == LEVEL_DDD && gCurrAreaIndex == 1) {
+                if (gMarioState->pos[1] < 0) {
+                    goto next;
+                }
+            } else {
+                next:
+                if (gCamera->pitch < 0x3000) {
+                    switchCase->selectedCase = BG_HIDE;
+                    print_text(32, 96, "hide");
+                }
+            }
+        }
+    } else {
+        switchCase->selectedCase = BG_SHOW;
     }
 
     return NULL;

@@ -518,6 +518,7 @@ struct Camera {
      *          vec3f_get_dist_and_angle() if you need the camera's yaw.
      */
     /*0x02*/ s16 yaw;
+            s16 pitch;
     /*0x04*/ Vec3f focus;
     /*0x10*/ Vec3f pos;
     /// The x coordinate of the "center" of the area. The camera will rotate around this point.

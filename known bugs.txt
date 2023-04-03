@@ -3,5 +3,5 @@ transition lerping occasionally has gaps in it
 some NPC's will disppear during dialogue, assuming throwmatrix strikes again
 certain point of the thwomp crashes the game trying to find_floor
 BBH demo crashes, pointing to "bhv_exclamation_box_loop"
-WF tower platforms generate collision every time they're spawned, they should only generate it once.
 WDW town camera is wierd, definitely not behaving right
+Star select and file select should be exempt from fog always

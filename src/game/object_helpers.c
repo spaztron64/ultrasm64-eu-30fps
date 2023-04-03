@@ -231,6 +231,16 @@ Gfx *geo_switch_BG(s32 callContext, struct GraphNode *node, UNUSED void *context
                     return NULL;
                 }
             }
+            // Most of the time you can't see the skybox unless you're looking up
+            if (gCurrLevelNum == LEVEL_WDW) {
+                if (gCamera->pitch < 0x4000 && gMarioState->pos[1] < 500) {
+                    switchCase->selectedCase = BG_HIDE;
+                } else if (gCamera->pitch < 0x3400 && gMarioState->pos[1] < 800) {
+                    switchCase->selectedCase = BG_HIDE;
+                } else if (gCamera->pitch < 0x2800 && gMarioState->pos[1] < 2500) {
+                    switchCase->selectedCase = BG_HIDE;
+                }
+            }
             // TTC, we want the opposite of the regular condition
             if (gCurrLevelNum == LEVEL_TTC) {
                 s32 pitch;

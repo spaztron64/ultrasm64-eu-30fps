@@ -43,5 +43,6 @@ extern Vec3f gCameraFocusAdd;
 
 void geo_process_node_and_siblings(struct GraphNode *firstNode);
 void geo_process_root(struct GraphNodeRoot *node, Vp *b, Vp *c, s32 clearColor);
+void update_graph_node_camera(struct GraphNodeCamera *gc);
 
 #endif // RENDERING_GRAPH_NODE_H

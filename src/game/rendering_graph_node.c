@@ -442,6 +442,51 @@ void setup_global_light(void) {
 }
 
 extern struct Object gObjectPool[OBJECT_POOL_CAPACITY];
+extern s16 sCurrPlayMode;
+
+/**
+ * Copy Lakitu's pos and foc into `gc`
+ */
+void update_graph_node_camera(struct GraphNodeCamera *gc) {
+
+    gc->rollScreen = gLakituState.roll;
+    vec3f_copy(gc->pos, gLakituState.pos);
+    vec3f_copy(gc->focus, gLakituState.focus);
+    zoom_out_if_paused_and_outside(gc);
+
+    if (gCameraPosAdd[0] + gCameraPosAdd[1] + gCameraPosAdd[2]) {
+        vec3f_add(gc->posLerp, gCameraPosAdd);
+        vec3f_add(gc->focusLerp, gCameraFocusAdd);
+        bzero(gCameraPosAdd, sizeof(Vec3f));
+        bzero(gCameraFocusAdd, sizeof(Vec3f));
+    } else {
+        if (!gMoveSpeed || sCurrPlayMode == 2) {
+            gc->posLerp[0] = gc->pos[0];
+            gc->posLerp[1] = gc->pos[1];
+            gc->posLerp[2] = gc->pos[2];
+            gc->focusLerp[0] = gc->focus[0];
+            gc->focusLerp[1] = gc->focus[1];
+            gc->focusLerp[2] = gc->focus[2];
+        } else {
+            gc->posLerp[0] = approach_pos_lerp(gc->posLerp[0], gc->pos[0]);
+            gc->posLerp[1] = approach_pos_lerp(gc->posLerp[1], gc->pos[1]);
+            gc->posLerp[2] = approach_pos_lerp(gc->posLerp[2], gc->pos[2]);
+            gc->focusLerp[0] = approach_pos_lerp(gc->focusLerp[0], gc->focus[0]);
+            gc->focusLerp[1] = approach_pos_lerp(gc->focusLerp[1], gc->focus[1]);
+            gc->focusLerp[2] = approach_pos_lerp(gc->focusLerp[2], gc->focus[2]);
+        }
+    }
+
+    for (u32 i = 0; i < OBJECT_POOL_CAPACITY; i++) {
+        if (gObjectPool[i].header.gfx.node.flags & GRAPH_RENDER_PRIORITY) {
+            if (gMoveSpeed && gObjectPool[i].header.gfx.bothMats >= 2) {
+                interpolate_node(&gObjectPool[i]);
+            } else {
+                warp_node(&gObjectPool[i]);
+            }
+        }
+    }
+}
 
 /**
  * Process a camera node.
@@ -459,39 +504,6 @@ void geo_process_camera(struct GraphNodeCamera *node) {
     mtxf_rotate_xy(rollMtx, node->rollScreen);
 
     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(rollMtx), G_MTX_PROJECTION | G_MTX_MUL | G_MTX_NOPUSH);
-    
-    if (gCameraPosAdd[0] + gCameraPosAdd[1] + gCameraPosAdd[2]) {
-        vec3f_add(node->posLerp, gCameraPosAdd);
-        vec3f_add(node->focusLerp, gCameraFocusAdd);
-        bzero(gCameraPosAdd, sizeof(Vec3f));
-        bzero(gCameraFocusAdd, sizeof(Vec3f));
-    } else {
-        if (!gMoveSpeed) {
-            node->posLerp[0] = node->pos[0];
-            node->posLerp[1] = node->pos[1];
-            node->posLerp[2] = node->pos[2];
-            node->focusLerp[0] = node->focus[0];
-            node->focusLerp[1] = node->focus[1];
-            node->focusLerp[2] = node->focus[2];
-        } else {
-            node->posLerp[0] = approach_pos_lerp(node->posLerp[0], node->pos[0]);
-            node->posLerp[1] = approach_pos_lerp(node->posLerp[1], node->pos[1]);
-            node->posLerp[2] = approach_pos_lerp(node->posLerp[2], node->pos[2]);
-            node->focusLerp[0] = approach_pos_lerp(node->focusLerp[0], node->focus[0]);
-            node->focusLerp[1] = approach_pos_lerp(node->focusLerp[1], node->focus[1]);
-            node->focusLerp[2] = approach_pos_lerp(node->focusLerp[2], node->focus[2]);
-        }
-    }
-
-    for (u32 i = 0; i < OBJECT_POOL_CAPACITY; i++) {
-        if (gObjectPool[i].header.gfx.node.flags & GRAPH_RENDER_PRIORITY) {
-            if (gMoveSpeed && gObjectPool[i].header.gfx.bothMats >= 2) {
-                interpolate_node(&gObjectPool[i]);
-            } else {
-                warp_node(&gObjectPool[i]);
-            }
-        }
-    }
 
     mtxf_lookat(gCameraTransform, node->posLerp, node->focusLerp, node->roll);
     Mat4* cameraMatrix = &gCameraTransform;

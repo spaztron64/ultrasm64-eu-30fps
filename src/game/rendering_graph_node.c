@@ -188,7 +188,7 @@ struct LevelFog gLevelFog[] = {
 u32 gFirstCycleRM = G_RM_PASS;
 
 void update_level_fog(Gfx **gfx) {
-    if (gLevelFog[gCurrLevelNum].areaFlags & (1 << (gCurrAreaIndex - 1))) {
+    if (gLevelFog[gCurrLevelNum].areaFlags & (1 << (gCurrAreaIndex - 1)) && gFileSelect == FALSE) {
         gDPSetFogColor((*gfx)++, gLevelFog[gCurrLevelNum].c[0], gLevelFog[gCurrLevelNum].c[1], gLevelFog[gCurrLevelNum].c[2], gLevelFog[gCurrLevelNum].c[3]);
         gSPFogPosition((*gfx)++, gLevelFog[gCurrLevelNum].near, gLevelFog[gCurrLevelNum].far);
         gSPSetGeometryMode((*gfx)++, G_FOG);

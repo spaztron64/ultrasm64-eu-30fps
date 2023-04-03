@@ -38,6 +38,7 @@ struct SPTask *gGfxSPTask;
 Gfx *gDisplayListHead;
 u8 *gGfxPoolEnd;
 struct GfxPool *gGfxPool;
+u8 gFileSelect;
 
 u32 gMoveSpeed = 1;
 f32 gLerpSpeed = 1;

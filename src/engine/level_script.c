@@ -396,6 +396,8 @@ static void level_cmd_begin_area(void) {
         }
     }
 
+    gFileSelect = FALSE;
+
     sCurrentCmd = CMD_NEXT;
 }
 

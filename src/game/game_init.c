@@ -818,7 +818,18 @@ void thread9_graphics(UNUSED void *arg) {
             gMoveSpeed = 1;
         }
 
-        if (gInstantWarp == FALSE || gInstantWarpReady == FALSE) {
+        
+        if (gDisableDraw == 1) {
+            gDisableDraw = 0;
+            gWarpTransition.isActive = FALSE;
+            if (!gWarpTransition.isActive) {
+                if (gWarpTransition.type & 1) {
+                    gWarpTransition.pauseRendering = TRUE;
+                } else {
+                    set_warp_transition_rgb(0, 0, 0);
+                }
+            }
+        } else if (gInstantWarp == FALSE || gInstantWarpReady == FALSE) {
             profiler_log_thread9_time(THREAD9_START);
             if (deltaTime < OS_USEC_TO_CYCLES(33333)/* || gPlatform & EMULATOR*/) { // > 30 fps
                 if (lastRenderedFrame - gGlobalTimer == 1) {
@@ -846,8 +857,7 @@ void thread9_graphics(UNUSED void *arg) {
 #ifdef PUPPYPRINT_DEBUG
             gVideoTime = osGetTime() - first;
             profiler_log_thread9_time(THREAD9_END);
-#endif
-
+#endif      
             display_and_vsync();
         }
         //If an instant warp has been triggered, this ensures the game isn't trying to render while switching the area.

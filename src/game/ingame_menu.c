@@ -3255,7 +3255,7 @@ s32 options_page_logic(void) {
             if (osGetMemSize() == 0x400000) {
                 screenMax = 3;
             } else {
-                screenMax = 3;
+                screenMax = 5;
             }
             if (gScreenMode == 255 && settingSwap == -1) {
                 gScreenMode = screenMax - 1;

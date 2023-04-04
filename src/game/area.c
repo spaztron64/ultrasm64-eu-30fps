@@ -35,6 +35,7 @@ s16 gCurrAreaIndex;
 s16 gSavedCourseNum;
 s16 gMenuOptSelectIndex;
 s16 gSaveOptSelectIndex;
+u8 gDisableDraw = FALSE;
 
 struct SpawnInfo *gMarioSpawnInfo = &gPlayerSpawnInfos[0];
 struct GraphNode **gLoadedGraphNodes = D_8033A160;
@@ -177,7 +178,7 @@ void clear_areas(void) {
     s32 i;
 
     gCurrentArea = NULL;
-    gWarpTransition.isActive = FALSE;
+    //gDisableDraw = TRUE;
     gWarpTransition.pauseRendering = FALSE;
     gMarioSpawnInfo->areaIndex = -1;
 
@@ -209,10 +210,10 @@ void clear_area_graph_nodes(void) {
     if (gCurrentArea != NULL) {
         geo_call_global_function_nodes(&gCurrentArea->unk04->node, GEO_CONTEXT_AREA_UNLOAD);
         gCurrentArea = NULL;
-        gWarpTransition.isActive = FALSE;
+        //gDisableDraw = TRUE;
     }
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 8; i++) {
         if (gAreaData[i].unk04 != NULL) {
             geo_call_global_function_nodes(&gAreaData[i].unk04->node, GEO_CONTEXT_AREA_INIT);
             gAreaData[i].unk04 = NULL;
@@ -250,7 +251,7 @@ void unload_area(void) {
 
         gCurrentArea->flags = 0;
         gCurrentArea = NULL;
-        gWarpTransition.isActive = FALSE;
+        //gDisableDraw = TRUE;
     }
 }
 
@@ -370,16 +371,9 @@ void hud_logic(void) {
         gMenuOptSelectIndex = ingame_menu_logic();
         if (gWarpTransition.isActive) {
             if (gWarpTransDelay == 0) {
-                gWarpTransition.isActive = !screen_transition_logic(0, gWarpTransition.type, gWarpTransition.time, &gWarpTransition.data);
-                if (!gWarpTransition.isActive) {
-                    if (gWarpTransition.type & 1) {
-                        gWarpTransition.pauseRendering = TRUE;
-                    } else {
-                        set_warp_transition_rgb(0, 0, 0);
-                    }
-                }
+                gDisableDraw = screen_transition_logic(0, gWarpTransition.type, gWarpTransition.time, &gWarpTransition.data);
             } else {
-                    gWarpTransDelay--;
+                gWarpTransDelay--;
             }
         }
     }
@@ -387,7 +381,9 @@ void hud_logic(void) {
 
 void render_game(void) {
     if (gCurrentArea != NULL && !gWarpTransition.pauseRendering && (gAreaUpdateCounter > 2 || gCurrLevelNum < 3)) {
-        geo_process_root(gCurrentArea->unk04, D_8032CE74, D_8032CE78, gFBSetColor);
+        if (gCurrentArea->unk04) {
+            geo_process_root(gCurrentArea->unk04, D_8032CE74, D_8032CE78, gFBSetColor);
+        }
 
         gSPViewport(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&D_8032CF00));
 

@@ -129,6 +129,7 @@ extern s16 gCurrAreaIndex;
 extern s16 gSavedCourseNum;
 extern s16 gMenuOptSelectIndex;
 extern s16 gSaveOptSelectIndex;
+extern u8 gDisableDraw;
 
 extern struct SpawnInfo *gMarioSpawnInfo;
 
@@ -155,5 +156,6 @@ void play_transition(s16 transType, s16 time, u8 red, u8 green, u8 blue);
 void play_transition_after_delay(s16 transType, s16 time, u8 red, u8 green, u8 blue, s16 delay);
 void render_game(void);
 void hud_logic(void);
+void set_warp_transition_rgb(u8 red, u8 green, u8 blue);
 
 #endif // AREA_H

@@ -20,15 +20,15 @@ u8 sTransitionColorFadeCount[4] = { 0 };
 u16 sTransitionTextureFadeCount[2] = { 0 };
 f32 sTransitionColorFadeCountLerp[4] = { 0 };
 f32 sTransitionTextureFadeCountLerp[2] = { 0 };
+u8 gReset[4];
 
 s32 set_and_reset_transition_fade_timer(s8 fadeTimer, u8 transTime) {
     s32 reset = FALSE;
 
     if (sTransitionColorFadeCount[fadeTimer] >= transTime) {
         sTransitionColorFadeCount[fadeTimer] = 0;
-        sTransitionColorFadeCountLerp[fadeTimer] = 0;
         sTransitionTextureFadeCount[fadeTimer] = 0;
-        sTransitionTextureFadeCountLerp[fadeTimer] = 0;
+        gReset[fadeTimer] = TRUE;
         reset = TRUE;
     }
     return reset;
@@ -37,7 +37,6 @@ s32 set_and_reset_transition_fade_timer(s8 fadeTimer, u8 transTime) {
 u32 set_transition_color_fade_alpha(s8 fadeType, s8 fadeTimer, u8 transTime) {
     u8 time = 0;
 
-    sTransitionColorFadeCountLerp[fadeTimer] = approach_f32_asymptotic(sTransitionColorFadeCountLerp[fadeTimer], sTransitionColorFadeCount[fadeTimer], gLerpSpeed);
     switch (fadeType) {
         case 0:
             time = sTransitionColorFadeCountLerp[fadeTimer] * 255.0f / (f32)(transTime - 1) + 0.5f; // fade in
@@ -225,8 +224,6 @@ void render_textured_transition(s8 fadeTimer, s8 transTime, struct WarpTransitio
         gSPDisplayList(gDisplayListHead++, dl_draw_quad_verts_0123);
         gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF);
         gSPDisplayList(gDisplayListHead++, dl_screen_transition_end);
-        sTransitionTextureFadeCountLerp[fadeTimer] = approach_f32_asymptotic(sTransitionTextureFadeCountLerp[fadeTimer], sTransitionTextureFadeCount[fadeTimer], gLerpSpeed);
-        sTransitionColorFadeCountLerp[fadeTimer] = approach_f32_asymptotic(sTransitionColorFadeCountLerp[fadeTimer], sTransitionColorFadeCount[fadeTimer], gLerpSpeed);
     }
 }
 
@@ -235,6 +232,25 @@ void render_screen_transition(s8 fadeTimer, s8 transType, u8 transTime, struct W
         f32 scaleVal = (f32) gScreenHeight / (f32) SCREEN_HEIGHT;
         create_dl_scale_matrix(MENU_MTX_PUSH, 1.0f, scaleVal, 1.0f);
     }*/
+
+    if (gReset[fadeTimer] == FALSE) {
+        if (sTransitionTextureFadeCount[fadeTimer] != 0) {
+            sTransitionTextureFadeCountLerp[fadeTimer] = approach_f32_asymptotic(sTransitionTextureFadeCountLerp[fadeTimer], sTransitionTextureFadeCount[fadeTimer], gLerpSpeed);
+        }
+        if (sTransitionColorFadeCount[fadeTimer] != 0) {
+            sTransitionColorFadeCountLerp[fadeTimer] = approach_f32_asymptotic(sTransitionColorFadeCountLerp[fadeTimer], sTransitionColorFadeCount[fadeTimer], gLerpSpeed);
+        }
+        
+        if (sTransitionColorFadeCount[fadeTimer] < 3) {
+            sTransitionColorFadeCountLerp[fadeTimer] = sTransitionColorFadeCount[fadeTimer];
+        }
+        if (sTransitionTextureFadeCount[fadeTimer] < 3) {
+            sTransitionTextureFadeCountLerp[fadeTimer] = sTransitionTextureFadeCount[fadeTimer];
+        }
+    }
+
+
+
     switch (transType) {
         case WARP_TRANSITION_FADE_FROM_COLOR:
             render_fade_transition_from_color(fadeTimer, transTime, transData);
@@ -266,6 +282,12 @@ void render_screen_transition(s8 fadeTimer, s8 transType, u8 transTime, struct W
         case WARP_TRANSITION_FADE_INTO_BOWSER:
             render_textured_transition(fadeTimer, transTime, transData, TEX_TRANS_BOWSER, TRANS_TYPE_MIRROR);
             break;
+    }
+    
+    if (gReset[fadeTimer]) {
+        sTransitionColorFadeCountLerp[fadeTimer] = 0;
+        sTransitionTextureFadeCountLerp[fadeTimer] = 0;
+        gReset[fadeTimer] = FALSE;
     }
 }
 
@@ -326,11 +348,10 @@ Gfx *geo_cannon_circle_base(s32 callContext, struct GraphNode *node, UNUSED Mat4
 }
 
 s32 screen_transition_logic(s8 fadeTimer, s8 transType, u8 transTime, struct WarpTransitionData *transData) {
+    sTransitionColorFadeCount[fadeTimer]++;
     if (transType == WARP_TRANSITION_FADE_FROM_COLOR || transType == WARP_TRANSITION_FADE_INTO_COLOR) {
-        sTransitionColorFadeCount[fadeTimer]++;
         return set_and_reset_transition_fade_timer(fadeTimer, transTime);
     } else {
-        sTransitionColorFadeCount[fadeTimer]++;
         sTransitionTextureFadeCount[fadeTimer] += transData->texTimer;
         return set_and_reset_transition_fade_timer(fadeTimer, transTime);
     }

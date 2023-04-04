@@ -63,6 +63,7 @@ extern u32 gMoveSpeed;
 extern u8 gLoadReset;
 extern u8 gInstantWarp;
 extern u16 gScreenWidth;
+extern u16 gScreenHeight;
 extern u8 gScreenSwapTimer;
 extern f32 gAspectRatio;
 extern u8 gGoddardReady;

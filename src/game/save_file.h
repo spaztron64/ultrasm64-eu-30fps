@@ -58,7 +58,7 @@ struct MainMenuSaveData {
     u8 soundMode: 2;
     u8 language: 2;
     s8 antiAliasing : 2;
-    u8 screenMode : 2;
+    u8 screenMode : 3;
     u8 dedither : 1;
     u8 frameCap : 1;
 

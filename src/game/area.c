@@ -112,16 +112,16 @@ void print_intro_text(void) {
     if ((gGlobalTimer & 31) < 20) {
         if (gControllerBits == 0) {
 #ifdef VERSION_EU
-            print_text_centered(gScreenWidth / 2, 20, gNoControllerMsg[language]);
+            print_text_centered(gScreenWidth / 2, (SCREEN_HEIGHT - gScreenHeight) + 20, gNoControllerMsg[language]);
 #else
-            print_text_centered(gScreenWidth / 2, 20, "NO CONTROLLER");
+            print_text_centered(gScreenWidth / 2, (SCREEN_HEIGHT - gScreenHeight) + 20, "NO CONTROLLER");
 #endif
         } else {
 #ifdef VERSION_EU
-            print_text(20, 20, "START");
+            print_text(20, (SCREEN_HEIGHT - gScreenHeight) + 20, "START");
 #else
-            print_text_centered(60, 38, "PRESS");
-            print_text_centered(60, 20, "START");
+            print_text_centered(60, (SCREEN_HEIGHT - gScreenHeight) + 38, "PRESS");
+            print_text_centered(60, (SCREEN_HEIGHT - gScreenHeight) + 20, "START");
 #endif
         }
     }
@@ -391,10 +391,10 @@ void render_game(void) {
 
         gSPViewport(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&D_8032CF00));
 
-        gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, gScreenWidth, SCREEN_HEIGHT);
+        gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, gScreenWidth, gScreenHeight);
         render_hud();
 
-        gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, gScreenWidth, SCREEN_HEIGHT);
+        gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, gScreenWidth, gScreenHeight);
         render_text_labels();
         do_cutscene_handler();
         
@@ -402,7 +402,7 @@ void render_game(void) {
             print_intro_text();
         }
         print_displaying_credits_entry();
-        gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, gScreenWidth, SCREEN_HEIGHT);
+        gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, gScreenWidth, gScreenHeight);
         render_menus_and_dialogs();
 
         if (gMenuOptSelectIndex != 0) {
@@ -412,7 +412,7 @@ void render_game(void) {
         if (D_8032CE78 != NULL) {
             make_viewport_clip_rect(D_8032CE78);
         } else
-            gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, gScreenWidth, SCREEN_HEIGHT);
+            gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, gScreenWidth, gScreenHeight);
 
         if (gWarpTransition.isActive) {
             render_screen_transition(0, gWarpTransition.type, gWarpTransition.time, &gWarpTransition.data);

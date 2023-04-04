@@ -207,8 +207,7 @@ void print_course_number(void) {
 #endif
     u8 courseNum[4];
 
-    f32 scaleVal = (f32) SCREEN_WIDTH / (f32)gScreenWidth;
-    create_dl_translation_matrix(MENU_MTX_PUSH, (gScreenWidth / 2) - 2.0f, 81.0f, 0.0f);
+    create_dl_translation_matrix(MENU_MTX_PUSH, (gScreenWidth / 2) - 2.0f, 81.0f * ((f32) gScreenHeight / (f32) SCREEN_HEIGHT), 0.0f);
 
     // Full wood texture in JP & US, lower part of it on EU
     gSPDisplayList(gDisplayListHead++, dl_menu_rgba16_wood_course);
@@ -279,9 +278,11 @@ void print_act_selector_strings(void) {
     s16 language = eu_get_language();
 #endif
 
-    f32 scaleVal = (f32) SCREEN_WIDTH / (f32)gScreenWidth;
     create_dl_ortho_matrix();
-    create_dl_scale_matrix(MENU_MTX_PUSH, scaleVal, 1.0f, 1.0f);
+    if (gScreenHeight <= 240) {
+        f32 scaleValX = (f32) SCREEN_WIDTH / (f32)gScreenWidth;
+        create_dl_scale_matrix(MENU_MTX_PUSH, scaleValX, 1.0f, 1.0f);
+    }
 
 #ifdef VERSION_EU
     switch (language) {
@@ -362,8 +363,14 @@ Gfx *geo_act_selector_strings(s16 callContext, UNUSED struct GraphNode *node, UN
 Gfx *geo_act_selector_strings(s16 callContext, UNUSED struct GraphNode *node) {
 #endif
     if (callContext == GEO_CONTEXT_RENDER) {
+        // Horrible hack that fixes file select text positioning without having to rewrite the whole damn thing.
+        s32 prevRes = gScreenWidth;
+        if (gScreenHeight > 240) {
+            gScreenWidth = 320;
+        }
         print_act_selector_strings();
-    }
+        gScreenWidth = prevRes;
+        }
     return NULL;
 }
 

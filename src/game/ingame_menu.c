@@ -1774,7 +1774,7 @@ void render_dialog_entries(void) {
     if (gLastDialogPageStrPos == -1 && gLastDialogResponse == 1) {
         render_dialog_triangle_choice();
     }
-    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 2, 2, gScreenWidth - gBorderHeight/2, SCREEN_HEIGHT - gBorderHeight/2);
+    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 2, 2, gScreenWidth - gBorderHeight/2, gScreenHeight - gBorderHeight/2);
     if (gLastDialogPageStrPos != -1 && gDialogBoxState == DIALOG_STATE_VERTICAL) {
         render_dialog_triangle_next(dialog->linesPerBox);
     }
@@ -2050,7 +2050,7 @@ void shade_screen(void) {
     create_dl_scale_matrix(MENU_MTX_NOPUSH,
                            GFX_DIMENSIONS_ASPECT_RATIO * SCREEN_HEIGHT / 130.0f, 3.0f, 1.0f);
 #else
-    create_dl_scale_matrix(MENU_MTX_NOPUSH, 4.5f, 3.4f, 1.0f);
+    create_dl_scale_matrix(MENU_MTX_NOPUSH, 4.5f, 4.5f, 1.0f);
 #endif
 
     gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 110);
@@ -3165,6 +3165,8 @@ u8 sOptionStrings[][32] = {
     {TEXT_SCREEN_MODE_4_3},
     {TEXT_SCREEN_MODE_16_10},
     {TEXT_SCREEN_MODE_16_9},
+    {TEXT_SCREEN_MODE_16_9},
+    {TEXT_SCREEN_MODE_16_9},
     {TEXT_FRAMECAP_60},
     {TEXT_FRAMECAP_30},
     {TEXT_DEDITHER_OFF},
@@ -3199,10 +3201,10 @@ void render_options_page(void) {
     print_generic_string(x, 240 - 144, sOptionStrings[0 + gAntiAliasing + 1]);
     x = get_str_x_pos_from_center(gScreenWidth / 2, sOptionStrings[3 + gScreenMode], 12.0f);
     print_generic_string(x, 240 - 160, sOptionStrings[3 + gScreenMode]);
-    x = get_str_x_pos_from_center(gScreenWidth / 2, sOptionStrings[8 + gDedither], 12.0f);
-    print_generic_string(x, 240 - 176, sOptionStrings[8 + gDedither]);
-    x = get_str_x_pos_from_center(gScreenWidth / 2, sOptionStrings[6 + gFrameCap], 12.0f);
-    print_generic_string(x, 240 - 192, sOptionStrings[6 + gFrameCap]);
+    x = get_str_x_pos_from_center(gScreenWidth / 2, sOptionStrings[10 + gDedither], 12.0f);
+    print_generic_string(x, 240 - 176, sOptionStrings[10 + gDedither]);
+    x = get_str_x_pos_from_center(gScreenWidth / 2, sOptionStrings[8 + gFrameCap], 12.0f);
+    print_generic_string(x, 240 - 192, sOptionStrings[8 + gFrameCap]);
     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
     y = (240 - 126) - (gOptionsSelection * 16);
     create_dl_translation_matrix(MENU_MTX_PUSH, (gScreenWidth / 2) - 64, y, 0);
@@ -3249,9 +3251,15 @@ s32 options_page_logic(void) {
             break;
         case 2:
             gScreenMode += settingSwap;
+            s32 screenMax;
+            if (osGetMemSize() == 0x400000) {
+                screenMax = 3;
+            } else {
+                screenMax = 5;
+            }
             if (gScreenMode == 255 && settingSwap == -1) {
-                gScreenMode = 2;
-            } else if (gScreenMode == 3) {
+                gScreenMode = screenMax - 1;
+            } else if (gScreenMode == screenMax) {
                 gScreenMode = 0;
             }
             gScreenSwapTimer = 3;

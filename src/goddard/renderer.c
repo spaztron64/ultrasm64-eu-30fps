@@ -815,7 +815,7 @@ void gdm_setup(void) {
 
 /* 24AC80 -> 24AD14; orig name: func_8019C4B0 */
 struct ObjView *make_view_withgrp(char *name, struct ObjGroup *grp) {
-    struct ObjView *view = make_view(name, (VIEW_DRAW | VIEW_ALLOC_ZBUF | VIEW_MOVEMENT), 1, 0, 0, gScreenWidth, SCREEN_HEIGHT, grp);
+    struct ObjView *view = make_view(name, (VIEW_DRAW | VIEW_ALLOC_ZBUF | VIEW_MOVEMENT), 1, 0, 0, gScreenWidth, gScreenHeight, grp);
 
     view->lights = gGdLightGroup;
     return view;
@@ -2272,7 +2272,7 @@ void Unknown801A4F58(void) {
     cbufOn = sScreenView->colourBufs[gGdFrameBufNum];
     zbuf = sScreenView->zbuf;
 
-    for (i = 0; i < (gScreenWidth * SCREEN_HEIGHT); i++) { // L801A4FCC
+    for (i = 0; i < (gScreenWidth * gScreenHeight); i++) { // L801A4FCC
         colour = cbufOff[i];
         if (colour) {
             r = (s16)(colour >> 11 & 0x1F);
@@ -2371,7 +2371,7 @@ void gd_init(void) {
 
     sScreenView =
         make_view("screenview2", (VIEW_2_COL_BUF | VIEW_UNK_1000 | VIEW_COLOUR_BUF | VIEW_Z_BUF), 0, 0,
-                  0, gScreenWidth, SCREEN_HEIGHT, NULL);
+                  0, gScreenWidth, gScreenHeight, NULL);
     sScreenView->colour.r = 0.0f;
     sScreenView->colour.g = 0.0f;
     sScreenView->colour.b = 0.0f;
@@ -2390,7 +2390,7 @@ void gd_init(void) {
     gGdCtrl.newStartPress = FALSE;
     gGdCtrl.prevFrame = &gGdCtrlPrev;
     gGdCtrl.csrX = gScreenWidth / 2;
-    gGdCtrl.csrY = SCREEN_HEIGHT / 2;
+    gGdCtrl.csrY = gScreenHeight / 2;
     gGdCtrl.dragStartFrame = -1000;
 }
 
@@ -2472,7 +2472,7 @@ void Unknown801A5C80(struct ObjGroup *parentGroup) {
 
     debugGroup = (struct ObjGroup *) d_use_obj("debugg");
     make_view("debugview", (VIEW_2_COL_BUF | VIEW_ALLOC_ZBUF | VIEW_1_CYCLE | VIEW_DRAW), 2, 0, 0, gScreenWidth,
-              SCREEN_HEIGHT, debugGroup);
+              gScreenHeight, debugGroup);
 
     if (parentGroup != NULL) {
         addto_group(parentGroup, &debugGroup->header);

@@ -171,8 +171,8 @@ s32 calculate_skybox_scaled_y(s8 player, UNUSED f32 fov) {
     if (scaledY > SKYBOX_HEIGHT) {
         scaledY = SKYBOX_HEIGHT;
     }
-    if (scaledY < SCREEN_HEIGHT) {
-        scaledY = SCREEN_HEIGHT;
+    if (scaledY < gScreenHeight) {
+        scaledY = gScreenHeight;
     }
     return scaledY;
 }

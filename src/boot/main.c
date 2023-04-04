@@ -305,6 +305,9 @@ void check_stack_validity(void) {
     gThread6Stack[THREAD6_STACK - 1]++;
     debug_assert(gThread6Stack[0] != gThread6Stack[THREAD6_STACK - 1], "Thread 6 stack overflow.");
 #endif
+    gThread9Stack[0]++;
+    gThread9Stack[THREAD9_STACK - 1]++;
+    debug_assert(gThread9Stack[0] != gThread9Stack[THREAD9_STACK - 1], "Thread 9 stack overflow.");
 }
 #endif
 
@@ -342,6 +345,8 @@ void thread3_main(UNUSED void *arg) {
     gThread6Stack[0] = 0;
     gThread6Stack[THREAD6_STACK - 1] = 0;
 #endif
+    gThread9Stack[0] = 0;
+    gThread9Stack[THREAD9_STACK - 1] = 0;
 #endif
 
     create_thread(&gSoundThread, 4, thread4_sound, NULL, gThread4Stack + THREAD4_STACK, 20);

@@ -331,7 +331,7 @@ void set_hud_camera_status(s16 status) {
 void render_hud_camera_status(void) {
     u8 *(*cameraLUT)[6] = segmented_to_virtual(&main_hud_camera_lut);
     s32 x = gScreenWidth - (54);
-    s32 y = 205;
+    s32 y = gScreenHeight - 35;
 
     if (sCameraHUD.status == CAM_STATUS_NONE) {
         return;
@@ -422,7 +422,7 @@ void render_profiler(void) {
     print_text_fmt_int(32, 240 - 48, "CPU %d", (u32) totalCPUReads[PROFILER_COUNT + 1]);
     print_text_fmt_int(32, 240 - 64, "RSP %d", (u32) totalRSPReads[PROFILER_COUNT + 1]);
     print_text_fmt_int(32, 240 - 80, "RDP %d", (u32) totalRDPReads[PROFILER_COUNT + 1]);
-    print_text_fmt_int(32, 240 - 216, "RAM %x", (u32) sPoolFreeSpace);
+    print_text_fmt_int(32, 240 - (gScreenHeight - 24), "RAM %x", (u32) sPoolFreeSpace);
 }
 
 void profiler_logic(void) {

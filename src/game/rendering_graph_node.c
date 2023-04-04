@@ -334,7 +334,7 @@ void geo_process_perspective(struct GraphNodePerspective *node) {
         u16 perspNorm;
         Mtx *mtx = alloc_display_listGRAPH(sizeof(*mtx));
 
-        f32 aspect = (f32) gScreenWidth / (f32) SCREEN_HEIGHT;
+        f32 aspect = (f32) gScreenWidth / (f32) gScreenHeight;
 
         guPerspective(mtx, &perspNorm, node->fov, aspect, node->near, node->far, 1.0f);
         gSPPerspNormalize(gDisplayListHead++, perspNorm);
@@ -673,7 +673,7 @@ void geo_process_background(struct GraphNodeBackground *node) {
         gDPPipeSync(gfx++);
         gDPSetCycleType(gfx++, G_CYC_FILL);
         gDPSetFillColor(gfx++, node->background);
-        gDPFillRectangle(gfx++, 0, 0, gScreenWidth - 1, SCREEN_HEIGHT - 1);
+        gDPFillRectangle(gfx++, 0, 0, gScreenWidth - 1, gScreenHeight - 1);
         gDPPipeSync(gfx++);
         gDPSetCycleType(gfx++, G_CYC_1CYCLE);
         gSPEndDisplayList(gfx++);
@@ -1063,12 +1063,15 @@ void geo_process_object(struct Object *node) {
             warp_node(node);
     }
 
-    /*if (node->header.gfx.matrixID[gThrowMatSwap ^ 1] != MATRIX_NULL) {
-        node->header.gfx.throwMatrix = &gThrowMatStack[gThrowMatSwap ^ 1][node->header.gfx.matrixID[gThrowMatSwap ^ 1]];
+    if (gFileSelect) {
+        if (node->header.gfx.matrixID[gThrowMatSwap ^ 1] != MATRIX_NULL) {
+            node->header.gfx.throwMatrix = &gThrowMatStack[gThrowMatSwap ^ 1][node->header.gfx.matrixID[gThrowMatSwap ^ 1]];
+        } else {
+            node->header.gfx.throwMatrix = NULL;
+        }
     } else {
         node->header.gfx.throwMatrix = NULL;
-    }*/
-    node->header.gfx.throwMatrix = NULL;
+    }
 
     if (node->header.gfx.bothMats < 5) {
         node->header.gfx.bothMats++;
@@ -1334,8 +1337,8 @@ void geo_process_root(struct GraphNodeRoot *node, Vp *b, Vp *c, s32 clearColor) 
         gCurLookAt->l[1].l.colc[1] = 0x80;
         gMatStackIndex = 0;
         gCurrAnimType = 0;
-        vec3s_set(viewport->vp.vtrans, gScreenWidth * 2, SCREEN_HEIGHT * 2, 511);
-        vec3s_set(viewport->vp.vscale, gScreenWidth * 2, SCREEN_HEIGHT * 2, 511);
+        vec3s_set(viewport->vp.vtrans, gScreenWidth * 2, gScreenHeight * 2, 511);
+        vec3s_set(viewport->vp.vscale, gScreenWidth * 2, gScreenHeight * 2, 511);
         if (b != NULL) {
             clear_framebuffer(clearColor);
             make_viewport_clip_rect(b);

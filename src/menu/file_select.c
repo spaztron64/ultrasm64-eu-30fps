@@ -293,7 +293,11 @@ f32 sFileSelectScale = 1.0f;
  */
 void beh_yellow_background_menu_init(void) {
     gCurrentObject->oFaceAngleYaw = 0x8000;
-    sFileSelectScale = ((f32) gScreenWidth / (f32)SCREEN_WIDTH);
+    if (gScreenHeight <= 240) {
+        sFileSelectScale = ((f32) gScreenWidth / (f32)SCREEN_WIDTH);
+    } else {
+        sFileSelectScale = 1.0f;
+    }
     gCurrentObject->oMenuButtonScale = sFileSelectScale * 9.0f;
     sMainMenuBG = gCurrentObject;
 }
@@ -321,7 +325,9 @@ void show_main_menu(void) {
  * Properly scales the background in the main menu.
  */
 void beh_yellow_background_menu_loop(void) {
-    sFileSelectScale = ((f32) gScreenWidth / (f32)SCREEN_WIDTH);
+    if (gScreenHeight <= 240) {
+        sFileSelectScale = ((f32) gScreenWidth / (f32)SCREEN_WIDTH);
+    }
     gCurrentObject->header.gfx.scale[0] = sFileSelectScale * 9.0f;
     gCurrentObject->header.gfx.scale[1] = 9.0f;
     gCurrentObject->header.gfx.scale[2] = 9.0f;
@@ -2891,8 +2897,10 @@ void print_save_file_scores(s8 fileIndex) {
 static void print_file_select_strings(void) {
 
     create_dl_ortho_matrix();
-    f32 scaleVal = (f32) SCREEN_WIDTH / (f32)gScreenWidth;
-    create_dl_scale_matrix(MENU_MTX_PUSH, scaleVal, 1.0f, 1.0f);
+    if (gScreenHeight <= 240) {
+        f32 scaleValX = (f32) SCREEN_WIDTH / (f32)gScreenWidth;
+        create_dl_scale_matrix(MENU_MTX_PUSH, scaleValX, 1.0f, 1.0f);
+    }
     switch (sSelectedButtonID) {
         case MENU_BUTTON_NONE:
 #ifdef VERSION_EU
@@ -2949,8 +2957,14 @@ static void print_file_select_strings(void) {
  */
 Gfx *geo_file_select_strings_and_menu_cursor(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx) {
     if (callContext == GEO_CONTEXT_RENDER) {
+        // Horrible hack that fixes file select text positioning without having to rewrite the whole damn thing.
+        s32 prevRes = gScreenWidth;
+        if (gScreenHeight > 240) {
+            gScreenWidth = 320;
+        }
         print_file_select_strings();
         print_menu_cursor();
+        gScreenWidth = prevRes;
     }
     return NULL;
 }

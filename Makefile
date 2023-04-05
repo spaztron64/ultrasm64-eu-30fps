@@ -115,12 +115,12 @@ endif
 ifeq ($(COMPILER),gcc)
   NON_MATCHING := 1
   MIPSISET     := -mips3
-  OPT_FLAGS    := -Os
+  OPT_FLAGS    := -Ofast
 else ifeq ($(COMPILER),clang)
   NON_MATCHING := 1
   # clang doesn't support ABI 'o32' for 'mips3'
   MIPSISET     := -mips2
-  OPT_FLAGS    := -O2
+  OPT_FLAGS    := -Ofast
 endif
 
 
@@ -347,8 +347,8 @@ export LD_LIBRARY_PATH=./tools
 AS        := $(CROSS)as
 ifeq ($(COMPILER),gcc)
   CC      := $(CROSS)gcc
-  $(BUILD_DIR)/actors/%.o:           OPT_FLAGS := -Os -mlong-calls -ffast-math
-  $(BUILD_DIR)/levels/%.o:           OPT_FLAGS := -Os -mlong-calls -ffast-math
+  $(BUILD_DIR)/actors/%.o:           OPT_FLAGS := -Ofast -mlong-calls -ffast-math
+  $(BUILD_DIR)/levels/%.o:           OPT_FLAGS := -Ofast -mlong-calls -ffast-math
 else ifeq ($(COMPILER),clang)
   CC      := clang
 endif
@@ -526,6 +526,27 @@ $(BUILD_DIR)/src/usb/usb.o: OPT_FLAGS := -O0
 $(BUILD_DIR)/src/usb/usb.o: CFLAGS += -Wno-unused-variable -Wno-sign-compare -Wno-unused-function
 $(BUILD_DIR)/src/usb/debug.o: OPT_FLAGS := -O0
 $(BUILD_DIR)/src/usb/debug.o: CFLAGS += -Wno-unused-parameter -Wno-maybe-uninitialized
+
+$(BUILD_DIR)/src/game/rendering_graph_node.o: OPT_FLAGS := -Os -ffast-math
+$(BUILD_DIR)/src/engine/math_util.o: OPT_FLAGS := -Os -ffast-math
+$(BUILD_DIR)/src/engine/collision_load.o: OPT_FLAGS := -Os -ffast-math
+$(BUILD_DIR)/src/engine/surface_collision.o: OPT_FLAGS := -Os -ffast-math
+$(BUILD_DIR)/src/engine/surface_load.o: OPT_FLAGS := -Os -ffast-math
+
+$(BUILD_DIR)/src/goddard/debug_utils.o: OPT_FLAGS := -Os -ffast-math
+$(BUILD_DIR)/src/goddard/draw_objects.o: OPT_FLAGS := -Os -ffast-math
+$(BUILD_DIR)/src/goddard/dynlist_proc.o: OPT_FLAGS := -Os -ffast-math
+$(BUILD_DIR)/src/goddard/gd_main.o: OPT_FLAGS := -Os -ffast-math
+$(BUILD_DIR)/src/goddard/gd_math.o: OPT_FLAGS := -Os -ffast-math
+$(BUILD_DIR)/src/goddard/gd_memory.o: OPT_FLAGS := -Os -ffast-math
+$(BUILD_DIR)/src/goddard/joints.o: OPT_FLAGS := -Os -ffast-math
+$(BUILD_DIR)/src/goddard/objects.o: OPT_FLAGS := -Os -ffast-math
+$(BUILD_DIR)/src/goddard/particles.o: OPT_FLAGS := -Os -ffast-math
+$(BUILD_DIR)/src/goddard/renderer.o: OPT_FLAGS := -Os -ffast-math
+$(BUILD_DIR)/src/goddard/sfx.o: OPT_FLAGS := -Os -ffast-math
+$(BUILD_DIR)/src/goddard/shape_helper.o: OPT_FLAGS := -Os -ffast-math
+$(BUILD_DIR)/src/goddard/skin.o: OPT_FLAGS := -Os -ffast-math
+$(BUILD_DIR)/src/goddard/skin_movement.o: OPT_FLAGS := -Os -ffast-math
 
 ALL_DIRS := $(BUILD_DIR) $(addprefix $(BUILD_DIR)/,$(SRC_DIRS) $(GODDARD_SRC_DIRS) $(LIBZ_SRC_DIRS) $(ULTRA_BIN_DIRS) $(BIN_DIRS) $(TEXTURE_DIRS) $(TEXT_DIRS) $(SOUND_SAMPLE_DIRS) $(addprefix levels/,$(LEVEL_DIRS)) rsp include) $(YAY0_DIR) $(addprefix $(YAY0_DIR)/,$(VERSION)) $(SOUND_BIN_DIR) $(SOUND_BIN_DIR)/sequences/$(VERSION)
 

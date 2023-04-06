@@ -27,6 +27,7 @@ extern OSThread gMainThread;
 extern OSThread gGameLoopThread;
 extern OSThread gSoundThread;
 extern OSThread hvqmThread;
+extern OSThread gVideoLoopThread;
 #if ENABLE_RUMBLE
 extern OSThread gRumblePakThread;
 

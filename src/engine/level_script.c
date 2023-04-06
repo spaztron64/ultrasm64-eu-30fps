@@ -22,6 +22,7 @@
 #include "surface_collision.h"
 #include "surface_load.h"
 #include "game/level_update.h"
+#include "game/main.h"
 
 #define CMD_GET(type, offset) (*(type *) (CMD_PROCESS_OFFSET(offset) + (u8 *) sCurrentCmd))
 
@@ -309,6 +310,7 @@ static void level_cmd_init_level(void) {
     clear_areas();
     main_pool_push_state();
 
+    gSkipRender = TRUE;
     sCurrentCmd = CMD_NEXT;
 }
 
@@ -336,6 +338,8 @@ void unmap_tlbs(void) {
 }
 
 static void level_cmd_clear_level(void) {
+    osRecvMesg(&gVideoVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
+    gSkipRender = TRUE;
     clear_objects();
     clear_area_graph_nodes();
     clear_areas();
@@ -354,6 +358,7 @@ static void level_cmd_alloc_level_pool(void) {
         sLevelPool = alloc_only_pool_init(main_pool_available() - sizeof(struct AllocOnlyPool),
                                           MEMORY_POOL_LEFT);
     }
+    gSkipRender = FALSE;
 
     sCurrentCmd = CMD_NEXT;
 }

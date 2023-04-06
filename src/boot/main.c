@@ -356,7 +356,6 @@ void thread3_main(UNUSED void *arg) {
     osStartThread(&gGameLoopThread);
 
     create_thread(&gVideoLoopThread, 9, thread9_graphics, NULL, gThread9Stack + THREAD9_STACK, 1);
-    osStartThread(&gVideoLoopThread);
 
     while (TRUE) {
         OSMesg msg;

@@ -26,6 +26,7 @@
 struct SpawnInfo gPlayerSpawnInfos[1];
 struct GraphNode *D_8033A160[0x100];
 struct Area gAreaData[8];
+volatile u8 gSkipRender = FALSE;
 
 struct WarpTransition gWarpTransition;
 
@@ -365,7 +366,7 @@ void play_transition_after_delay(s16 transType, s16 time, u8 red, u8 green, u8 b
 }
 
 void hud_logic(void) {
-    if (gCurrentArea != NULL && !gWarpTransition.pauseRendering) {
+    if (gCurrentArea != NULL && !gWarpTransition.pauseRendering && gSkipRender == FALSE) {
         cutscene_handler_logic();
         ui_logic();
         gMenuOptSelectIndex = ingame_menu_logic();

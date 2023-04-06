@@ -67,6 +67,7 @@ extern u16 gScreenHeight;
 extern u8 gScreenSwapTimer;
 extern f32 gAspectRatio;
 extern u8 gGoddardReady;
+extern OSMesgQueue gVideoVblankQueue;
 
 // this area is the demo input + the header. when the demo is loaded in, there is a header the size
 // of a single word next to the input list. this word is the current ID count.

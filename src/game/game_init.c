@@ -377,6 +377,17 @@ void check_cache_emulation() {
 }
 
 /**
+ * Selects the location of the F3D output buffer (gDisplayListHead).
+ */
+void select_gfx_pool(void) {
+    gGfxPool = &gGfxPools[gVideoTimer % ARRAY_COUNT(gGfxPools)];
+    set_segment_base_addr(1, gGfxPool->buffer);
+    gGfxSPTask = &gGfxPool->spTask;
+    gDisplayListHead = (Gfx *) ((u32)gGfxPool->buffer);
+    gGfxPoolEnd = (u8 *) (gGfxPool->buffer + GFX_POOL_SIZE);
+}
+
+/**
  * Initial settings for the first rendered frame.
  */
 void render_init(void) {
@@ -386,11 +397,7 @@ void render_init(void) {
     } else {
         gIsConsole = 1;
     }
-    gGfxPool = &gGfxPools[0];
-    set_segment_base_addr(1, gGfxPool->buffer);
-    gGfxSPTask = &gGfxPool->spTask;
-    gDisplayListHead = gGfxPool->buffer;
-    gGfxPoolEnd = (u8 *)(gGfxPool->buffer + GFX_POOL_SIZE);
+    select_gfx_pool();
     init_rcp();
     clear_framebuffer(0);
     end_master_display_list();
@@ -399,17 +406,6 @@ void render_init(void) {
     // Skip incrementing the initial framebuffer index on emulators other than Ares so that they display immediately as the Gfx task finishes
         sRenderingFramebuffer++;
     gVideoTimer++;
-}
-
-/**
- * Selects the location of the F3D output buffer (gDisplayListHead).
- */
-void select_gfx_pool(void) {
-    gGfxPool = &gGfxPools[gVideoTimer % ARRAY_COUNT(gGfxPools)];
-    set_segment_base_addr(1, gGfxPool->buffer);
-    gGfxSPTask = &gGfxPool->spTask;
-    gDisplayListHead = gGfxPool->buffer;
-    gGfxPoolEnd = (u8 *) (gGfxPool->buffer + GFX_POOL_SIZE);
 }
 
 /**
@@ -693,6 +689,7 @@ void load_config(void) {
  */
 void thread5_game_loop(UNUSED void *arg) {
     struct LevelCommand *addr;
+    u32 thread9Start = FALSE;
 
     setup_game_memory();
 #if ENABLE_RUMBLE
@@ -747,6 +744,10 @@ void thread5_game_loop(UNUSED void *arg) {
         profiler_log_thread5_time(THREAD5_END);
         gGameTime = osGetTime() - first;
 #endif
+        if (thread9Start == FALSE) {
+            osStartThread(&gVideoLoopThread);
+            thread9Start = TRUE;
+        }
         osRecvMesg(&gGameVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
         osRecvMesg(&gGameVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
 #if 0

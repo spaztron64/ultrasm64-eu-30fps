@@ -1,5 +1,3 @@
-mirror mario be missing, my guess is throwmatrix, though it's possible matstack is also involved
-transition lerping occasionally has gaps in it
 certain point of the thwomp crashes the game trying to find_floor
 BBH demo crashes, pointing to "bhv_exclamation_box_loop"
 Grabbing bowser activates the far camera, maybe the one as if he was already thrown

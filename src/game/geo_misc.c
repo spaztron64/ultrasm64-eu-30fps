@@ -15,7 +15,9 @@
 #include "object_list_processor.h"
 #include "rendering_graph_node.h"
 #include "save_file.h"
+#include "game_init.h"
 #include "segment2.h"
+#include "ingame_menu.h"
 
 /**
  * @file geo_misc.c
@@ -199,7 +201,7 @@ Gfx *geo_exec_cake_end_screen(s32 callContext, struct GraphNode *node, UNUSED f3
     Gfx *displayListHead = NULL;
 
     if (callContext == GEO_CONTEXT_RENDER) {
-        displayList = alloc_display_list(3 * sizeof(*displayList));
+        displayList = alloc_display_list(6 * sizeof(*displayList));
         displayListHead = displayList;
 
         generatedNode->fnNode.node.flags = (generatedNode->fnNode.node.flags & 0xFF) | 0x100;
@@ -207,6 +209,8 @@ Gfx *geo_exec_cake_end_screen(s32 callContext, struct GraphNode *node, UNUSED f3
         gSPDisplayList(displayListHead++, dl_cake_end_screen);
 #else
         gSPDisplayList(displayListHead++, dl_proj_mtx_fullscreen);
+        gDPSetCycleType(displayListHead++, G_CYC_1CYCLE);
+        gDPSetRenderMode(displayListHead++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
 #endif
 #ifdef VERSION_EU
 #ifdef EU_CUSTOM_CAKE_FIX
@@ -225,6 +229,20 @@ Gfx *geo_exec_cake_end_screen(s32 callContext, struct GraphNode *node, UNUSED f3
         }
 #endif
 #else
+        if (gScreenHeight <= 240) {
+            f32 scaleVal = (f32) SCREEN_WIDTH / (f32) gScreenWidth;
+            Mtx *matrix = (Mtx *) alloc_display_list(sizeof(Mtx));
+            Mtx *translate = (Mtx *) alloc_display_list(sizeof(Mtx));
+
+            if (matrix == NULL || translate == NULL) {
+                return NULL;
+            }
+
+            guScale(matrix, scaleVal, 1.0f, 1.0f);
+            guTranslate(translate, (gScreenWidth - SCREEN_WIDTH) / 2 ,0.0f, 0.0f);
+            gSPMatrix(displayListHead++, VIRTUAL_TO_PHYSICAL(matrix), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
+            gSPMatrix(displayListHead++, VIRTUAL_TO_PHYSICAL(translate), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
+        }
         gSPDisplayList(displayListHead++, dl_cake_end_screen);
 #endif
         gSPEndDisplayList(displayListHead);

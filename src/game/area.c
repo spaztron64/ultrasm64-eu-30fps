@@ -380,9 +380,48 @@ void hud_logic(void) {
     }
 }
 
+f32 gActionTimerLerp = 0;
+
+void viewport_overrides(void) {
+    f32 scaleVal = (f32) gScreenWidth / (f32) SCREEN_WIDTH;
+    if (gMarioState->action == ACT_CREDITS_CUTSCENE) {
+        s32 width;
+        s32 height;
+
+        gActionTimerLerp = approach_f32_asymptotic(gActionTimerLerp, gMarioState->actionState, gLerpSpeed);
+
+        if (gMarioState->actionTimer >= TIMER_CREDITS_SHOW) {
+
+            width = gActionTimerLerp * (640 * scaleVal) / 100;
+            height = gActionTimerLerp * 480 / 100;
+
+            sEndCutsceneVp.vp.vscale[0] = (640 * scaleVal) - width;
+            sEndCutsceneVp.vp.vscale[1] = 480 - height;
+            sEndCutsceneVp.vp.vtrans[0] =
+                (gCurrCreditsEntry->unk02 & 0x10 ? width : -width) * 56 / 100 + (640 * scaleVal);
+            sEndCutsceneVp.vp.vtrans[1] =
+                (gCurrCreditsEntry->unk02 & 0x20 ? height : -height) * 66 / 100 + 480;
+
+            override_viewport_and_clip(&sEndCutsceneVp, 0, 0, 0, 0);
+        } else {
+            gActionTimerLerp = gMarioState->actionState;
+        }
+    } else if (gMarioState->action == ACT_END_PEACH_CUTSCENE) {
+        gActionTimerLerp = 0.0f;
+        sEndCutsceneVp.vp.vscale[0] = 640 * scaleVal;
+        sEndCutsceneVp.vp.vscale[1] = 360;
+        sEndCutsceneVp.vp.vtrans[0] = 640 * scaleVal;
+        sEndCutsceneVp.vp.vtrans[1] = 480;
+        override_viewport_and_clip(NULL, &sEndCutsceneVp, 0, 0, 0);
+    } else {
+        gActionTimerLerp = 0.0f;
+    }
+}
+
 void render_game(void) {
     if (gCurrentArea != NULL && !gWarpTransition.pauseRendering && (gAreaUpdateCounter > 2 || gCurrLevelNum < 3)) {
         if (gCurrentArea->unk04) {
+            viewport_overrides();
             geo_process_root(gCurrentArea->unk04, D_8032CE74, D_8032CE78, gFBSetColor);
         }
 

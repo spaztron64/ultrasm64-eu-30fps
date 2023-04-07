@@ -27,6 +27,7 @@
 #include "sram.h"
 #endif
 #include "engine/math_util.h"
+#include "level_update.h"
 #include "rendering_graph_node.h"
 #include <prevent_bss_reordering.h>
 
@@ -748,6 +749,14 @@ void thread5_game_loop(UNUSED void *arg) {
             osStartThread(&gVideoLoopThread);
             thread9Start = TRUE;
         }
+
+        if (gPlayer1Controller->buttonPressed & D_JPAD) {
+            level_trigger_warp(gMarioState, 0x17);
+        }
+        if (gPlayer1Controller->buttonPressed & R_JPAD) {
+            level_trigger_warp(gMarioState, 0x15);
+        }
+
         osRecvMesg(&gGameVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
         osRecvMesg(&gGameVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
 #if 0

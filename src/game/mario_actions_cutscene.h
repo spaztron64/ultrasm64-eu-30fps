@@ -17,6 +17,22 @@
 #define MARIO_DIALOG_STATUS_START 1
 #define MARIO_DIALOG_STATUS_SPEAK 2
 
+#if defined(VERSION_EU)
+    #define TIMER_CREDITS_SHOW      51
+    #define TIMER_CREDITS_PROGRESS  80
+    #define TIMER_CREDITS_WARP     160
+#elif defined(VERSION_SH)
+    #define TIMER_CREDITS_SHOW      61
+    #define TIMER_CREDITS_PROGRESS  90
+    #define TIMER_CREDITS_WARP     204
+#else
+    #define TIMER_CREDITS_SHOW      61
+    #define TIMER_CREDITS_PROGRESS  90
+    #define TIMER_CREDITS_WARP     200
+#endif
+
+extern Vp sEndCutsceneVp;
+
 void print_displaying_credits_entry(void);
 void bhv_end_peach_loop(void);
 void bhv_end_toad_loop(void);

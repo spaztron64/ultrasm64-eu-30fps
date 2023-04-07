@@ -233,6 +233,9 @@ Gfx *geo_switch_BG(s32 callContext, struct GraphNode *node, UNUSED void *context
             }
             // Most of the time you can't see the skybox unless you're looking up
             if (gCurrLevelNum == LEVEL_WDW) {
+                if (gMarioState->action == ACT_CREDITS_CUTSCENE) {
+                    return NULL;
+                }
                 if (gCamera->pitch < 0x4000 && gMarioState->pos[1] < 500) {
                     switchCase->selectedCase = BG_HIDE;
                 } else if (gCamera->pitch < 0x3400 && gMarioState->pos[1] < 800) {
@@ -252,7 +255,7 @@ Gfx *geo_switch_BG(s32 callContext, struct GraphNode *node, UNUSED void *context
                 if (gCamera->pitch > 0x3000) {
                     switchCase->selectedCase = BG_HIDE;
                 }
-                return;
+                return NULL;
             }
             // It's possible in area 1 of DDD to look down enough, but still see the skybox, so add a height requirement too.
             if (gCurrLevelNum == LEVEL_DDD && gCurrAreaIndex == 1) {

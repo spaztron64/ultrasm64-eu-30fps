@@ -37,7 +37,7 @@ static struct Object *sEndJumboStarObj;
 static s16 sEndPeachAnimation;
 static s16 sEndToadAnims[2];
 
-static Vp sEndCutsceneVp = { { { 640, 480, 511, 0 }, { 640, 480, 511, 0 } } };
+Vp sEndCutsceneVp = { { { 640, 480, 511, 0 }, { 640, 480, 511, 0 } } };
 static struct CreditsEntry *sDispCreditsEntry = NULL;
 
 // related to peach gfx?
@@ -165,11 +165,11 @@ void print_displaying_credits_entry(void) {
         }
 
         dl_rgba16_stop_cutscene_msg_fade();
-        sDispCreditsEntry = NULL;
     }
 }
 
 void bhv_end_peach_loop(void) {
+    gCurrentObject->header.gfx.node.flags |= GRAPH_RENDER_PRIORITY;
     cur_obj_init_animation_with_sound(sEndPeachAnimation);
     if (cur_obj_check_if_near_animation_end()) {
         // anims: 0-3, 4, 5, 6-8, 9, 10, 11
@@ -2211,7 +2211,7 @@ static void end_peach_cutscene_dialog_1(struct MarioState *m) {
 #else
         case 230:
 #endif
-            set_cutscene_message(160, 227, 0, 30);
+            set_cutscene_message(gScreenWidth / 2, 227, 0, 30);
 #ifndef VERSION_JP
             seq_player_lower_volume(SEQ_PLAYER_LEVEL, 60, 40);
             play_sound(SOUND_PEACH_MARIO, sEndPeachObj->header.gfx.cameraToObject);
@@ -2232,7 +2232,7 @@ static void end_peach_cutscene_dialog_1(struct MarioState *m) {
 #else
         case 290:
 #endif
-            set_cutscene_message(160, 227, 1, 60);
+            set_cutscene_message(gScreenWidth / 2, 227, 1, 60);
 #ifndef VERSION_JP
             play_sound(SOUND_PEACH_POWER_OF_THE_STARS, sEndPeachObj->header.gfx.cameraToObject);
 #endif
@@ -2272,7 +2272,7 @@ static void end_peach_cutscene_dialog_2(struct MarioState *m) {
 #else
         case 29:
 #endif
-            set_cutscene_message(160, 227, 2, 30);
+            set_cutscene_message(gScreenWidth / 2, 227, 2, 30);
 #ifndef VERSION_JP
             play_sound(SOUND_PEACH_THANKS_TO_YOU, sEndPeachObj->header.gfx.cameraToObject);
 #endif
@@ -2291,14 +2291,14 @@ static void end_peach_cutscene_dialog_2(struct MarioState *m) {
 #else
         case 75:
 #endif
-            set_cutscene_message(160, 227, 3, 30);
+            set_cutscene_message(gScreenWidth / 2, 227, 3, 30);
 #ifndef VERSION_JP
             play_sound(SOUND_PEACH_THANK_YOU_MARIO, sEndPeachObj->header.gfx.cameraToObject);
 #endif
             break;
 
         case TIMER_SOMETHING_SPECIAL:
-            set_cutscene_message(160, 227, 4, 40);
+            set_cutscene_message(gScreenWidth / 2, 227, 4, 40);
 #ifndef VERSION_JP
             play_sound(SOUND_PEACH_SOMETHING_SPECIAL, sEndPeachObj->header.gfx.cameraToObject);
 #endif
@@ -2429,18 +2429,18 @@ static void end_peach_cutscene_dialog_3(struct MarioState *m) {
             sEndToadAnims[0] = 0;
             sEndToadAnims[1] = 2;
             D_8032CBE8 = 1;
-            set_cutscene_message(160, 227, 5, 30);
+            set_cutscene_message(gScreenWidth / 2, 227, 5, 30);
 #ifndef VERSION_JP
             play_sound(SOUND_PEACH_BAKE_A_CAKE, sEndPeachObj->header.gfx.cameraToObject);
 #endif
             break;
 
         case 55:
-            set_cutscene_message(160, 227, 6, 40);
+            set_cutscene_message(gScreenWidth / 2, 227, 6, 40);
             break;
 
         case 130:
-            set_cutscene_message(160, 227, 7, 50);
+            set_cutscene_message(gScreenWidth / 2, 227, 7, 50);
 #ifndef VERSION_JP
             play_sound(SOUND_PEACH_FOR_MARIO, sEndPeachObj->header.gfx.cameraToObject);
 #endif
@@ -2464,7 +2464,7 @@ static void end_peach_cutscene_run_to_castle(struct MarioState *m) {
     }
 
     if (m->actionTimer == 95) {
-        set_cutscene_message(160, 227, 0, 40);
+        set_cutscene_message(gScreenWidth / 2, 227, 0, 40);
 #ifndef VERSION_JP
         play_sound(SOUND_PEACH_MARIO2, sEndPeachObj->header.gfx.cameraToObject);
 #endif
@@ -2543,32 +2543,10 @@ static s32 act_end_peach_cutscene(struct MarioState *m) {
 
     m->actionTimer++;
 
-    sEndCutsceneVp.vp.vscale[0] = 640;
-    sEndCutsceneVp.vp.vscale[1] = 360;
-    sEndCutsceneVp.vp.vtrans[0] = 640;
-    sEndCutsceneVp.vp.vtrans[1] = 480;
-    override_viewport_and_clip(NULL, &sEndCutsceneVp, 0, 0, 0);
-
     return FALSE;
 }
 
-#if defined(VERSION_EU)
-    #define TIMER_CREDITS_SHOW      51
-    #define TIMER_CREDITS_PROGRESS  80
-    #define TIMER_CREDITS_WARP     160
-#elif defined(VERSION_SH)
-    #define TIMER_CREDITS_SHOW      61
-    #define TIMER_CREDITS_PROGRESS  90
-    #define TIMER_CREDITS_WARP     204
-#else
-    #define TIMER_CREDITS_SHOW      61
-    #define TIMER_CREDITS_PROGRESS  90
-    #define TIMER_CREDITS_WARP     200
-#endif
-
 static s32 act_credits_cutscene(struct MarioState *m) {
-    s32 width;
-    s32 height;
 
     m->statusForCamera->cameraEvent = CAM_EVENT_START_CREDITS;
     // checks if Mario is underwater (JRB, DDD, SA, etc.)
@@ -2592,18 +2570,6 @@ static s32 act_credits_cutscene(struct MarioState *m) {
         if (m->actionState < 40) {
             m->actionState += 2;
         }
-
-        width = m->actionState * 640 / 100;
-        height = m->actionState * 480 / 100;
-
-        sEndCutsceneVp.vp.vscale[0] = 640 - width;
-        sEndCutsceneVp.vp.vscale[1] = 480 - height;
-        sEndCutsceneVp.vp.vtrans[0] =
-            (gCurrCreditsEntry->unk02 & 0x10 ? width : -width) * 56 / 100 + 640;
-        sEndCutsceneVp.vp.vtrans[1] =
-            (gCurrCreditsEntry->unk02 & 0x20 ? height : -height) * 66 / 100 + 480;
-
-        override_viewport_and_clip(&sEndCutsceneVp, 0, 0, 0, 0);
     }
 
     if (m->actionTimer == TIMER_CREDITS_PROGRESS) {
@@ -2612,6 +2578,8 @@ static s32 act_credits_cutscene(struct MarioState *m) {
 
     if (m->actionTimer >= TIMER_CREDITS_PROGRESS) {
         sDispCreditsEntry = gCurrCreditsEntry;
+    } else {
+        sDispCreditsEntry = NULL;
     }
 
     if (m->actionTimer++ == TIMER_CREDITS_WARP) {
@@ -2645,6 +2613,7 @@ static s32 act_end_waving_cutscene(struct MarioState *m) {
         sEndToadAnims[1] = 7;
 
         m->actionState = 1;
+        sDispCreditsEntry = NULL;
     }
 
     set_mario_animation(m, MARIO_ANIM_CREDITS_WAVING);

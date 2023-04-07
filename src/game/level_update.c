@@ -28,6 +28,7 @@
 #include "level_table.h"
 #include "course_table.h"
 #include "rumble_init.h"
+#include "rendering_graph_node.h"
 
 #define PLAY_MODE_NORMAL 0
 #define PLAY_MODE_PAUSED 2
@@ -563,6 +564,7 @@ void check_instant_warp(void) {
                     gMarioState->area = gCurrentArea;
 
                     warp_camera(warp->displacement[0], warp->displacement[1], warp->displacement[2]);
+                    gCameraSnap = TRUE;
 
                     gMarioState->area->camera->yaw = cameraAngle;
                     gInstantWarp = FALSE;

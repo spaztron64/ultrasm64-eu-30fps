@@ -1795,6 +1795,7 @@ void reset_cutscene_msg_fade(void) {
 void dl_rgba16_begin_cutscene_msg_fade(void) {
     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_begin);
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gCutsceneMsgFadeLerp);
+    gCutsceneMsgFadeLerp = approach_f32_asymptotic(gCutsceneMsgFadeLerp, gCutsceneMsgFade, gLerpSpeed);
 }
 
 void dl_rgba16_stop_cutscene_msg_fade(void) {
@@ -1884,23 +1885,24 @@ void do_cutscene_handler(void) {
     switch (eu_get_language()) {
         case LANGUAGE_ENGLISH:
             x = get_str_x_pos_from_center(gCutsceneMsgXOffset, gEndCutsceneStringsEn[gCutsceneMsgIndex], 10.0f);
-            print_generic_string(x, 240 - gCutsceneMsgYOffset, gEndCutsceneStringsEn[gCutsceneMsgIndex]);
+            print_generic_string(x, SCREEN_HEIGHT - gCutsceneMsgYOffset, gEndCutsceneStringsEn[gCutsceneMsgIndex]);
             break;
         case LANGUAGE_FRENCH:
             x = get_str_x_pos_from_center(gCutsceneMsgXOffset, gEndCutsceneStringsFr[gCutsceneMsgIndex], 10.0f);
-            print_generic_string(x, 240 - gCutsceneMsgYOffset, gEndCutsceneStringsFr[gCutsceneMsgIndex]);
+            print_generic_string(x, SCREEN_HEIGHT - gCutsceneMsgYOffset, gEndCutsceneStringsFr[gCutsceneMsgIndex]);
             break;
         case LANGUAGE_GERMAN:
             x = get_str_x_pos_from_center(gCutsceneMsgXOffset, gEndCutsceneStringsDe[gCutsceneMsgIndex], 10.0f);
-            print_generic_string(x, 240 - gCutsceneMsgYOffset, gEndCutsceneStringsDe[gCutsceneMsgIndex]);
+            print_generic_string(x, SCREEN_HEIGHT - gCutsceneMsgYOffset, gEndCutsceneStringsDe[gCutsceneMsgIndex]);
             break;
     }
 #else
     // get the x coordinate of where the cutscene string starts.
     x = get_str_x_pos_from_center(gCutsceneMsgXOffset, gEndCutsceneStringsEn[gCutsceneMsgIndex], 10.0f);
-    print_generic_string(x, 240 - gCutsceneMsgYOffset, gEndCutsceneStringsEn[gCutsceneMsgIndex]);
+    print_generic_string(x, SCREEN_HEIGHT - gCutsceneMsgYOffset, gEndCutsceneStringsEn[gCutsceneMsgIndex]);
 #endif
 
+    gCutsceneMsgFadeLerp = approach_f32_asymptotic(gCutsceneMsgFadeLerp, gCutsceneMsgFade, gLerpSpeed);
     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 }
 

@@ -1,5 +1,7 @@
 // intro_peach.inc.c
 
+#include "engine/graph_node.h"
+
 /**
  * Set peach's location relative to the camera focus.
  * If nonzero, make peach's opacity approach targetOpacity by increment
@@ -18,6 +20,7 @@ void intro_peach_set_pos_and_opacity(struct Object *obj, f32 targetOpacity, f32 
     newOpacity = obj->oOpacity;
     camera_approach_f32_symmetric_bool(&newOpacity, targetOpacity, increment);
     obj->oOpacity = newOpacity;
+    obj->header.gfx.node.flags |= GRAPH_RENDER_PRIORITY;
 }
 
 void bhv_intro_peach_loop(void) {

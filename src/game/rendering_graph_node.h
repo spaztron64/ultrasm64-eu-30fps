@@ -24,6 +24,7 @@ extern u8 gScreenMode;
 extern u8 gFrameCap;
 extern u8 gDedither;
 extern s8 gAntiAliasing;
+extern u8 gCameraSnap;
 
 // after processing an object, the type is reset to this
 #define ANIM_TYPE_NONE                  0

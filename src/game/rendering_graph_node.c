@@ -78,6 +78,7 @@ Mat4 gCameraTransform;
 f32 gHalfFovVert;
 f32 gHalfFovHor;
 u32 gCurrAnimPos;
+u8 gCameraSnap = FALSE;
 ALIGNED16 u8 gMarioAnimHeap[0x4000];
 struct AnimInfo gMarioGfxAnim;
 struct DmaHandlerList gMarioGfxAnimBuf;
@@ -453,13 +454,14 @@ void update_graph_node_camera(struct GraphNodeCamera *gc) {
     vec3f_copy(gc->focus, gLakituState.focus);
     zoom_out_if_paused_and_outside(gc);
 
-    if (!gMoveSpeed || sCurrPlayMode == 2) {
+    if (!gMoveSpeed || sCurrPlayMode == 2 || gCameraSnap == TRUE) {
         gc->posLerp[0] = gc->pos[0];
         gc->posLerp[1] = gc->pos[1];
         gc->posLerp[2] = gc->pos[2];
         gc->focusLerp[0] = gc->focus[0];
         gc->focusLerp[1] = gc->focus[1];
         gc->focusLerp[2] = gc->focus[2];
+        gCameraSnap = FALSE;
     } else {
         gc->posLerp[0] = approach_pos_lerp(gc->posLerp[0], gc->pos[0]);
         gc->posLerp[1] = approach_pos_lerp(gc->posLerp[1], gc->pos[1]);
@@ -1343,9 +1345,7 @@ void geo_process_root(struct GraphNodeRoot *node, Vp *b, Vp *c, s32 clearColor) 
             clear_framebuffer(clearColor);
             make_viewport_clip_rect(b);
             *viewport = *b;
-        }
-
-        else if (c != NULL) {
+        } else if (c != NULL) {
             clear_framebuffer(clearColor);
             make_viewport_clip_rect(c);
         }

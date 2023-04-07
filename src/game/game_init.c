@@ -750,13 +750,6 @@ void thread5_game_loop(UNUSED void *arg) {
             thread9Start = TRUE;
         }
 
-        if (gPlayer1Controller->buttonPressed & D_JPAD) {
-            level_trigger_warp(gMarioState, 0x17);
-        }
-        if (gPlayer1Controller->buttonPressed & R_JPAD) {
-            level_trigger_warp(gMarioState, 0x15);
-        }
-
         osRecvMesg(&gGameVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
         osRecvMesg(&gGameVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
 #if 0

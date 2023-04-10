@@ -1055,7 +1055,8 @@ void geo_process_object(struct Object *node) {
 
     // !@Bug: Breaks JRB ship
     if ((node->header.gfx.sharedChild == NULL || !(node->header.gfx.node.flags & GRAPH_RENDER_ACTIVE) || 
-    node->header.gfx.node.flags & GRAPH_RENDER_INVISIBLE) && node->behavior != segmented_to_virtual(bhvInSunkenShip3)) {
+    node->header.gfx.node.flags & GRAPH_RENDER_INVISIBLE) && node->behavior != segmented_to_virtual(bhvInSunkenShip3) && 
+    node->behavior != segmented_to_virtual(bhvLllTiltingInvertedPyramid) && node->behavior != segmented_to_virtual(bhvBitfsTiltingInvertedPyramid)) {
         // Still want to know where the object is in worldspace, for audio panning to correctly work.
         mtxf_translate(gMatStack[gMatStackIndex + 1], node->header.gfx.pos);
         linear_mtxf_mul_vec3f_and_translate(gCameraTransform, node->header.gfx.cameraToObject, gMatStack[gMatStackIndex + 1][3]);

@@ -231,6 +231,10 @@ Gfx *create_shadow_below_xyz(Vec3f pos, s16 shadowScale, u8 shadowSolidity, s8 s
     // Check for water under the shadow.
     f32 waterLevel = find_water_level(x, y);
 
+    if (floorHeight > gCamera->pos[1]) {
+        return NULL;
+    }
+
     // Whether the floor is an environment box rather than an actual surface.
     s32 isEnvBox = FALSE;
 

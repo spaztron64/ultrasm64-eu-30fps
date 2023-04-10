@@ -1,7 +1,6 @@
-certain point of the thwomp crashes the game trying to find_floor
 BBH demo crashes, pointing to "bhv_exclamation_box_loop" - Update: This has now moved to the CCM demo, and is console only.
 Grabbing bowser activates the far camera, maybe the one as if he was already thrown
 BBH falling bridge room needs BG drawn - am actually surprised that was a problem
 CCM slide precision issues
 BBH success warp instakills
-Shadows appear to still be causing problems regarding collision on dynamic surfaces
+Shadows appear to still be causing problems regarding collision on dynamic surfaces. I think this is caused by a race condition. also, certain point of the thwomp crashes the game trying to find_floor

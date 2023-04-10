@@ -834,7 +834,7 @@ void thread9_graphics(UNUSED void *arg) {
             }
         } else if (gInstantWarp == FALSE || gInstantWarpReady == FALSE) {
             profiler_log_thread9_time(THREAD9_START);
-            if (deltaTime < OS_USEC_TO_CYCLES(33333)/* || gPlatform & EMULATOR*/) { // > 30 fps
+            if (deltaTime < OS_USEC_TO_CYCLES(33333)) { // > 30 fps
                 if (lastRenderedFrame - gGlobalTimer == 1) {
                     gMoveSpeed = 0; // Full
                 } else {

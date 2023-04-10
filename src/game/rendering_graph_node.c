@@ -918,6 +918,11 @@ void geo_process_shadow(struct GraphNodeShadow *node) {
             vec3f_copy(shadowPos, gMatStack[gMatStackIndex][3]);
             shadowScale = node->shadowScale * gCurGraphNodeHeldObject->objNode->header.gfx.scaleLerp[0];
         } else {
+            if (gCurGraphNodeObjectNode->oFloor != NULL) {
+                if (gCurGraphNodeObjectNode->oFloorHeight > gCamera->pos[1]) {
+                    goto skipShadow;
+                }
+            }
             vec3f_copy(shadowPos, gCurGraphNodeObject->posLerp);
             shadowScale = node->shadowScale * gCurGraphNodeObject->scaleLerp[0];
         }
@@ -958,6 +963,7 @@ void geo_process_shadow(struct GraphNodeShadow *node) {
             gMatStackIndex--;
         }
     }
+    skipShadow:
     if (node->node.children != NULL) {
         geo_process_node_and_siblings(node->node.children);
     }

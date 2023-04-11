@@ -115,7 +115,7 @@ endif
 ifeq ($(COMPILER),gcc)
   NON_MATCHING := 1
   MIPSISET     := -mips3
-  OPT_FLAGS    := -Ofast
+  OPT_FLAGS    := -Ofast -fno-peel-loops --param case-values-threshold=20
 else ifeq ($(COMPILER),clang)
   NON_MATCHING := 1
   # clang doesn't support ABI 'o32' for 'mips3'

@@ -3423,3 +3423,43 @@ const f32 intro_seg7_table_0700C880[] = {
     0.048600f, 0.048600f, 0.012800f, 0.012800f,
     0.012800f, 0.000000f, 0.000000f, 0.000000f,
 };
+
+ALIGNED8 const u8 intro_expansionIcon[] = {
+#include "levels/intro/custom_exppak.rgba16.inc.c"
+};
+
+ALIGNED8 const u8 intro_rumbleIcon[] = {
+#include "levels/intro/custom_rumblepak.rgba16.inc.c"
+};
+
+ALIGNED8 const u8 intro_detectedIcon[] = {
+#include "levels/intro/custom_nonmissingpak.rgba16.inc.c"
+};
+
+ALIGNED8 const u8 intro_missingIcon[] = {
+#include "levels/intro/custom_missingpak.rgba16.inc.c"
+};
+
+const Gfx dIntroExpansionTexture[] = {
+    gsDPLoadSync(),
+    gsDPLoadTextureBlock(intro_expansionIcon, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, 0, G_TX_CLAMP, G_TX_CLAMP, 6, 6, G_TX_NOLOD, G_TX_NOLOD),
+    gsSPEndDisplayList(),
+};
+
+const Gfx dIntroRumbleTexture[] = {
+    gsDPLoadSync(),
+    gsDPLoadTextureBlock(intro_rumbleIcon, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, 0, G_TX_CLAMP, G_TX_CLAMP, 6, 6, G_TX_NOLOD, G_TX_NOLOD),
+    gsSPEndDisplayList(),
+};
+
+const Gfx dIntroDetectedIcon[] = {
+    gsDPLoadSync(),
+    gsDPLoadTextureBlock(intro_detectedIcon, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, 0, G_TX_CLAMP, G_TX_CLAMP, 5, 5, G_TX_NOLOD, G_TX_NOLOD),
+    gsSPEndDisplayList(),
+};
+
+const Gfx dIntroMissingIcon[] = {
+    gsDPLoadSync(),
+    gsDPLoadTextureBlock(intro_missingIcon, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, 0, G_TX_CLAMP, G_TX_CLAMP, 5, 5, G_TX_NOLOD, G_TX_NOLOD),
+    gsSPEndDisplayList(),
+};

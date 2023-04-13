@@ -860,7 +860,7 @@ void geo_set_animation_globals(struct AnimInfo *node, struct Object *obj) {
         gSkipLerp = FALSE;
     } else {
         tempNode = node;
-        if (obj && obj->oDistanceToMario != 19000.0f && obj->oDistanceToMario > 1000.0f) {
+        if (obj->oDistanceToMario != 19000.0f && obj->oDistanceToMario > 1000.0f) {
             gSkipLerp = TRUE;
         } else {
             gSkipLerp = FALSE;
@@ -937,9 +937,10 @@ void geo_process_shadow(struct GraphNodeShadow *node) {
             shadowScale = node->shadowScale * gCurGraphNodeHeldObject->objNode->header.gfx.scaleLerp[0];
         } else {
             if (gCurGraphNodeObjectNode->oFloor != NULL) {
-                if (gCurGraphNodeObjectNode->oFloorHeight > gCamera->pos[1]) {
+                // I'm reverting this for now simply because I need the floor pitch to make this seamless.
+                /*if (gCurGraphNodeObjectNode->oFloorHeight > gCamera->pos[1]) {
                     goto skipShadow;
-                }
+                }*/
             }
             vec3f_copy(shadowPos, gCurGraphNodeObject->posLerp);
             shadowScale = node->shadowScale * gCurGraphNodeObject->scaleLerp[0];
@@ -1196,7 +1197,7 @@ void geo_process_held_object(struct GraphNodeHeldObject *node) {
         gCurrAnimType = 0;
         gCurGraphNodeHeldObject = (void *) node;
         if (node->objNode->header.gfx.animInfo.curAnim != NULL) {
-            geo_set_animation_globals(&node->objNode->header.gfx.animInfo, NULL);
+            geo_set_animation_globals(&node->objNode->header.gfx.animInfo, node->objNode);
         }
 
         geo_process_node_and_siblings(node->objNode->header.gfx.sharedChild);

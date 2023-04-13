@@ -860,7 +860,7 @@ void geo_set_animation_globals(struct AnimInfo *node, struct Object *obj) {
         gSkipLerp = FALSE;
     } else {
         tempNode = node;
-        if (obj->oDistanceToMario != 19000.0f && obj->oDistanceToMario > 1000.0f) {
+        if (obj->oDistanceToMario > 1000.0f) {
             gSkipLerp = TRUE;
         } else {
             gSkipLerp = FALSE;

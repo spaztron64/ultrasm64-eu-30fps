@@ -695,12 +695,6 @@ void load_object_collision_model(void) {;
     f32 marioDist = gCurrentObject->oDistanceToMario;
     f32 tangibleDist = gCurrentObject->oCollisionDistance;
 
-    // On an object's first frame, the distance is set to 19000.0f.
-    // If the distance hasn't been updated, update it now.
-    if (gCurrentObject->oDistanceToMario == 19000.0f) {
-        marioDist = dist_between_objects(gCurrentObject, gMarioObject);
-    }
-
     // If the object collision is supposed to be loaded more than the
     // drawing distance of 4000, extend the drawing range.
     if (gCurrentObject->oCollisionDistance > 4000.0f) {
@@ -730,7 +724,6 @@ void load_object_collision_model(void) {;
  * Transform an object's vertices and add them to the static surface pool.
  */
 void load_object_static_model(void) {
-    s16 vertexData[600];
     s16 *collisionData = gCurrentObject->collisionData;
     u32 surfacePoolData;
 
@@ -741,11 +734,11 @@ void load_object_static_model(void) {
     gSurfacesAllocated = gNumStaticSurfaces;
 
     collisionData++;
-    transform_object_vertices(&collisionData, vertexData);
+    transform_object_vertices(&collisionData, sDynamicVertices);
 
     // TERRAIN_LOAD_CONTINUE acts as an "end" to the terrain data.
     while (*collisionData != TERRAIN_LOAD_CONTINUE) {
-        load_object_surfaces(&collisionData, vertexData, FALSE);
+        load_object_surfaces(&collisionData, sDynamicVertices, FALSE);
     }
 
     surfacePoolData = (uintptr_t)gCurrStaticSurfacePoolEnd - (uintptr_t)gCurrStaticSurfacePool;

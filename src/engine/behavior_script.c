@@ -734,7 +734,7 @@ void cur_obj_update(void) {
     s32 bhvProcResult;
 
     // Calculate the distance from the object to Mario.
-    if (objFlags & OBJ_FLAG_COMPUTE_DIST_TO_MARIO) {
+    if (gMarioObject) {
         gCurrentObject->oDistanceToMario = dist_between_objects(gCurrentObject, gMarioObject);
         distanceFromMario = gCurrentObject->oDistanceToMario;
     } else {

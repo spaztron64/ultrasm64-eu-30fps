@@ -509,7 +509,28 @@ void spawn_objects_from_info(UNUSED s32 unused, struct SpawnInfo *spawnInfo) {
     }
 }
 
-void stub_obj_list_processor_1(void) {
+void clear_dynamic_surface_references(void) {
+    s32 listIndex;
+    s32 i = 0;
+    struct Object *obj;
+    struct ObjectNode *objNode;
+    struct ObjectNode *objList;
+
+    while ((listIndex = sObjectListUpdateOrder[i]) != -1) {
+        objList = &gObjectLists[listIndex];
+        objNode = objList->next;
+
+        while (objList != objNode) {
+            obj = (struct Object *) objNode;
+            objNode = objNode->next;
+
+            if (obj->oFloor && obj->oFloor->flags & SURFACE_FLAG_DYNAMIC) {
+                obj->oFloor = NULL;
+            }
+        }
+
+        i++;
+    }
 }
 
 /**

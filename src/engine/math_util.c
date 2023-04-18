@@ -437,7 +437,7 @@ void mtxf_align_terrain_triangle(Mat4 mtx, Vec3f pos, s16 yaw, f32 radius) { // 
         point2[1] = pos[1];
     }
 
-    avgY = (point0[1] + point1[1] + point2[1]) * .3333333333333333333333333333333333333333333333f;
+    avgY = (point0[1] + point1[1] + point2[1]) / 3.0f;
 
     vec3f_set(forward, sins(yaw), 0, coss(yaw));
     find_vector_perpendicular_to_plane(yColumn, point0, point1, point2);

@@ -35,12 +35,14 @@ u8 sClearAllCells;
  */
 void *gCurrStaticSurfacePool;
 void *gDynamicSurfacePool;
+void *gDynamicSurfaceNodePool;
 
 /**
  * The end of the data currently allocated to the surface pools.
  */
 void *gCurrStaticSurfacePoolEnd;
 void *gDynamicSurfacePoolEnd;
+void *gDynamicSurfaceNodePoolEnd;
 
 /**
  * The amount of data currently allocated to static surfaces.
@@ -51,7 +53,7 @@ u32 gTotalStaticSurfaceData;
  * Allocate the part of the surface node pool to contain a surface node.
  */
 struct SurfaceNode *alloc_surface_node(u32 dynamic) {
-    struct SurfaceNode **poolEnd = (struct SurfaceNode **)(dynamic ? &gDynamicSurfacePoolEnd : &gCurrStaticSurfacePoolEnd);
+    struct SurfaceNode **poolEnd = (struct SurfaceNode **)(dynamic ? &gDynamicSurfaceNodePoolEnd : &gCurrStaticSurfacePoolEnd);
 
     struct SurfaceNode *node = *poolEnd;
     (*poolEnd)++;
@@ -502,6 +504,8 @@ void load_environmental_regions(s16 **data) {
  */
 void alloc_surface_pools(void) {
     gDynamicSurfacePool = main_pool_alloc(DYNAMIC_SURFACE_POOL_SIZE, MEMORY_POOL_LEFT);
+    gDynamicSurfaceNodePool = main_pool_alloc(DYNAMIC_SURFACE_NODE_SIZE, MEMORY_POOL_LEFT);
+    gDynamicSurfaceNodePoolEnd = gDynamicSurfaceNodePool;
     gDynamicSurfacePoolEnd = gDynamicSurfacePool;
 
     gCCMEnteredSlide = FALSE;
@@ -582,6 +586,7 @@ void clear_dynamic_surfaces(void) {
         gSurfacesAllocated = gNumStaticSurfaces;
         gSurfaceNodesAllocated = gNumStaticSurfaceNodes;
         gDynamicSurfacePoolEnd = gDynamicSurfacePool;
+        gDynamicSurfaceNodePoolEnd = gDynamicSurfaceNodePool;
         if (sClearAllCells) {
             clear_spatial_partition(&gDynamicSurfacePartition[0][0]);
         } else {
@@ -685,7 +690,7 @@ void load_object_surfaces(s16 **data, s16 *vertexData, u32 dynamic) {
 }
 
 
-s16 sDynamicVertices[600];
+s16 sDynamicVertices[900];
 
 /**
  * Transform an object's vertices, reload them, and render the object.

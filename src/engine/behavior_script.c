@@ -662,9 +662,6 @@ static s32 bhv_cmd_animate_texture(void) {
     return BHV_PROC_CONTINUE;
 }
 
-void stub_behavior_script_2(void) {
-}
-
 typedef s32 (*BhvCommandProc)(void);
 static BhvCommandProc BehaviorCmdTable[] = {
     bhv_cmd_begin,

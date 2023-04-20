@@ -146,6 +146,13 @@ struct ObjectNode {
 // NOTE: Since ObjectNode is the first member of Object, it is difficult to determine
 // whether some of these pointers point to ObjectNode or Object.
 
+struct ObjectShadow {
+    s16 floorHeight;
+    s16 floorPitch;
+    f32 floorHeightLerp;
+    u8 hasShadow;
+};
+
 struct Object {
     /*0x000*/ struct ObjectNode header;
     /*0x068*/ struct Object *parentObj;
@@ -203,6 +210,7 @@ struct Object {
     /*0x218*/ void *collisionData;
     /*0x21C*/ Mat4 transform;
     /*0x25C*/ void *respawnInfo;
+    //struct ObjectShadow shadow;
 };
 
 struct ObjectHitbox {

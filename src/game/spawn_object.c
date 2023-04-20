@@ -105,6 +105,7 @@ void unload_object(struct Object *obj) {
 
     obj->header.gfx.node.flags &= ~GRAPH_RENDER_BILLBOARD;
     obj->header.gfx.node.flags &= ~GRAPH_RENDER_ACTIVE;
+    //obj->shadow.hasShadow = FALSE;
 
     deallocate_object(&gFreeObjectList, &obj->header);
 }
@@ -193,6 +194,7 @@ struct Object *allocate_object(struct ObjectNode *objList) {
     obj->header.gfx.matrixID[1] = MATRIX_NULL;
     obj->header.gfx.bothMats = 0;
     obj->header.gfx.animInfo.animPosStackNum = 0;
+    //obj->shadow.hasShadow = FALSE;
 
     return obj;
 }

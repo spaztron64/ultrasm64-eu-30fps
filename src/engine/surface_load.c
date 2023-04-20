@@ -503,8 +503,9 @@ void load_environmental_regions(s16 **data) {
  * Allocate some of the main pool for surfaces (2300 surf) and for surface nodes (7000 nodes).
  */
 void alloc_surface_pools(void) {
-    gDynamicSurfacePool = main_pool_alloc(DYNAMIC_SURFACE_POOL_SIZE, MEMORY_POOL_LEFT);
-    gDynamicSurfaceNodePool = main_pool_alloc(DYNAMIC_SURFACE_NODE_SIZE, MEMORY_POOL_LEFT);
+    // Single define for memory, and split it into thirds, giving 1 to the poolsize and 2 to the nodesize.
+    gDynamicSurfacePool = main_pool_alloc(DYNAMIC_SURFACE_POOL_SIZE * 0.33f, MEMORY_POOL_LEFT);
+    gDynamicSurfaceNodePool = main_pool_alloc(DYNAMIC_SURFACE_POOL_SIZE * 0.66f, MEMORY_POOL_LEFT);
     gDynamicSurfaceNodePoolEnd = gDynamicSurfaceNodePool;
     gDynamicSurfacePoolEnd = gDynamicSurfacePool;
 

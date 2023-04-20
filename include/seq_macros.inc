@@ -280,8 +280,6 @@
 .endm
 
 .macro chan_stereoheadseteffects a
-    .byte 0xd0
-    .byte \a
 .endm
 
 .macro chan_setnoteallocationpolicy a

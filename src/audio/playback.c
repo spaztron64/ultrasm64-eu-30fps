@@ -1124,7 +1124,6 @@ void note_init_for_layer(struct Note *note, struct SequenceChannelLayer *seqLaye
 #else
     sub->bankId = seqLayer->seqChannel->bankId;
 #endif
-    sub->stereoHeadsetEffects = seqLayer->seqChannel->stereoHeadsetEffects;
     sub->reverbIndex = seqLayer->seqChannel->reverbIndex & 3;
 }
 #else
@@ -1137,7 +1136,6 @@ s32 note_init_for_layer(struct Note *note, struct SequenceChannelLayer *seqLayer
     }
 
     note->bankId = seqLayer->seqChannel->bankId;
-    note->stereoHeadsetEffects = seqLayer->seqChannel->stereoHeadsetEffects;
     note->sound = seqLayer->sound;
     seqLayer->status = SOUND_LOAD_STATUS_DISCARDABLE; // "loaded"
     seqLayer->note = note;
@@ -1383,9 +1381,6 @@ void note_init_all(void) {
         note->noteSubEu = gZeroNoteSub;
 #else
         note->enabled = FALSE;
-        note->stereoStrongRight = FALSE;
-        note->stereoStrongLeft = FALSE;
-        note->stereoHeadsetEffects = FALSE;
 #endif
         note->priority = NOTE_PRIORITY_DISABLED;
 #ifdef VERSION_SH
@@ -1399,7 +1394,6 @@ void note_init_all(void) {
         note->vibratoState.active = FALSE;
 #else
         note->reverbVol = 0;
-        note->usesHeadsetPanEffects = FALSE;
         note->sampleCount = 0;
         note->instOrWave = 0;
         note->targetVolLeft = 0;

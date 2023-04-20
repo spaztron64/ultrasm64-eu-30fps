@@ -144,7 +144,7 @@ static unsigned char textEraseFileButton[][16] = { {TEXT_ERASE_FILE}, {TEXT_ERAS
 #endif
 
 #ifndef VERSION_EU
-static unsigned char textSoundModes[][8] = { { TEXT_STEREO }, { TEXT_MONO }, { TEXT_HEADSET } };
+static unsigned char textSoundModes[][8] = { { TEXT_STEREO }, { TEXT_MONO } };
 #endif
 
 static unsigned char textMarioA[] = { TEXT_FILE_MARIO_A };
@@ -267,9 +267,9 @@ static unsigned char textLanguageSelect[][17] = {
 };
 
 static unsigned char textSoundModes[][10] = {
-    { TEXT_STEREO }, { TEXT_MONO }, { TEXT_HEADSET },
-    { TEXT_STEREO_FR }, { TEXT_MONO_FR }, { TEXT_HEADSET_FR },
-    { TEXT_STEREO_DE }, { TEXT_MONO_DE }, { TEXT_HEADSET_DE }
+    { TEXT_STEREO }, { TEXT_MONO },
+    { TEXT_STEREO_FR }, { TEXT_MONO_FR },
+    { TEXT_STEREO_DE }, { TEXT_MONO_DE }
 };
 
 static unsigned char textLanguage[][9] = {{ TEXT_ENGLISH }, { TEXT_FRENCH }, { TEXT_GERMAN }};
@@ -2609,8 +2609,8 @@ void print_sound_mode_menu_strings(void) {
             gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, sTextBaseAlpha);
         }
         print_generic_string(
-            get_str_x_pos_from_center(textX, textSoundModes[sLanguageMode * 3 + mode], 10.0f),
-            141, textSoundModes[sLanguageMode * 3 + mode]);
+            get_str_x_pos_from_center(textX, textSoundModes[sLanguageMode * 2 + mode], 10.0f),
+            141, textSoundModes[sLanguageMode * 2 + mode]);
     }
 
     // In EU, print language mode names

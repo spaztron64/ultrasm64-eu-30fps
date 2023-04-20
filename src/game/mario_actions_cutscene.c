@@ -254,6 +254,7 @@ void handle_save_menu(struct MarioState *m) {
         if (gSaveOptSelectIndex != MENU_OPT_SAVE_AND_QUIT) {
             disable_time_stop();
             m->faceAngle[1] += 0x8000;
+            m->marioObj->header.gfx.bothMats = 0;
             // figure out what dialog to show, if we should
             dialogID = get_star_collection_dialog(m);
             if (dialogID) {
@@ -772,6 +773,7 @@ s32 act_unlocking_key_door(struct MarioState *m) {
 
     if (m->actionArg & 2) {
         m->faceAngle[1] += 0x8000;
+        m->marioObj->header.gfx.bothMats = 0;
     }
 
     if (m->actionTimer == 0) {
@@ -812,6 +814,7 @@ s32 act_unlocking_star_door(struct MarioState *m) {
             m->faceAngle[1] = m->usedObj->oMoveAngleYaw;
             if (m->actionArg & 2) {
                 m->faceAngle[1] += 0x8000;
+                m->marioObj->header.gfx.bothMats = 0;
             }
             m->marioObj->oMarioReadingSignDPosX = m->pos[0];
             m->marioObj->oMarioReadingSignDPosZ = m->pos[2];
@@ -891,6 +894,7 @@ s32 act_entering_star_door(struct MarioState *m) {
 
         if (m->actionArg & 2) {
             m->faceAngle[1] += 0x8000;
+            m->marioObj->header.gfx.bothMats = 0;
         }
 
         m->pos[0] += 12.0f * sins(m->faceAngle[1]);
@@ -944,6 +948,7 @@ s32 act_going_through_door(struct MarioState *m) {
         if (is_anim_at_end(m)) {
             if (m->actionArg & 2) {
                 m->faceAngle[1] += 0x8000;
+                m->marioObj->header.gfx.bothMats = 0;
             }
             set_mario_action(m, ACT_IDLE, 0);
         }

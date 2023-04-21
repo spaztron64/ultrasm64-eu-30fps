@@ -496,7 +496,7 @@ endif
 $(CRASH_TEXTURE_C_FILES): TEXTURE_ENCODING := u32
 
 ifeq ($(COMPILER),gcc)
-$(BUILD_DIR)/src/libz/%.o: OPT_FLAGS := -Os
+$(BUILD_DIR)/src/libz/%.o: OPT_FLAGS := -Ofast
 endif
 
 ifeq ($(VERSION),eu)

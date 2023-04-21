@@ -181,10 +181,10 @@ s32 f32_find_wall_collision(f32 *xPtr, f32 *yPtr, f32 *zPtr, f32 offsetY, f32 ra
  */
 s32 find_wall_collisions(struct WallCollisionData *colData) {
     struct SurfaceNode *node;
-    s16 cellX, cellZ;
+    s32 cellX, cellZ;
     s32 numCollisions = 0;
-    s16 x = colData->x;
-    s16 z = colData->z;
+    s32 x = colData->x;
+    s32 z = colData->z;
 
     colData->numWalls = 0;
 
@@ -233,7 +233,7 @@ static struct Surface *find_ceil_from_list(struct SurfaceNode *surfaceNode, s32 
         surf = surfaceNode->surface;
         surfaceNode = surfaceNode->next;
 
-        if (y > surf->upperY + 200) {
+        if (y > surf->upperY + 200 || surf->upperY >= *pheight) {
             continue;
         }
 
@@ -317,9 +317,9 @@ f32 find_ceil(f32 posX, f32 posY, f32 posZ, struct Surface **pceil) {
     //! (Parallel Universes) Because position is casted to an s16, reaching higher
     //  float locations can return ceilings despite them not existing there.
     //  (Dynamic ceilings will unload due to the range.)
-    s16 x = (s16) posX;
-    s16 y = (s16) posY;
-    s16 z = (s16) posZ;
+    s32 x = posX;
+    s32 y = posY;
+    s32 z = posZ;
 
     *pceil = NULL;
 
@@ -402,7 +402,7 @@ static struct Surface *find_floor_from_list(struct SurfaceNode *surfaceNode, s32
         surf = surfaceNode->surface;
         surfaceNode = surfaceNode->next;
 
-        if (y < surf->lowerY - 200) {
+        if (y < surf->lowerY - 200  || surf->lowerY <= *pheight) {
             continue;
         }
 
@@ -480,7 +480,7 @@ f32 find_floor_height(f32 x, f32 y, f32 z) {
  * Find the highest floor under a given position and return the height.
  */
 f32 find_floor(f32 xPos, f32 yPos, f32 zPos, struct Surface **pfloor) {
-    s16 cellZ, cellX;
+    s32 cellZ, cellX;
 
     struct Surface *floor, *dynamicFloor;
     struct SurfaceNode *surfaceList;
@@ -491,9 +491,9 @@ f32 find_floor(f32 xPos, f32 yPos, f32 zPos, struct Surface **pfloor) {
     //! (Parallel Universes) Because position is casted to an s16, reaching higher
     //  float locations can return floors despite them not existing there.
     //  (Dynamic floors will unload due to the range.)
-    s16 x = (s16) xPos;
-    s16 y = (s16) yPos;
-    s16 z = (s16) zPos;
+    s32 x = xPos;
+    s32 y = yPos;
+    s32 z = zPos;
 
     *pfloor = NULL;
 

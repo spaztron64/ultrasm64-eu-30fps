@@ -678,7 +678,7 @@ void initiate_painting_warp(void) {
                 check_if_should_set_warp_checkpoint(&warpNode);
 
                 play_transition_after_delay(WARP_TRANSITION_FADE_INTO_COLOR, 30, 255, 255, 255, 45);
-                level_set_transition(74, basic_update);
+                level_set_transition(70, basic_update);
 
                 set_mario_action(gMarioState, ACT_DISAPPEARED, 0);
 

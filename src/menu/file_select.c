@@ -1485,11 +1485,14 @@ void check_main_menu_clicked_buttons(void) {
                 }
             }
         }
-        // Open Options Menu if sOpenLangSettings is TRUE (It's TRUE when there's no saves)
-        if (sOpenLangSettings == TRUE) {
-            sMainMenuButtons[MENU_BUTTON_SOUND_MODE]->oMenuButtonState = MENU_BUTTON_STATE_GROWING;
-            sSelectedButtonID = MENU_BUTTON_SOUND_MODE;
-            sOpenLangSettings = FALSE;
+        
+        if (sMainMenuTimer >= 3) {
+            // Open Options Menu if sOpenLangSettings is TRUE (It's TRUE when there's no saves)
+            if (sOpenLangSettings == TRUE) {
+                sMainMenuButtons[MENU_BUTTON_SOUND_MODE]->oMenuButtonState = MENU_BUTTON_STATE_GROWING;
+                sSelectedButtonID = MENU_BUTTON_SOUND_MODE;
+                sOpenLangSettings = FALSE;
+            }
         }
 
         // Play sound of the save file clicked

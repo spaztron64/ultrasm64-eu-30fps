@@ -47,6 +47,8 @@ u16 gScreenWidth = 320;
 u16 gScreenHeight = 240;
 u8 gScreenSwapTimer;
 f32 gAspectRatio;
+u64 *gTaskBufStart = NULL;
+u64 *gTaskBufEnd = NULL;
 
 // OS Controllers
 OSContStatus gControllerStatuses[4];
@@ -301,9 +303,8 @@ void create_gfx_task_structure(void) {
 #endif
     gGfxSPTask->task.t.dram_stack = (u64 *) gGfxSPTaskStack;
     gGfxSPTask->task.t.dram_stack_size = SP_DRAM_STACK_SIZE8;
-    gGfxSPTask->task.t.output_buff = gGfxSPTaskOutputBuffer;
-    gGfxSPTask->task.t.output_buff_size =
-        (u64 *)((u8 *) gGfxSPTaskOutputBuffer + sizeof(gGfxSPTaskOutputBuffer));
+    gGfxSPTask->task.t.output_buff = gTaskBufStart;
+    gGfxSPTask->task.t.output_buff_size = gTaskBufEnd;
     gGfxSPTask->task.t.data_ptr = (u64 *) &gGfxPool->buffer;
     gGfxSPTask->task.t.data_size = entries * sizeof(Gfx);
     gGfxSPTask->task.t.yield_data_ptr = (u64 *) gGfxSPTaskYieldBuffer;
@@ -629,7 +630,7 @@ void init_controllers(void) {
 
 
 extern struct DmaHandlerList gMarioGfxAnimBuf;
-extern u8 gMarioAnimHeap[0x4000];
+extern u8 gMarioAnimHeap[];
 /**
  * Setup main segments and framebuffers.
  */
@@ -647,12 +648,16 @@ void setup_game_memory(void) {
         gPhysicalFramebuffers[0] = VIRTUAL_TO_PHYSICAL(gFramebuffer0);
         gPhysicalFramebuffers[1] = VIRTUAL_TO_PHYSICAL(gFramebuffer1);
         gPhysicalFramebuffers[2] = VIRTUAL_TO_PHYSICAL(gFramebuffer2);
+        gTaskBufStart = gGfxSPTaskOutputBuffer;
+        gTaskBufEnd = (u64 *)((u8 *) gGfxSPTaskOutputBuffer + sizeof(gGfxSPTaskOutputBuffer));
     } else {
         // Expansion memory goes unused, so I just haphazardly pointed FB's here.
         gPhysicalZBuffer =         (uintptr_t) 0x80400000;
         gPhysicalFramebuffers[0] = (uintptr_t) 0x80500000;
         gPhysicalFramebuffers[1] = (uintptr_t) 0x80600000;
         gPhysicalFramebuffers[2] = (uintptr_t) 0x80700000;
+        gTaskBufStart = (u64 *) 0x80680000;
+        gTaskBufEnd = (u64 *) 0x806E0000;
     }
     // Setup Mario Animations
     gMarioAnimsMemAlloc = main_pool_alloc(0x4000, MEMORY_POOL_LEFT);

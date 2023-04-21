@@ -2,6 +2,5 @@ BBH demo crashes, pointing to "bhv_exclamation_box_loop" - Update: This has now 
 Grabbing bowser activates the far camera, maybe the one as if he was already thrown
 BBH falling bridge room needs BG drawn - am actually surprised that was a problem
 CCM slide precision issues
-BBH success warp instakills
 Goddard screen completely fails to load on iQue, have to skip it entirely to not crash the game. And naturally, it works fine on N64.
 Revisit throwmatrix implementation

@@ -402,7 +402,7 @@ static struct Surface *find_floor_from_list(struct SurfaceNode *surfaceNode, s32
         surf = surfaceNode->surface;
         surfaceNode = surfaceNode->next;
 
-        if (y < surf->lowerY - 30) {
+        if (y < surf->lowerY - 200) {
             continue;
         }
 

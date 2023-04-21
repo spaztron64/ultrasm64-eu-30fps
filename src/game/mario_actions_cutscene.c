@@ -1160,6 +1160,7 @@ s32 act_exit_land_save_dialog(struct MarioState *m) {
     }
 
     m->marioObj->header.gfx.angle[1] += 0x8000;
+    m->marioObj->header.gfx.bothMats = 0;
     return FALSE;
 }
 

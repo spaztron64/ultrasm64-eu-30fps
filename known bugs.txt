@@ -6,4 +6,3 @@ BBH success warp instakills
 Goddard screen completely fails to load on iQue, have to skip it entirely to not crash the game. And naturally, it works fine on N64.
 Revisit throwmatrix implementation
 Impact stars have a bit of material bleed
-Mario can face the wrong direction for a frame after the course clear dialogue, same problem the doors had.

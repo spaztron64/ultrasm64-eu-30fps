@@ -137,6 +137,8 @@ const Gfx dirt_seg3_dl_0302C2F8[] = {
 // 0x0302C318 - 0x0302C378
 const Gfx dirt_seg3_dl_0302C318[] = {
     gsSPClearGeometryMode(G_LIGHTING | G_CULL_BACK),
+    gsSPSetGeometryMode(G_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPVertex(dirt_seg3_vertex_0302C198, 10, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  4,  1, 0x0),
     gsSP2Triangles( 0,  5,  3, 0x0,  6,  7,  0, 0x0),

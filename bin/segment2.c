@@ -2590,8 +2590,8 @@ const Gfx dl_transition_draw_filled_region[] = {
 // 0x02014708 - 0x02014738
 const Gfx dl_skybox_begin[] = {
     gsDPPipeSync(),
-    gsSPClearGeometryMode(G_LIGHTING),
-    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_PASS2),
+    gsSPClearGeometryMode(G_LIGHTING | G_SHADE),
+    gsDPSetCombineMode(G_CC_MODULATEI_PRIM, G_CC_PASS2),
     gsSPPerspNormalize(0xFFFF),
     gsSPMatrix(&matrix_identity, G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH),
     gsSPEndDisplayList(),
@@ -2611,7 +2611,7 @@ const Gfx dl_skybox_tile_tex_settings[] = {
 const Gfx dl_skybox_end[] = {
     gsDPPipeSync(),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
-    gsSPSetGeometryMode(G_LIGHTING),
+    gsSPSetGeometryMode(G_LIGHTING | G_SHADE),
     gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPEndDisplayList(),
 };

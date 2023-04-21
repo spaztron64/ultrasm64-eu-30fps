@@ -61,7 +61,6 @@ extern struct DemoInput gRecordedDemoInput;
 extern f32 gLerpSpeed;
 extern u32 gMoveSpeed;
 extern u8 gLoadReset;
-extern u8 gInstantWarp;
 extern u16 gScreenWidth;
 extern u16 gScreenHeight;
 extern u8 gScreenSwapTimer;

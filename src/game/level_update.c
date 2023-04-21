@@ -470,9 +470,6 @@ void warp_area(void) {
     }
 }
 
-extern u8 gInstantWarp;
-extern u8 gInstantWarpReady;
-
 // used for warps between levels
 void warp_level(void) {
     gCurrLevelNum = sWarpDest.levelNum;
@@ -544,32 +541,28 @@ void check_instant_warp(void) {
             struct InstantWarp *warp = &gCurrentArea->instantWarps[index];
 
             if (warp->id != 0) {
-                gInstantWarp = TRUE;
-                if (gInstantWarpReady) {
-                    gMarioState->pos[0] += warp->displacement[0];
-                    gMarioState->pos[1] += warp->displacement[1];
-                    gMarioState->pos[2] += warp->displacement[2];
+                osRecvMesg(&gVideoVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
+                gMarioState->pos[0] += warp->displacement[0];
+                gMarioState->pos[1] += warp->displacement[1];
+                gMarioState->pos[2] += warp->displacement[2];
 
-                    gMarioState->marioObj->oPosX = gMarioState->pos[0];
-                    gMarioState->marioObj->oPosY = gMarioState->pos[1];
-                    gMarioState->marioObj->oPosZ = gMarioState->pos[2];
+                gMarioState->marioObj->oPosX = gMarioState->pos[0];
+                gMarioState->marioObj->oPosY = gMarioState->pos[1];
+                gMarioState->marioObj->oPosZ = gMarioState->pos[2];
 
-                    gMarioState->marioObj->header.gfx.posLerp[0] = gMarioState->pos[0];
-                    gMarioState->marioObj->header.gfx.posLerp[1] = gMarioState->pos[1];
-                    gMarioState->marioObj->header.gfx.posLerp[2] = gMarioState->pos[2];
+                gMarioState->marioObj->header.gfx.posLerp[0] = gMarioState->pos[0];
+                gMarioState->marioObj->header.gfx.posLerp[1] = gMarioState->pos[1];
+                gMarioState->marioObj->header.gfx.posLerp[2] = gMarioState->pos[2];
 
-                    cameraAngle = gMarioState->area->camera->yaw;
+                cameraAngle = gMarioState->area->camera->yaw;
 
-                    change_area(warp->area);
-                    gMarioState->area = gCurrentArea;
+                change_area(warp->area);
+                gMarioState->area = gCurrentArea;
 
-                    warp_camera(warp->displacement[0], warp->displacement[1], warp->displacement[2]);
-                    gCameraSnap = TRUE;
+                warp_camera(warp->displacement[0], warp->displacement[1], warp->displacement[2]);
+                gCameraSnap = TRUE;
 
-                    gMarioState->area->camera->yaw = cameraAngle;
-                    gInstantWarp = FALSE;
-                    gInstantWarpReady = FALSE;
-                }
+                gMarioState->area->camera->yaw = cameraAngle;
             }
         }
     }

@@ -6,6 +6,8 @@
 #include "synthesis.h"
 #include "seqplayer.h"
 #include "effects.h"
+#include "game/game_init.h"
+#include "game/main.h"
 
 #define ALIGN16(val) (((val) + 0xF) & ~0xF)
 
@@ -1086,9 +1088,7 @@ void audio_reset_session(struct AudioSessionSettings *preset, s32 presetId) {
         init_reverb_us(presetId);
         bzero(&gAiBuffers[0][0], (AIBUFFER_LEN * NUMAIBUFFERS));
         gAudioFrameCount = 0;
-        while (gAudioFrameCount < 1) {
-            // spin
-        }
+        osRecvMesg(&gGameVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
         bzero(&gAiBuffers[0][0], (AIBUFFER_LEN * NUMAIBUFFERS));
         return;
     }

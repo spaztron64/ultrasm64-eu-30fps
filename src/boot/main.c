@@ -26,11 +26,18 @@
 #define MESG_START_GFX_SPTASK 103
 #define MESG_NMI_REQUEST 104
 
+OSMesgQueue sSoundMesgQueue;
+OSMesg sSoundMesgBuf[1];
+struct VblankHandler sSoundVblankHandler;
+
 OSThread D_80339210; // unused?
 OSThread gIdleThread;
 OSThread gMainThread;
 OSThread gGameLoopThread;
 OSThread gSoundThread;
+
+OSTimer mytimer;
+OSTimer audiotimer;
 
 OSIoMesg gDmaIoMesg;
 OSMesg gMainReceivedMesg;
@@ -101,7 +108,9 @@ void setup_mesg_queues(void) {
 
     osCreateMesgQueue(&gSPTaskMesgQueue, gUnknownMesgBuf, ARRAY_COUNT(gUnknownMesgBuf));
     osCreateMesgQueue(&gIntrMesgQueue, gIntrMesgBuf, ARRAY_COUNT(gIntrMesgBuf));
-    osViSetEvent(&gIntrMesgQueue, (OSMesg) MESG_VI_VBLANK, 1);
+    //osViSetEvent(&gIntrMesgQueue, (OSMesg) MESG_VI_VBLANK, 1);
+    osSetTimer(&mytimer, 0, OS_USEC_TO_CYCLES(16600), &gIntrMesgQueue, (OSMesg) MESG_VI_VBLANK);    
+    osSetTimer(&audiotimer, 0, OS_USEC_TO_CYCLES(20000), &sSoundMesgQueue, (OSMesg) 512);
 
     osSetEventMesg(OS_EVENT_SP, &gIntrMesgQueue, (OSMesg) MESG_SP_COMPLETE);
     osSetEventMesg(OS_EVENT_DP, &gIntrMesgQueue, (OSMesg) MESG_DP_COMPLETE);
@@ -200,6 +209,7 @@ void pretend_audio_sptask_done(void) {
 
 void handle_vblank(void) {
 
+	//osStopTimer(&mytimer);
     gNumVblanks++;
 #ifdef VERSION_SH
     if (gResetTimer > 0 && gResetTimer < 100) {

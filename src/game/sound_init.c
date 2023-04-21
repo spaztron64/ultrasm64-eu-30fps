@@ -19,9 +19,9 @@
 #define MUSIC_NONE 0xFFFF
 
 static Vec3f unused80339DC0;
-static OSMesgQueue sSoundMesgQueue;
-static OSMesg sSoundMesgBuf[1];
-static struct VblankHandler sSoundVblankHandler;
+//OSMesgQueue sSoundMesgQueue;
+//OSMesg sSoundMesgBuf[1];
+//struct VblankHandler sSoundVblankHandler;
 
 // Only written to, never read.
 static u8 sMusicVolume = 0;
@@ -340,7 +340,8 @@ void thread4_sound(UNUSED void *arg) {
     vec3f_copy(unused80339DC0, gVec3fZero);
 
     osCreateMesgQueue(&sSoundMesgQueue, sSoundMesgBuf, ARRAY_COUNT(sSoundMesgBuf));
-    set_vblank_handler(1, &sSoundVblankHandler, &sSoundMesgQueue, (OSMesg) 512);
+    //set_vblank_handler(1, &sSoundVblankHandler, &sSoundMesgQueue, (OSMesg) 512);
+    //osSetTimer(&mytimer, 0, OS_USEC_TO_CYCLES(16600), &gSoundMesgQueue, (OSMesg) 512);
 
     while (TRUE) {
         OSMesg msg;

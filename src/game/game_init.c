@@ -28,6 +28,12 @@
 #endif
 #include <prevent_bss_reordering.h>
 
+#define FRAMETIME_COUNT 30
+
+OSTime frameTimes[FRAMETIME_COUNT];
+u8 curFrameTimeIndex = 0;
+f32 gFPS = 0;
+
 // First 3 controller slots
 struct Controller gControllers[3];
 
@@ -425,6 +431,19 @@ void select_gfx_pool(void) {
     gGfxPoolEnd = (u8 *) (gGfxPool->buffer + GFX_POOL_SIZE);
 }
 
+f32 calculate_and_update_fps() {
+	OSTime newTime = osGetTime();
+	OSTime oldTime = frameTimes[curFrameTimeIndex];
+	frameTimes[curFrameTimeIndex] = newTime;
+	
+	curFrameTimeIndex++;
+	if (curFrameTimeIndex >= FRAMETIME_COUNT) {
+		curFrameTimeIndex = 0;
+	}
+	gFPS = ((f32)FRAMETIME_COUNT * 1000000.0f) / (s32)OS_CYCLES_TO_USEC(newTime - oldTime);
+	return gFPS;
+}
+
 /**
  * This function:
  * - Sends the current master display list out to be rendered.
@@ -433,6 +452,7 @@ void select_gfx_pool(void) {
  * - Selects which framebuffer will be rendered and displayed to next time.
  */
 void display_and_vsync(void) {
+	
     profiler_log_thread5_time(BEFORE_DISPLAY_LISTS);
     osRecvMesg(&gGfxVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
     if (gGoddardVblankCallback != NULL) {
@@ -442,9 +462,12 @@ void display_and_vsync(void) {
     exec_display_list(&gGfxPool->spTask);
     profiler_log_thread5_time(AFTER_DISPLAY_LISTS);
     osRecvMesg(&gGameVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
+	
     osViSwapBuffer((void *) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[sRenderedFramebuffer]));
     profiler_log_thread5_time(THREAD5_END);
     osRecvMesg(&gGameVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
+    print_text(20, 40, "FPS");
+	print_text_fmt_int(60, 40, "%d", calculate_and_update_fps());
     // Skip swapping buffers on emulator other than Ares so that they display immediately as the Gfx task finishes
     if (gIsConsole || gCacheEmulated) { // Read RDP Clock Register, has a value of zero on emulators
         if (++sRenderedFramebuffer == 3) {

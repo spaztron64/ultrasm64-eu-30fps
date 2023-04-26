@@ -1,13 +1,5 @@
 // bowser_key_cutscene.inc.c
 
-Gfx *geo_scale_bowser_key(s32 run, struct GraphNode *node, UNUSED f32 mtx[4][4]) {
-    if (run == TRUE) {
-        struct Object *sp4 = (struct Object *) gCurGraphNodeObject;
-        ((struct GraphNodeScale *) node->next)->scale = sp4->oBowserKeyScale;
-    }
-    return NULL;
-}
-
 void bhv_bowser_key_unlock_door_loop(void) {
     s32 animFrame = o->header.gfx.animInfo.animFrame;
 

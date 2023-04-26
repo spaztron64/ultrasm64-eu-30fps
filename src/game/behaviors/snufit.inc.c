@@ -31,38 +31,6 @@ struct ObjectHitbox sSnufitBulletHitbox = {
 };
 
 /**
- * This geo function shifts snufit's mask when it shrinks down, 
- * since the parts move independently.
- */
-Gfx *geo_snufit_move_mask(s32 callContext, struct GraphNode *node, UNUSED Mat4 *c) {
-    if (callContext == GEO_CONTEXT_RENDER) {
-        struct Object *obj = (struct Object *) gCurGraphNodeObject;
-        struct GraphNodeTranslationRotation *transNode
-            = (struct GraphNodeTranslationRotation *) node->next;
-
-        transNode->translation[0] = obj->oSnufitXOffset;
-        transNode->translation[1] = obj->oSnufitYOffset;
-        transNode->translation[2] = obj->oSnufitZOffset;
-    }
-
-    return NULL;
-}
-
-/**
- * This function scales the body of snufit, which needs done seperately from its mask.
- */
-Gfx *geo_snufit_scale_body(s32 callContext, struct GraphNode *node, UNUSED Mat4 *c) {
-    if (callContext == GEO_CONTEXT_RENDER) {
-        struct Object *obj = (struct Object *) gCurGraphNodeObject;
-        struct GraphNodeScale *scaleNode = (struct GraphNodeScale *) node->next;
-
-        scaleNode->scale = obj->oSnufitBodyScale / 1000.0f;
-    }
-
-    return NULL;
-}
-
-/**
  * Snufit's idle action. It rotates in a circle until Mario is near,
  * then prepares to shoot after a period.
  */

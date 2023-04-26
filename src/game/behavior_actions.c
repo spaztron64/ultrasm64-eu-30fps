@@ -320,3 +320,254 @@ s32 set_obj_anim_with_accel_and_sound(s16 a0, s16 a1, s32 a2) {
     return FALSE;
 }
 
+Gfx *geo_scale_bowser_key(s32 run, struct GraphNode *node, UNUSED f32 mtx[4][4]) {
+    if (run == TRUE) {
+        struct Object *sp4 = (struct Object *) gCurGraphNodeObject;
+        ((struct GraphNodeScale *) node->next)->scale = sp4->oBowserKeyScale;
+    }
+    return NULL;
+}
+
+/**
+ * Bowser's eyes Geo-Switch-Case IDs, defined from Mario's POV
+ */
+enum BowserEyesGSCId {
+    /*0x00*/ BOWSER_EYES_OPEN,
+    /*0x01*/ BOWSER_EYES_HALF_CLOSED,
+    /*0x02*/ BOWSER_EYES_CLOSED,
+    /*0x03*/ BOWSER_EYES_LEFT,
+    /*0x04*/ BOWSER_EYES_FAR_LEFT,
+    /*0x05*/ BOWSER_EYES_RIGHT,
+    /*0x06*/ BOWSER_EYES_FAR_RIGHT,
+    /*0x07*/ BOWSER_EYES_DERP, // unused
+    /*0x08*/ BOWSER_EYES_CROSS, // unused
+    /*0x08*/ BOWSER_EYES_RESET // set eyes back to open
+};
+
+/**
+ * Controls Bowser's eye open stage, including blinking and look directions
+ */
+void bowser_open_eye_switch(struct Object *obj, struct GraphNodeSwitchCase *switchCase) {
+    s32 eyeCase;
+    s16 angleFromMario;
+
+    angleFromMario = abs_angle_diff(obj->oMoveAngleYaw, obj->oAngleToMario);
+    eyeCase = switchCase->selectedCase;
+
+    switch (eyeCase) {
+        case BOWSER_EYES_OPEN:
+            // Mario is in Bowser's field of view
+            if (angleFromMario > 0x2000) {
+                if (obj->oAngleVelYaw > 0) {
+                    switchCase->selectedCase = BOWSER_EYES_RIGHT;
+                }
+                if (obj->oAngleVelYaw < 0) {
+                    switchCase->selectedCase = BOWSER_EYES_LEFT;
+                }
+            }
+            // Half close, start blinking
+            if (obj->oBowserEyesTimer > 50) {
+                switchCase->selectedCase = BOWSER_EYES_HALF_CLOSED;
+            }
+            break;
+
+        case BOWSER_EYES_HALF_CLOSED:
+            // Close, blinking
+            if (obj->oBowserEyesTimer > 2) {
+                switchCase->selectedCase = BOWSER_EYES_CLOSED;
+            }
+            break;
+
+        case BOWSER_EYES_CLOSED:
+            // Reset blinking
+            if (obj->oBowserEyesTimer > 2) {
+                switchCase->selectedCase = BOWSER_EYES_RESET;
+            }
+            break;
+
+        case BOWSER_EYES_RESET:
+            // Open, no longer blinking
+            if (obj->oBowserEyesTimer > 2) {
+                switchCase->selectedCase = BOWSER_EYES_OPEN;
+            }
+            break;
+
+        case BOWSER_EYES_RIGHT:
+            // Look more on the right if angle didn't change
+            // Otherwise, look at the center (open)
+            if (obj->oBowserEyesTimer > 2) {
+                switchCase->selectedCase = BOWSER_EYES_FAR_RIGHT;
+                if (obj->oAngleVelYaw <= 0) {
+                    switchCase->selectedCase = BOWSER_EYES_OPEN;
+                }
+            }
+            break;
+
+        case BOWSER_EYES_FAR_RIGHT:
+            // Look close right if angle was drastically changed
+            if (obj->oAngleVelYaw <= 0) {
+                switchCase->selectedCase = BOWSER_EYES_RIGHT;
+            }
+            break;
+
+        case BOWSER_EYES_LEFT:
+            // Look more on the left if angle didn't change
+            // Otherwise, look at the center (open)
+            if (obj->oBowserEyesTimer > 2) {
+                switchCase->selectedCase = BOWSER_EYES_FAR_LEFT;
+                if (obj->oAngleVelYaw >= 0) {
+                    switchCase->selectedCase = BOWSER_EYES_OPEN;
+                }
+            }
+            break;
+
+        case BOWSER_EYES_FAR_LEFT:
+            // Look close left if angle was drastically changed
+            if (obj->oAngleVelYaw >= 0) {
+                switchCase->selectedCase = BOWSER_EYES_LEFT;
+            }
+            break;
+
+        default:
+            switchCase->selectedCase = BOWSER_EYES_OPEN;
+    }
+
+    // Reset timer if eye case has changed
+    if (switchCase->selectedCase != eyeCase) {
+        obj->oBowserEyesTimer = -1;
+    }
+}
+
+/**
+ * Geo switch for controlling the state of Bowser's eye direction and open/closed
+ * state. Checks whether oBowserEyesShut is TRUE and closes eyes if so and processes
+ * direction otherwise.
+ */
+Gfx *geo_switch_bowser_eyes(s32 callContext, struct GraphNode *node, UNUSED Mat4 *mtx) {
+    struct Object *obj = (struct Object *) gCurGraphNodeObject;
+    struct GraphNodeSwitchCase *switchCase = (struct GraphNodeSwitchCase *) node;
+
+    if (callContext == GEO_CONTEXT_RENDER) {
+        if (gCurGraphNodeHeldObject != NULL) {
+            obj = gCurGraphNodeHeldObject->objNode;
+        }
+
+        switch (obj->oBowserEyesShut) {
+            case FALSE: // eyes open, handle eye looking direction
+                bowser_open_eye_switch(obj, switchCase);
+                break;
+            case TRUE: // eyes closed, blinking
+                switchCase->selectedCase = BOWSER_EYES_CLOSED;
+                break;
+        }
+
+        obj->oBowserEyesTimer++;
+    }
+
+    return NULL;
+}
+
+/**
+ * Geo switch that sets Bowser's Rainbow coloring (in BitS)
+ */
+Gfx *geo_bits_bowser_coloring(s32 callContext, struct GraphNode *node, UNUSED s32 context) {
+    Gfx *gfxHead = NULL;
+    Gfx *gfx;
+
+    if (callContext == GEO_CONTEXT_RENDER) {
+        struct Object *obj = (struct Object *) gCurGraphNodeObject;
+        struct GraphNodeGenerated *graphNode = (struct GraphNodeGenerated *) node;
+
+        if (gCurGraphNodeHeldObject != NULL) {
+            obj = gCurGraphNodeHeldObject->objNode;
+        }
+
+        // Set layers if object is transparent or not
+        if (obj->oOpacity == 255) {
+            graphNode->fnNode.node.flags = (graphNode->fnNode.node.flags & 0xFF) | (LAYER_OPAQUE << 8);
+        } else {
+            graphNode->fnNode.node.flags = (graphNode->fnNode.node.flags & 0xFF) | (LAYER_TRANSPARENT << 8);
+        }
+
+        gfx = gfxHead = alloc_display_list(2 * sizeof(Gfx));
+
+        // If TRUE, clear lighting to give rainbow color
+        if (obj->oBowserRainbowLight) {
+            gSPClearGeometryMode(gfx++, G_LIGHTING);
+        }
+
+        gSPEndDisplayList(gfx);
+    }
+
+    return gfxHead;
+}
+
+
+
+/**
+ * This geo function shifts snufit's mask when it shrinks down, 
+ * since the parts move independently.
+ */
+Gfx *geo_snufit_move_mask(s32 callContext, struct GraphNode *node, UNUSED Mat4 *c) {
+    if (callContext == GEO_CONTEXT_RENDER) {
+        struct Object *obj = (struct Object *) gCurGraphNodeObject;
+        struct GraphNodeTranslationRotation *transNode
+            = (struct GraphNodeTranslationRotation *) node->next;
+
+        transNode->translation[0] = obj->oSnufitXOffset;
+        transNode->translation[1] = obj->oSnufitYOffset;
+        transNode->translation[2] = obj->oSnufitZOffset;
+    }
+
+    return NULL;
+}
+
+/**
+ * This function scales the body of snufit, which needs done seperately from its mask.
+ */
+Gfx *geo_snufit_scale_body(s32 callContext, struct GraphNode *node, UNUSED Mat4 *c) {
+    if (callContext == GEO_CONTEXT_RENDER) {
+        struct Object *obj = (struct Object *) gCurGraphNodeObject;
+        struct GraphNodeScale *scaleNode = (struct GraphNodeScale *) node->next;
+
+        scaleNode->scale = obj->oSnufitBodyScale / 1000.0f;
+    }
+
+    return NULL;
+}
+
+/** Geo switch logic for Tuxie's mother's eyes. Cases 0-4. Interestingly, case
+ * 4 is unused, and is the eye state seen in Shoshinkai 1995 footage.
+ */
+Gfx *geo_switch_tuxie_mother_eyes(s32 run, struct GraphNode *node, UNUSED Mat4 *mtx) {
+    if (run == TRUE) {
+        struct Object *obj = (struct Object *) gCurGraphNodeObject;
+        struct GraphNodeSwitchCase *switchCase = (struct GraphNodeSwitchCase *) node;
+        s32 timer;
+
+        switchCase->selectedCase = 0;
+
+        // timer logic for blinking. uses cases 0-2.
+        timer = gGlobalTimer % 50;
+        if (timer < 43) {
+            switchCase->selectedCase = 0;
+        } else if (timer < 45) {
+            switchCase->selectedCase = 1;
+        } else if (timer < 47) {
+            switchCase->selectedCase = 2;
+        } else {
+            switchCase->selectedCase = 1;
+        }
+
+        /** make Tuxie's Mother have angry eyes if Mario takes the correct baby
+         * after giving it back. The easiest way to check this is to see if she's
+         * moving, since she only does when she's chasing Mario.
+         */
+        if (obj->behavior == segmented_to_virtual(bhvTuxiesMother)) {
+            if (obj->oForwardVel > 5.0f) {
+                switchCase->selectedCase = 3;
+            }
+        }
+    }
+    return NULL;
+}

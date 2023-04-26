@@ -316,6 +316,9 @@ void play_transition(s16 transType, s16 time, u8 red, u8 green, u8 blue) {
         red = gWarpTransRed, green = gWarpTransGreen, blue = gWarpTransBlue;
     }
 
+    bzero(&sTransitionTextureFadeCountLerp, sizeof(sTransitionTextureFadeCountLerp));
+    bzero(&sTransitionColorFadeCountLerp, sizeof(sTransitionColorFadeCountLerp));
+
     if (transType < 8) { // if transition is RGB
         gWarpTransition.data.red = red;
         gWarpTransition.data.green = green;

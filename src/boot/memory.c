@@ -409,43 +409,6 @@ void *load_segment_decompress(s32 segment, u8 *srcStart, u8 *srcEnd) {
     return dest;
 }
 
-void *load_segment_decompress_heap(u32 segment, u8 *srcStart, u8 *srcEnd) {
-    u8 *heap = (u8 *) &gZBuffer;
-#ifdef UNCOMPRESSED
-    dma_read(heap, srcStart, srcEnd);
-    set_segment_base_addr(segment, heap);
-#else
-#ifdef GZIP
-    u32 compSize = (srcEnd - 4 - srcStart);
-#else
-    u32 compSize = ALIGN16(srcEnd - srcStart);
-#endif
-    u8 *compressed = main_pool_alloc(compSize, MEMORY_POOL_RIGHT);
-#ifdef GZIP
-    // Decompressed size from end of gzip
-    u32 *size = (u32 *) (compressed + compSize);
-#endif
-    if (compressed != NULL) {
-        dma_read(compressed, srcStart, srcEnd);
-#ifdef GZIP
-        expand_gzip(compressed, heap, compSize, (u32)size);
-#elif RNC1
-        Propack_UnpackM1(compressed, heap);
-#elif RNC2
-        Propack_UnpackM2(compressed, heap);
-#elif YAY0
-        slidstart(compressed, heap);
-#elif MIO0
-        decompress(compressed, heap);
-#endif
-        set_segment_base_addr(segment, heap);
-        main_pool_free(compressed);
-    } else {
-    }
-#endif
-    return heap;
-}
-
 void load_engine_code_segment(void) {
     void *startAddr = (void *) _engineSegmentStart;
     u32 totalSize = _engineSegmentEnd - _engineSegmentStart;

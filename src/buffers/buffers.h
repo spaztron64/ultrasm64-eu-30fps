@@ -8,8 +8,6 @@
 #include "game/game_init.h"
 #include "config.h"
 
-extern u8 gDecompressionHeap[];
-
 extern u8 gAudioHeap[];
 
 extern u8 gIdleThreadStack[THREAD1_STACK];

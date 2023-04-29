@@ -5,6 +5,7 @@
 #define INCLUDED_FROM_MEMORY_C
 
 #include "buffers/buffers.h"
+#include "buffers/zbuffer.h"
 #include "slidec.h"
 #include "game/game_init.h"
 #include "game/main.h"
@@ -409,10 +410,10 @@ void *load_segment_decompress(s32 segment, u8 *srcStart, u8 *srcEnd) {
 }
 
 void *load_segment_decompress_heap(u32 segment, u8 *srcStart, u8 *srcEnd) {
-
+    u8 *heap = (u8 *) &gZBuffer;
 #ifdef UNCOMPRESSED
-    dma_read(gDecompressionHeap, srcStart, srcEnd);
-    set_segment_base_addr(segment, gDecompressionHeap);
+    dma_read(heap, srcStart, srcEnd);
+    set_segment_base_addr(segment, heap);
 #else
 #ifdef GZIP
     u32 compSize = (srcEnd - 4 - srcStart);
@@ -427,22 +428,22 @@ void *load_segment_decompress_heap(u32 segment, u8 *srcStart, u8 *srcEnd) {
     if (compressed != NULL) {
         dma_read(compressed, srcStart, srcEnd);
 #ifdef GZIP
-        expand_gzip(compressed, gDecompressionHeap, compSize, (u32)size);
+        expand_gzip(compressed, heap, compSize, (u32)size);
 #elif RNC1
-        Propack_UnpackM1(compressed, gDecompressionHeap);
+        Propack_UnpackM1(compressed, heap);
 #elif RNC2
-        Propack_UnpackM2(compressed, gDecompressionHeap);
+        Propack_UnpackM2(compressed, heap);
 #elif YAY0
-        slidstart(compressed, gDecompressionHeap);
+        slidstart(compressed, heap);
 #elif MIO0
-        decompress(compressed, gDecompressionHeap);
+        decompress(compressed, heap);
 #endif
-        set_segment_base_addr(segment, gDecompressionHeap);
+        set_segment_base_addr(segment, heap);
         main_pool_free(compressed);
     } else {
     }
 #endif
-    return gDecompressionHeap;
+    return heap;
 }
 
 void load_engine_code_segment(void) {

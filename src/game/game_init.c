@@ -425,7 +425,7 @@ void display_and_vsync(void) {
         gGoddardVblankCallback = NULL;
     }
     exec_display_list(&gGfxPool->spTask);
-    osViSwapBuffer((void *) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[sRenderedFramebuffer]));
+    //osViSwapBuffer((void *) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[sRenderedFramebuffer]));
     // Skip swapping buffers on emulator other than Ares so that they display immediately as the Gfx task finishes
         if (++sRenderedFramebuffer == 3) {
             sRenderedFramebuffer = 0;
@@ -872,5 +872,6 @@ void thread9_graphics(UNUSED void *arg) {
         if (gFrameCap) {
             osRecvMesg(&gVideoVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
         }
+        osViSwapBuffer((void *) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[sRenderedFramebuffer]));
     }
 }

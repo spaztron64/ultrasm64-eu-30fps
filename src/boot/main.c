@@ -35,6 +35,13 @@ OSThread gVideoLoopThread;
 OSIoMesg gDmaIoMesg;
 OSMesg gMainReceivedMesg;
 
+OSMesgQueue sSoundMesgQueue;
+OSMesg sSoundMesgBuf[1];
+struct VblankHandler sSoundVblankHandler;
+
+OSTimer audiotimer;
+OSTimer logictimer;
+
 OSMesgQueue gDmaMesgQueue;
 OSMesgQueue gSIEventMesgQueue;
 OSMesgQueue gPIMesgQueue;
@@ -74,6 +81,9 @@ void setup_mesg_queues(void) {
     osCreateMesgQueue(&gSPTaskMesgQueue, gUnknownMesgBuf, ARRAY_COUNT(gUnknownMesgBuf));
     osCreateMesgQueue(&gIntrMesgQueue, gIntrMesgBuf, ARRAY_COUNT(gIntrMesgBuf));
     osViSetEvent(&gIntrMesgQueue, (OSMesg) MESG_VI_VBLANK, 1);
+    osSetTimer(&logictimer, 0, OS_USEC_TO_CYCLES(16666), &gGameVblankQueue, (OSMesg) 1);
+    //set_vblank_handler(2, &gGameVblankHandler, &gGameVblankQueue, (OSMesg) 1);
+    //osSetTimer(&audiotimer, 0, OS_USEC_TO_CYCLES(20000), &sSoundMesgQueue, (OSMesg) 512);
 
     osSetEventMesg(OS_EVENT_SP, &gIntrMesgQueue, (OSMesg) MESG_SP_COMPLETE);
     osSetEventMesg(OS_EVENT_DP, &gIntrMesgQueue, (OSMesg) MESG_DP_COMPLETE);

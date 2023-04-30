@@ -21,6 +21,12 @@ struct StructSH8031D9B0 {
     s16 unk0E;
 };
 
+extern OSTimer videotimer;
+
+extern OSMesgQueue sSoundMesgQueue;
+extern OSMesg sSoundMesgBuf[1];
+extern struct VblankHandler sSoundVblankHandler;
+
 extern OSThread D_80339210;
 extern OSThread gIdleThread;
 extern OSThread gMainThread;

@@ -711,7 +711,7 @@ void thread5_game_loop(UNUSED void *arg) {
 #endif
     save_file_load_all();
 
-    set_vblank_handler(2, &gGameVblankHandler, &gGameVblankQueue, (OSMesg) 1);
+    //set_vblank_handler(2, &gGameVblankHandler, &gGameVblankQueue, (OSMesg) 1);
 
     // Point address to the entry point into the level script data.
     addr = segmented_to_virtual(level_script_entry);

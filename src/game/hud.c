@@ -378,6 +378,7 @@ void render_hud_camera_status(void) {
 #ifdef PUPPYPRINT_DEBUG
 u8 gFPS = 30;
 OSTime frameTimes[FRAMETIME_COUNT];
+OSTime frameTime1;
 u8 curFrameTimeIndex = 0;
 extern s16 gCurrentFrameIndex1;
 extern s16 gCurrentFrameIndex3;
@@ -401,6 +402,7 @@ void calculate_and_update_fps(void) {
     if (curFrameTimeIndex >= FRAMETIME_COUNT) {
         curFrameTimeIndex = 0;
     }
+    frameTime1 = (s32)OS_CYCLES_TO_USEC(newTime - oldTime) / 3;
     gFPS = (FRAMETIME_COUNT * 1000000.0f) / (s32)OS_CYCLES_TO_USEC(newTime - oldTime);
 }
 
@@ -418,11 +420,12 @@ void render_profiler(void) {
     totalRSPReads[PROFILER_COUNT + 1] = totalRSPReads[PROFILER_COUNT] / PROFILER_COUNT;
     totalRDPReads[PROFILER_COUNT + 1] = totalRDPReads[PROFILER_COUNT] / PROFILER_COUNT;
     calculate_and_update_fps();
-    print_text_fmt_int(32, 240 - 32, "FPS %d", gFPS);
-    print_text_fmt_int(32, 240 - 48, "CPU %d", (u32) totalCPUReads[PROFILER_COUNT + 1]);
-    print_text_fmt_int(32, 240 - 64, "RSP %d", (u32) totalRSPReads[PROFILER_COUNT + 1]);
-    print_text_fmt_int(32, 240 - 80, "RDP %d", (u32) totalRDPReads[PROFILER_COUNT + 1]);
-    print_text_fmt_int(32, 240 - (gScreenHeight - 24), "RAM %x", (u32) sPoolFreeSpace);
+    print_text_fmt_int(32, 240 - 32, "FPS   %d", gFPS);
+    print_text_fmt_int(32, 240 - 48, "FTIME %d", frameTime1);
+    print_text_fmt_int(32, 240 - 64, "CPU   %d", (u32) totalCPUReads[PROFILER_COUNT + 1]);
+    print_text_fmt_int(32, 240 - 80, "RSP   %d", (u32) totalRSPReads[PROFILER_COUNT + 1]);
+    print_text_fmt_int(32, 240 - 96, "RDP   %d", (u32) totalRDPReads[PROFILER_COUNT + 1]);
+    print_text_fmt_int(32, 240 - (gScreenHeight - 24), "RAM   %dK FREE", (u32) sPoolFreeSpace / 1024);
 }
 
 void profiler_logic(void) {

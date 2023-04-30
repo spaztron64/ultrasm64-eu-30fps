@@ -3169,8 +3169,13 @@ u8 sOptionStrings[][32] = {
     {TEXT_SCREEN_MODE_16_9},
     {TEXT_SCREEN_MODE_16_9},
     {TEXT_SCREEN_MODE_16_9},
-    {TEXT_FRAMECAP_60},
+#ifdef VERSION_EU
+    {TEXT_FRAMECAP_50},
+    {TEXT_FRAMECAP_25},
+#else
+	{TEXT_FRAMECAP_60},
     {TEXT_FRAMECAP_30},
+#endif
     {TEXT_DEDITHER_OFF},
     {TEXT_DEDITHER_ON}
 };

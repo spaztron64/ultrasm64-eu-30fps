@@ -818,7 +818,11 @@ void thread9_graphics(UNUSED void *arg) {
 
         u32 deltaTime = osGetTime() - prevTime;
         prevTime = osGetTime();
-        gLerpSpeed = OS_CYCLES_TO_USEC(deltaTime) / 33333.33f;
+#ifdef VERSION_EU
+        gLerpSpeed = OS_CYCLES_TO_USEC(deltaTime) / 40000.00f;
+#else
+		gLerpSpeed = OS_CYCLES_TO_USEC(deltaTime) / 33333.33f;
+#endif        
         if (gLoadReset) {
             gLoadReset = 0;
             gLerpSpeed = 1.0f;
@@ -838,15 +842,26 @@ void thread9_graphics(UNUSED void *arg) {
             }
         } else {
             profiler_log_thread9_time(THREAD9_START);
-            if (deltaTime < OS_USEC_TO_CYCLES(33333)) { // > 30 fps
+#ifdef VERSION_EU
+            if (deltaTime < OS_USEC_TO_CYCLES(40000)) { // > 25 fps
+#else
+			if (deltaTime < OS_USEC_TO_CYCLES(33333)) { // > 30 fps
+#endif				
                 if (lastRenderedFrame - gGlobalTimer == 1) {
                     gMoveSpeed = 0; // Full
                 } else {
-                    gMoveSpeed = 1; // Half
+					if (!gFrameCap)
+						gMoveSpeed = 1; // Half
+					else
+						gMoveSpeed = 0;
                 }
-            } else if (deltaTime > OS_USEC_TO_CYCLES(66666)) { // < 15fps
+#ifdef VERSION_EU                
+            } else if (deltaTime > OS_USEC_TO_CYCLES(80000)) { // < 12.5fps
+#else
+			} else if (deltaTime > OS_USEC_TO_CYCLES(66666)) { // < 15fps
+#endif				
                 if (gGlobalTimer - lastRenderedFrame == 1) {
-                    gMoveSpeed = 2; // Full and a half
+                    gMoveSpeed = 0; // Full and a half
                 } else {
                     gMoveSpeed = 0; // Full
                 }
